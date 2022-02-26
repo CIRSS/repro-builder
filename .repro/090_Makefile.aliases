@@ -3,7 +3,6 @@
 ## 
 
 # Define target aliases available both inside and outside a running REPRO
-examples: run-examples  ## Run all of the examples.
 
 # Define target aliases available only outside a running REPRO
 ifndef IN_RUNNING_REPRO
