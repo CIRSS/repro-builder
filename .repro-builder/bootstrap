@@ -4,7 +4,6 @@
 REPRO_BUILDER_DIR=`readlink -f $(dirname $0)`
 cd ${REPRO_BUILDER_DIR}/cache
 
-
 # install wget so that missing builder scripts can be downloaded
 apt-get -y update
 apt-get -y install wget
@@ -22,10 +21,6 @@ do
         wget -nv -O ${artifact_name} ${repro_template_release}/${artifact_name}
     fi
 done
-
-# if [[ ! -f initialize-repro ]] ; then
-#     echo "MISSING"
-# fi
 
 for filename in [0-9]*; do
     echo -e "\nSTARTING  ${filename}\n"
