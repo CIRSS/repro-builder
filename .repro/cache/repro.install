@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
 module_name=$1
-package_version=$2
-package_url_template=$3
+module_version=$2
+module_url_template=$3
 
-module_dir=${MODULES_DIR}/${module_name}-${package_version}
+module_dir=${REPRO_MODULES}/${module_name}-${module_version}
 
 mkdir -p ${module_dir}
 cd ${module_dir}
 
-if [[ $package_version == local ]] ; then
-    cp ${PACKAGE_SNAPSHOT}/module.txt .
+if [[ $module_version == local ]] ; then
+    cp ${MODULE_SNAPSHOT}/module.txt .
 else
-    package_url=`eval echo ${package_url_template}`
-    wget --quiet ${package_url}/module.txt
+    module_url=`eval echo ${module_url_template}`
+    wget --quiet ${module_url}/module.txt
 fi
 
 readarray lines < module.txt
@@ -44,10 +44,10 @@ do
 
     if [[ ${artifact_path} == http?:* ]] ; then
         wget -nv -O ${artifact_name} ${artifact_path}
-    elif [[ $package_version == local ]] ; then
-        cp ${PACKAGE_SNAPSHOT}/${artifact_path} ${artifact_name}
+    elif [[ $module_version == local ]] ; then
+        cp ${MODULE_SNAPSHOT}/${artifact_path} ${artifact_name}
     else
-        wget -nv -O ${artifact_name} ${package_url}/${artifact_path}
+        wget -nv -O ${artifact_name} ${module_url}/${artifact_path}
     fi
 
     mimetype=`file --mime ${artifact_name}`

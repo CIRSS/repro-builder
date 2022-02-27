@@ -7,10 +7,10 @@ RUN bash .repro/bootstrap
 
 USER repro
 
-# URLs for packages delivered as CIRSS GitHub releases
+# URLs for REPRO modules delivered as CIRSS GitHub releases
 ENV CIRSS_RELEASES 'https://github.com/cirss/${1}/releases/download/v${2}/'
 
-# install the local package containing the tests
+# install the local module containing the tests
 RUN repro.install repro-builder local ${CIRSS_RELEASES}
 
 # run the tests

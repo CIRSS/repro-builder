@@ -9,8 +9,11 @@ cd ${REPRO_BUILDER_DIR}/cache
 apt-get -y update
 apt-get -y install wget
 
-repro_template_release=https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/
-wget --quiet ${repro_template_release}/module.txt
+repro_builder_release=https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/
+
+if [[ ! -f module.txt ]] ; then
+    wget --quiet ${repro_builder_release}/module.txt
+fi
 
 readarray lines < module.txt
 for full_line in "${lines[@]}"
@@ -19,7 +22,7 @@ do
     read -ra tokens <<< ${trimmed_line}
     artifact_name=${tokens[0]}
     if [[ ! -f ${artifact_name} ]] ; then
-        wget -nv -O ${artifact_name} ${repro_template_release}/${artifact_name}
+        wget -nv -O ${artifact_name} ${repro_builder_release}/${artifact_name}
     fi
 done
 
