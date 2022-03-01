@@ -2,6 +2,7 @@
 repro.setenv REPRO_PATH         ${HOME}/.repropath
 repro.setenv REPRO_MODULES      ${HOME}/repro-modules
 
+export REPRO_BUILD_DIR=$(dirname $(readlink -f $(dirname $0)))
 export MODULE_SNAPSHOT=${REPRO_BUILD_DIR}/module
 
 vars_to_substitute='$REPRO_PATH $REPRO_MODULES $MODULE_SNAPSHOT'

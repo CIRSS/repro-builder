@@ -1,0 +1,8 @@
+010_install_required_packages
+020_create_repro_user
+030_initialize_environment
+040_install_builders
+050_install_optional_packages
+060_configure_startup
+repro.atstart
+repro.install

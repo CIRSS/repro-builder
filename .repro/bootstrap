@@ -1,27 +1,16 @@
 #!/bin/bash
 
-# store paths to directories the build was performed in
-export REPRO_BUILD_DIR=`readlink -f $(dirname $0)`
-export REPRO_BUILD_CACHE=${REPRO_BUILD_DIR}/cache
+# work in directory containing this script
+cd $(dirname $0)
 
-# work in the cache subdirectory
-mkdir -p ${REPRO_BUILD_CACHE}
-cd ${REPRO_BUILD_CACHE}
-
-# install wget so that builder scripts can be downloaded
+# install wget so that builders can be downloaded
 apt-get -y update
 apt-get -y install wget
 
-# define the location of the repro-builder release to use
-REPRO_BUILDER_RELEASE_URL=https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/
-
-# set the name of the builder script
-repro_builder_script=build.sh
-
-# download the builder script if not already in the cache
-if [[ ! -f ${repro_builder_script} ]] ; then
-    wget --quiet ${REPRO_BUILDER_RELEASE_URL}/${repro_builder_script}
+# download the builder script if necessary
+if [[ ! -f build ]] ; then
+    wget https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/build
 fi
 
 # run the builder script
-bash ${repro_builder_script}
+bash build

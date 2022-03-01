@@ -1,12 +1,15 @@
 #!/bin/bash
 
-contents_filename=contents.txt
+export REPRO_BUILDER_RELEASE_URL=https://github.com/CIRSS/repro-builder/releases/download/v0.1.0
 
-if [[ ! -f ${contents_filename} ]] ; then
-    wget --quiet ${REPRO_BUILDER_RELEASE_URL}/${contents_filename}
+mkdir -p cache
+cd cache
+
+if [[ ! -f contents.txt ]] ; then
+    wget --quiet ${REPRO_BUILDER_RELEASE_URL}/contents.txt
 fi
 
-readarray lines < ${contents_filename}
+readarray lines < contents.txt
 
 for full_line in "${lines[@]}"
 do

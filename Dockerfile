@@ -1,8 +1,7 @@
 FROM ubuntu:22.04
 
-ENV REPRO_NAME  repro-builder
-
 COPY .repro .repro
+#ADD https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/bootstrap .repro/
 RUN bash .repro/bootstrap
 
 USER repro

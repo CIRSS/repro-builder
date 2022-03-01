@@ -10,5 +10,4 @@ function repro.setenv {
 }
 
 repro.setenv HOME               ${HOME}
-repro.setenv REPRO_MNT          /mnt/${REPRO_NAME}
-repro.setenv IN_RUNNING_REPRO   ${REPRO_NAME}
+repro.setenv IN_RUNNING_REPRO   true

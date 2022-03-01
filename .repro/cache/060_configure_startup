@@ -3,7 +3,6 @@ repro.atstart source ${REPRO_ENV}
 
 touch ${REPRO_PATH}
 repro.atstart 'export PATH=$(<${REPRO_PATH}):$PATH'
-
-repro.atstart cd ${REPRO_MNT}
+repro.atstart 'cd ${REPRO_MNT}'
 
 chown ${repro_uid}.${repro_gid} ${HOME}/.repro*
