@@ -1,9 +1,19 @@
 #!/bin/bash
 
+# set the URL of REPRO builder release to employ
 export REPRO_BUILDER_RELEASE_URL=https://github.com/CIRSS/repro-builder/releases/download/v0.1.0
 
-mkdir -p cache
-cd cache
+# save the path to the original build directory
+export REPRO_BUILD_DIR=$(readlink -f $(dirname $0))
+
+# work in the cache subdirectory of the build directory
+cache_dir=${REPRO_BUILD_DIR}/cache
+mkdir -p ${cache_dir}
+cd ${cache_dir}
+
+# install wget so that builders can be downloaded
+apt-get -y update
+apt-get -y install wget
 
 if [[ ! -f contents.txt ]] ; then
     wget --quiet ${REPRO_BUILDER_RELEASE_URL}/contents.txt
@@ -22,7 +32,7 @@ do
 done
 
 for filename in [0-9]*; do
-    echo -e "\nSTARTING  ${filename}\n"
+    echo -e "STARTING  ${filename}"
     source $filename
-    echo -e "\nFINISHED ${filename}\n"
 done
+
