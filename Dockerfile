@@ -1,8 +1,8 @@
 FROM ubuntu:22.04
 
 COPY .repro .repro
-#ADD https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/builder .repro/
-RUN bash .repro/builder
+#ADD https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/build .repro/
+RUN bash .repro/build
 
 USER repro
 
@@ -10,7 +10,7 @@ USER repro
 ENV CIRSS_RELEASES 'https://github.com/cirss/${1}/releases/download/v${2}/'
 
 # install the local module containing the tests
-RUN repro.install repro-builder local ${CIRSS_RELEASES}
+RUN repro.require repro-builder local ${CIRSS_RELEASES}
 
 # run the tests
 RUN repro.atstart run_tests.sh

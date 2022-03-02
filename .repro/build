@@ -15,11 +15,11 @@ cd ${cache_dir}
 apt-get -y update
 apt-get -y install wget
 
-if [[ ! -f contents.txt ]] ; then
-    wget --quiet ${REPRO_BUILDER_RELEASE_URL}/contents.txt
+if [[ ! -f builders.txt ]] ; then
+    wget --quiet ${REPRO_BUILDER_RELEASE_URL}/builders.txt
 fi
 
-readarray lines < contents.txt
+readarray lines < builders.txt
 
 for full_line in "${lines[@]}"
 do

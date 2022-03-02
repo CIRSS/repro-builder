@@ -2,7 +2,7 @@
 repro.setenv REPRO_PATH         ${HOME}/.repropath
 repro.setenv REPRO_MODULES      ${HOME}/repro-modules
 
-export MODULE_SNAPSHOT=${REPRO_BUILD_DIR}/module
+export MODULE_SNAPSHOT=${REPRO_BUILD_DIR}/export
 
 vars_to_substitute='$REPRO_PATH $REPRO_MODULES $MODULE_SNAPSHOT'
 

@@ -5,4 +5,4 @@
 050_install_optional_packages
 060_configure_startup
 repro.atstart
-repro.install
+repro.require
