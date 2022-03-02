@@ -4,71 +4,90 @@ module_name=$1
 module_version=$2
 module_url_template=$3
 
-module_dir=${REPRO_MODULES}/${module_name}-${module_version}
+# create the repro index directory if needed
+repro_index_dir=${HOME}/.reproindex
+mkdir -p ${repro_index_dir}
 
-mkdir -p ${module_dir}
-cd ${module_dir}
+# determine path to index entry for this module
+repro_index_entry=${repro_index_dir}/${module_name}
 
-if [[ $module_version == local ]] ; then
-    cp ${MODULE_SNAPSHOT}/module.txt .
-else
-    module_url=`eval echo ${module_url_template}`
-    wget --quiet ${module_url}/module.txt
-fi
+# install the module if the index entry does not exist
+if [[ ! -f ${repro_index_entry} ]] ; then 
 
-readarray lines < module.txt
+    echo "Installing REPRO module ${module_name} version ${module_version}..."
 
-for full_line in "${lines[@]}"
-do
-    # trim comments starting with a `#` character on the line
-    trimmed_line=${full_line%%#*}
+    module_dir=${REPRO_MODULES}/${module_name}-${module_version}
 
-    # split the trimmed line using whitespace as token delimiter
-    read -ra tokens <<< ${trimmed_line}
+    mkdir -p ${module_dir}
+    cd ${module_dir}
 
-    # interpret the line based on the number its tokens
-    case ${#tokens[@]} in
-
-    1)  artifact_name=${tokens[0]}
-        artifact_path=${artifact_name}
-    ;;
-
-    2)  artifact_name=${tokens[0]}
-        artifact_path=${tokens[1]}
-    ;;
-
-    *) continue
-    ;;
-
-    esac
-
-    artifact_base=$(basename $artifact_path)
-
-    if [[ ${artifact_path} == http?:* ]] ; then
-        wget -nv -O ${artifact_base} ${artifact_path}
-    elif [[ $module_version == local ]] ; then
-        cp ${MODULE_SNAPSHOT}/${artifact_path} ${artifact_base}
+    if [[ $module_version == local ]] ; then
+        cp ${MODULE_SNAPSHOT}/module.txt .
     else
-        wget -nv -O ${artifact_base} ${module_url}/${artifact_path}
+        module_url=`eval echo ${module_url_template}`
+        wget --quiet ${module_url}/module.txt
     fi
 
-    if [[ ${artifact_name} != ${artifact_base} ]] ; then
-        ln -s ${artifact_base} ${artifact_name}
-    fi
+    readarray lines < module.txt
 
-    mimetype=`file --mime ${artifact_base}`
-    if echo ${mimetype} | grep -q "application/x-executable"; then
-        chmod u+x ${artifact_base}
-    elif echo ${mimetype} | grep -q "text/x-shellscript"; then
-        chmod u+x ${artifact_base}
-    fi
+    for full_line in "${lines[@]}"
+    do
+        # trim comments starting with a `#` character on the line
+        trimmed_line=${full_line%%#*}
 
-    if [[ ${artifact_name} == configure.sh ]] ; then
-        echo "Running  ${artifact_name}"
-        source ${artifact_name}
-    fi
+        # split the trimmed line using whitespace as token delimiter
+        read -ra tokens <<< ${trimmed_line}
 
-done
+        # interpret the line based on the number its tokens
+        case ${#tokens[@]} in
 
-echo -n "${module_dir}:" >> ${REPRO_PATH}
+        1)  artifact_name=${tokens[0]}
+            artifact_path=${artifact_name}
+        ;;
+
+        2)  artifact_name=${tokens[0]}
+            artifact_path=${tokens[1]}
+        ;;
+
+        *) continue
+        ;;
+
+        esac
+
+        artifact_base=$(basename $artifact_path)
+
+        if [[ ${artifact_path} == http?:* ]] ; then
+            wget -nv -O ${artifact_base} ${artifact_path}
+        elif [[ $module_version == local ]] ; then
+            cp ${MODULE_SNAPSHOT}/${artifact_path} ${artifact_base}
+        else
+            wget -nv -O ${artifact_base} ${module_url}/${artifact_path}
+        fi
+
+        if [[ ${artifact_name} != ${artifact_base} ]] ; then
+            ln -s ${artifact_base} ${artifact_name}
+        fi
+
+        mimetype=`file --mime ${artifact_base}`
+        if echo ${mimetype} | grep -q "application/x-executable"; then
+            chmod u+x ${artifact_base}
+        elif echo ${mimetype} | grep -q "text/x-shellscript"; then
+            chmod u+x ${artifact_base}
+        fi
+
+        if [[ ${artifact_name} == configure.sh ]] ; then
+            echo "Running  ${artifact_name}"
+            source ${artifact_name}
+        fi
+
+    done
+
+    echo -n "${module_dir}:" >> ${REPRO_PATH}
+
+    echo "${module_name} ${module_version} ${module_dir}" > ${repro_index_entry}
+    echo "${module_name}" >> ${repro_index_dir}/.requiredorder
+
+else
+    echo "Module ${module_name} was already installed."
+fi
 
