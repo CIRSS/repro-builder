@@ -42,19 +42,25 @@ do
 
     esac
 
+    artifact_base=$(basename $artifact_path)
+
     if [[ ${artifact_path} == http?:* ]] ; then
-        wget -nv -O ${artifact_name} ${artifact_path}
+        wget -nv -O ${artifact_base} ${artifact_path}
     elif [[ $module_version == local ]] ; then
-        cp ${MODULE_SNAPSHOT}/${artifact_path} ${artifact_name}
+        cp ${MODULE_SNAPSHOT}/${artifact_path} ${artifact_base}
     else
-        wget -nv -O ${artifact_name} ${module_url}/${artifact_path}
+        wget -nv -O ${artifact_base} ${module_url}/${artifact_path}
     fi
 
-    mimetype=`file --mime ${artifact_name}`
+    if [[ ${artifact_name} != ${artifact_base} ]] ; then
+        ln -s ${artifact_base} ${artifact_name}
+    fi
+
+    mimetype=`file --mime ${artifact_base}`
     if echo ${mimetype} | grep -q "application/x-executable"; then
-        chmod u+x ${artifact_name}
+        chmod u+x ${artifact_base}
     elif echo ${mimetype} | grep -q "text/x-shellscript"; then
-        chmod u+x ${artifact_name}
+        chmod u+x ${artifact_base}
     fi
 
     if [[ ${artifact_name} == configure.sh ]] ; then
