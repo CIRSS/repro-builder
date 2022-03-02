@@ -13,6 +13,6 @@ ENV CIRSS_RELEASES 'https://github.com/cirss/${1}/releases/download/v${2}/'
 RUN repro.require repro-builder local ${CIRSS_RELEASES}
 
 # run the tests
-RUN repro.atstart run_tests.sh
+RUN repro.atstart run_tests
 
 CMD  /bin/bash -il
