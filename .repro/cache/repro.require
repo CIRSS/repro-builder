@@ -4,12 +4,8 @@ module_name=$1
 module_version=$2
 module_url_template=$3
 
-# create the repro index directory if needed
-repro_index_dir=${HOME}/.reproindex
-mkdir -p ${repro_index_dir}
-
 # determine path to index entry for this module
-repro_index_entry=${repro_index_dir}/${module_name}
+repro_index_entry=${REPRO_INDEX_DIR}/${module_name}
 
 # install the module if the index entry does not exist
 if [[ ! -f ${repro_index_entry} ]] ; then 
@@ -85,7 +81,7 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     echo -n "${module_dir}:" >> ${REPRO_PATH}
 
     echo "${module_name} ${module_version} ${module_dir}" > ${repro_index_entry}
-    echo "${module_name}" >> ${repro_index_dir}/.requiredorder
+    echo "${module_name}" >> ${REPRO_MODULE_ORDER_FILE}
 
 else
     echo "Module ${module_name} was already installed."

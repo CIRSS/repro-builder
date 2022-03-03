@@ -1,6 +1,14 @@
 
 export HOME=/home/${repro_user}
-export REPRO_ENV=${HOME}/.reproenv
+export REPRO_ENV=${HOME}/.repro-env
+export REPRO_INDEX_DIR=${HOME}/.repro-index
+export REPRO_MODULE_ORDER_FILE=${HOME}/.repro-module-order
+
+# create the repro index directory
+mkdir -p ${REPRO_INDEX_DIR}
+
+# create the module order file
+touch ${REPRO_MODULE_ORDER_FILE}
 
 function repro.setenv {
     name=$1
@@ -9,5 +17,9 @@ function repro.setenv {
     echo "export ${name}=${value}" >> ${REPRO_ENV}
 }
 
-repro.setenv HOME               ${HOME}
-repro.setenv IN_RUNNING_REPRO   true
+repro.setenv HOME                       ${HOME}
+repro.setenv IN_RUNNING_REPRO           true
+repro.setenv REPRO_ATSTART              ${HOME}/.repro-atstart
+repro.setenv REPRO_INDEX_DIR            ${REPRO_INDEX_DIR}
+repro.setenv REPRO_MODULE_ORDER_FILE    ${REPRO_MODULE_ORDER_FILE}
+
