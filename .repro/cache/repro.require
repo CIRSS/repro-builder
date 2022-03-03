@@ -12,7 +12,7 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     echo "Installing REPRO module ${module_name} version ${module_version}..."
 
-    module_dir=${REPRO_MODULES}/${module_name}-${module_version}
+    module_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
     mkdir -p ${module_dir}
     cd ${module_dir}

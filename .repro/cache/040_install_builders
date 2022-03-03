@@ -1,10 +1,7 @@
 
-repro.setenv REPRO_PATH         ${HOME}/.repro-path
-repro.setenv REPRO_MODULES      ${HOME}/.repro-modules
-
 export MODULE_SNAPSHOT=${REPRO_BUILD_DIR}/export
 
-vars_to_substitute='$REPRO_PATH $REPRO_INDEX_DIR $REPRO_ATSTART $REPRO_MODULE_ORDER_FILE $REPRO_MODULES $MODULE_SNAPSHOT'
+vars_to_substitute='$REPRO_PATH $REPRO_INDEX_DIR $REPRO_ATSTART $REPRO_MODULE_ORDER_FILE $REPRO_MODULES_DIR $MODULE_SNAPSHOT'
 
 for template_file in repro.*; do
     expanded_file=/usr/local/bin/${template_file}
