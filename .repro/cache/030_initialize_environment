@@ -2,7 +2,7 @@
 export HOME=/home/${repro_user}
 export REPRO_ENV=${HOME}/.repro-env
 export REPRO_INDEX_DIR=${HOME}/.repro-index
-export REPRO_MODULE_ORDER_FILE=${HOME}/.repro-module-order
+export REPRO_ORDER_FILE=${HOME}/.repro-order
 
 function repro.setenv {
     name=$1
@@ -15,7 +15,7 @@ repro.setenv HOME                       ${HOME}
 repro.setenv IN_RUNNING_REPRO           true
 repro.setenv REPRO_ATSTART              ${HOME}/.repro-atstart
 repro.setenv REPRO_INDEX_DIR            ${REPRO_INDEX_DIR}
-repro.setenv REPRO_MODULE_ORDER_FILE    ${REPRO_MODULE_ORDER_FILE}
+repro.setenv REPRO_ORDER_FILE    ${REPRO_ORDER_FILE}
 repro.setenv REPRO_PATH                 ${HOME}/.repro-path
 repro.setenv REPRO_MODULES_DIR          ${HOME}/.repro-modules
 
@@ -23,5 +23,5 @@ repro.setenv REPRO_MODULES_DIR          ${HOME}/.repro-modules
 mkdir -p ${REPRO_MODULES_DIR}
 mkdir -p ${REPRO_INDEX_DIR}
 touch ${REPRO_ATSTART}
-touch ${REPRO_MODULE_ORDER_FILE}
+touch ${REPRO_ORDER_FILE}
 touch ${REPRO_PATH}

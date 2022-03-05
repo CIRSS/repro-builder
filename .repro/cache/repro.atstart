@@ -1,3 +1,17 @@
 #!/usr/bin/env bash
 
+trimmed_new_command=$(echo "$@" | xargs)
+
+readarray current_commands < ${REPRO_ATSTART}
+
+for command in "${current_commands[@]}" 
+do
+    trimmed_command=$(echo "$command" | xargs)
+
+    if [[ "${trimmed_new_command}" == "${trimmed_command}" ]] ; then
+        echo "**** Command already runs at start: ${command} ****"
+        exit
+    fi
+done
+
 echo $@ >> ${REPRO_ATSTART}

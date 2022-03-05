@@ -81,7 +81,7 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     echo -n "${module_dir}:" >> ${REPRO_PATH}
 
     echo "${module_name} ${module_version} ${module_dir}" > ${repro_index_entry}
-    echo "${module_name}" >> ${REPRO_MODULE_ORDER_FILE}
+    echo "${module_name}" >> ${REPRO_ORDER_FILE}
 
 else
     echo "Module ${module_name} was already installed."
