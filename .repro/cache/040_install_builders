@@ -1,7 +1,7 @@
 
 export MODULE_SNAPSHOT=${REPRO_BUILD_DIR}/export
 
-vars_to_substitute='$$REPRO_INDEX_DIR $REPRO_ATSTART $REPRO_ORDER_FILE $REPRO_MODULES_DIR $MODULE_SNAPSHOT'
+vars_to_substitute='$REPRO_ENV $REPRO_INDEX_DIR $REPRO_ATSTART $REPRO_ORDER_FILE $REPRO_MODULES_DIR $MODULE_SNAPSHOT'
 
 for template_file in repro.*; do
     expanded_file=/usr/local/bin/${template_file}
