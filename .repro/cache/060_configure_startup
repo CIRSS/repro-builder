@@ -1,7 +1,10 @@
 
 
 # copy all predefined dot-repro files to REPRO home directory
-cp .repro-* ${HOME}/
+for dot_file in repro-*
+do
+    cp ${dot_file} ${HOME}/.${dot_file}
+done
 
 # schedule start-time initialization of REPRO user environment
 repro.atstart source ${REPRO_ENV}
