@@ -14,6 +14,7 @@ function repro.setenv {
 repro.setenv HOME                ${HOME}
 repro.setenv IN_RUNNING_REPRO    true
 repro.setenv REPRO_ATSTART       ${HOME}/.repro-atstart
+repro.setenv REPRO_PATHS_FILE    ${HOME}/.repro-paths
 repro.setenv REPRO_INDEX_DIR     ${REPRO_INDEX_DIR}
 repro.setenv REPRO_ORDER_FILE    ${REPRO_ORDER_FILE}
 repro.setenv REPRO_MODULES_DIR   ${HOME}/.repro-modules
@@ -22,4 +23,5 @@ repro.setenv REPRO_MODULES_DIR   ${HOME}/.repro-modules
 mkdir -p ${REPRO_MODULES_DIR}
 mkdir -p ${REPRO_INDEX_DIR}
 touch ${REPRO_ATSTART}
+touch ${REPRO_PATHS_FILE}
 touch ${REPRO_ORDER_FILE}

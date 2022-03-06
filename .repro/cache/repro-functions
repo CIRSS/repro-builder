@@ -1,6 +1,14 @@
 
 
 function repro.rebuild-path {
+
+    readarray repro_paths < ${REPRO_PATHS_FILE}
+    for path_entry in "${repro_paths[@]}"
+    do
+        new_path=$(echo "$path_entry" | xargs)
+        export PATH=${new_path}:${PATH}
+    done
+
     module_path=''
     readarray module_order < ${REPRO_ORDER_FILE}
     for module_name in "${module_order[@]}"
