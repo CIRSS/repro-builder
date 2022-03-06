@@ -1,0 +1,10 @@
+## 
+## # Targets for building the base image.
+## 
+
+ifndef IN_RUNNING_REPRO
+
+base-image:             ## Build the Docker base image.
+	docker build -f Dockerfile-base -t ${REPRO_DOCKER_ORG}/repro-base:${REPRO_IMAGE_TAG} .
+
+endif

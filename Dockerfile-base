@@ -1,0 +1,14 @@
+FROM ubuntu:22.04
+
+# preinstall wget so that builders can be downloaded
+RUN apt-get -y update && apt-get -y install wget
+
+# preinstall packages needed to build any REPRO
+RUN apt-get -y install apt-utils gettext makepasswd sudo file
+
+# preinstall tzdata to ensure timezone is set
+RUN DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles" \
+	apt-get -y install tzdata
+
+RUN apt-get -y install make git less tree
+

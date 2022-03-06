@@ -14,4 +14,5 @@ include .repro/010_Makefile.help
 # include .repro/060_Makefile.services
 # include .repro/070_Makefile.code
 include .repro/080_Makefile.image
+include .repro/085_Makefile.base
 include .repro/090_Makefile.aliases
