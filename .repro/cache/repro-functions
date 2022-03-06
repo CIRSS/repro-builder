@@ -5,7 +5,7 @@ function repro.rebuild-path {
     readarray repro_paths < ${REPRO_PATHS_FILE}
     for path_entry in "${repro_paths[@]}"
     do
-        new_path=$(echo "$path_entry" | xargs)
+        new_path=$(echo "$path_entry" | envsubst | xargs )
         export PATH=${new_path}:${PATH}
     done
 
