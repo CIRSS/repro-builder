@@ -1,9 +1,16 @@
 
 
-echo "source ${REPRO_ENV}" >> ${HOME}/.bashrc
-echo "source ${REPRO_ATSTART}" >> ${HOME}/.bashrc
+# copy all predefined dot-repro files to REPRO home directory
+cp .repro-* ${HOME}/
 
-repro.atstart 'export PATH=$(<${REPRO_PATH}):$PATH'
+# schedule start-time initialization of REPRO user environment
+repro.atstart source ${REPRO_ENV}
+repro.atstart source ${HOME}/.repro-functions
+repro.atstart repro.rebuild-path
 repro.atstart 'cd ${REPRO_MNT}'
 
+# make sure all dot-repro files belong to the REPRO user
 chown -R ${repro_uid}.${repro_gid} ${HOME}/.repro*
+
+# add a final line to .bashrc to source the atstart file 
+echo "source ${REPRO_ATSTART}" >> ${HOME}/.bashrc

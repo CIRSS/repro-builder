@@ -1,0 +1,13 @@
+
+
+function repro.rebuild-path {
+    module_path=''
+    readarray module_order < ${REPRO_ORDER_FILE}
+    for module_name in "${module_order[@]}"
+    do
+        read -ra tokens < ${REPRO_INDEX_DIR}/${module_name}
+        module_dir=${tokens[2]}
+        module_path=${module_dir}:${module_path}
+    done
+    export PATH=${module_path}:${PATH}
+}

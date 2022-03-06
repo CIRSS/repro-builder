@@ -78,8 +78,6 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     done
 
-    echo -n "${module_dir}:" >> ${REPRO_PATH}
-
     echo "${module_name} ${module_version} ${module_dir}" > ${repro_index_entry}
     echo "${module_name}" >> ${REPRO_ORDER_FILE}
 
