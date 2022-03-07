@@ -11,14 +11,15 @@ function repro.setenv {
     echo "export ${name}=${value}" >> ${REPRO_ENV}
 }
 
-repro.setenv HOME                ${HOME}
-repro.setenv IN_RUNNING_REPRO    true
-repro.setenv REPRO_ATSTART       ${HOME}/.repro-atstart
-repro.setenv REPRO_PATHS_FILE    ${HOME}/.repro-paths
-repro.setenv REPRO_INDEX_DIR     ${REPRO_INDEX_DIR}
-repro.setenv REPRO_ORDER_FILE    ${REPRO_ORDER_FILE}
-repro.setenv REPRO_MODULES_DIR   ${HOME}/.repro-modules
-repro.setenv REPRO_EXPORTED_DIR   ${REPRO_BUILD_DIR}/exported
+repro.setenv HOME                    ${HOME}
+repro.setenv IN_RUNNING_REPRO        '${REPRO_NAME}'
+repro.setenv REPRO_ATSTART           ${HOME}/.repro-atstart
+repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths
+repro.setenv REPRO_INDEX_DIR         ${REPRO_INDEX_DIR}
+repro.setenv REPRO_ORDER_FILE        ${REPRO_ORDER_FILE}
+repro.setenv REPRO_MODULES_DIR       ${HOME}/.repro-modules
+repro.setenv REPRO_EXPORTED_DIR      '${REPRO_MNT}/.repro/exported'
+repro.setenv REPRO_EXPORTED_SNAPSHOT ${REPRO_BUILD_DIR}/exported
 
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}
