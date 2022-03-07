@@ -17,8 +17,8 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     mkdir -p ${module_dir}
     cd ${module_dir}
 
-    if [[ $module_version == local ]] ; then
-        cp ${MODULE_SNAPSHOT}/module.txt .
+    if [[ $module_version == exported ]] ; then
+        cp ${REPRO_EXPORTED_DIR}/module.txt .
     else
         module_url=`eval echo ${module_url_template}`
         wget --quiet ${module_url}/module.txt
@@ -54,8 +54,8 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
         if [[ ${artifact_path} == http?:* ]] ; then
             wget -nv -O ${artifact_base} ${artifact_path}
-        elif [[ $module_version == local ]] ; then
-            cp ${MODULE_SNAPSHOT}/${artifact_path} ${artifact_base}
+        elif [[ $module_version == exported ]] ; then
+            cp ${REPRO_EXPORTED_DIR}/${artifact_path} ${artifact_base}
         else
             wget -nv -O ${artifact_base} ${module_url}/${artifact_path}
         fi

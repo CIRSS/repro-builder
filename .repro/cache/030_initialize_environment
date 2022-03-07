@@ -18,6 +18,7 @@ repro.setenv REPRO_PATHS_FILE    ${HOME}/.repro-paths
 repro.setenv REPRO_INDEX_DIR     ${REPRO_INDEX_DIR}
 repro.setenv REPRO_ORDER_FILE    ${REPRO_ORDER_FILE}
 repro.setenv REPRO_MODULES_DIR   ${HOME}/.repro-modules
+repro.setenv REPRO_EXPORTED_DIR   ${REPRO_BUILD_DIR}/exported
 
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}

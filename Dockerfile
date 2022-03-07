@@ -9,8 +9,8 @@ USER repro
 # URLs for REPRO modules delivered as CIRSS GitHub releases
 ENV CIRSS_RELEASES 'https://github.com/cirss/${1}/releases/download/v${2}/'
 
-# install the local module containing the tests
-RUN repro.require repro-builder local ${CIRSS_RELEASES}
+# install the exported module containing the tests
+RUN repro.require repro-builder exported ${CIRSS_RELEASES}
 
 # run the tests
 RUN repro.atstart run_tests
