@@ -31,11 +31,21 @@ function repro.get-module-path {
     echo ${module_path}
 }
 
-function repro.rebuild-path {
-    path_prefix=$(repro.get-prefix-path)
+function repro.update-path {
+        
+    updated_path=${REPRO_BASE_PATH}
+    
     module_path=$(repro.get-module-path)
-    export PATH=${path_prefix}:${module_path}:${REPRO_BASE_PATH}
-
+    if [[ ! -z ${module_path} ]] ; then
+        updated_path=${module_path}:${updated_path}
+    fi
+    
+    path_prefix=$(repro.get-prefix-path)
+    if [[ ! -z ${path_prefix} ]] ; then
+        updated_path=${path_prefix}:${updated_path}
+    fi
+    
+    export PATH=${updated_path}
 }
 
 

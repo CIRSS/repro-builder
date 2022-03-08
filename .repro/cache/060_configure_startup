@@ -11,7 +11,7 @@ repro.setenv REPRO_BASE_PATH '${PATH}'
 # schedule start-time initialization of REPRO user environment
 repro.atstart source ${REPRO_ENV}
 repro.atstart source ${HOME}/.repro-functions
-repro.atstart repro.rebuild-path
+repro.atstart repro.update-path
 repro.atstart 'cd ${REPRO_MNT}'
 
 # make sure all dot-repro files belong to the REPRO user
