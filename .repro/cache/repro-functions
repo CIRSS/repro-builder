@@ -34,7 +34,7 @@ function repro.get-module-path {
 function repro.rebuild-path {
     path_prefix=$(repro.get-prefix-path)
     module_path=$(repro.get-module-path)
-    export PATH=${path_prefix}:${module_path}:${PATH}
+    export PATH=${path_prefix}:${module_path}:${REPRO_BASE_PATH}
 
 }
 
