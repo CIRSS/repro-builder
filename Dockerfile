@@ -1,7 +1,7 @@
 FROM cirss/repro-base:latest
 
 COPY .repro .repro
-#ADD https://github.com/CIRSS/repro-builder/releases/download/v0.1.0/build .repro/
+#ADD https://github.com/repros-dev/repro-builders/releases/download/v0.1.0/build .repro/
 RUN bash .repro/build
 
 USER repro
@@ -10,7 +10,7 @@ USER repro
 ENV CIRSS_RELEASES 'https://github.com/cirss/${1}/releases/download/v${2}/'
 
 # install the exported module containing the tests
-RUN repro.require repro-builder exported ${CIRSS_RELEASES}
+RUN repro.require repro-builders exported ${CIRSS_RELEASES}
 
 # run the tests
 RUN repro.atstart run_tests

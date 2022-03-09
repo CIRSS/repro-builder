@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set the URL of REPRO builder release to employ
-export REPRO_BUILDER_RELEASE_URL=https://github.com/CIRSS/repro-builder/releases/download/v0.1.0
+export REPRO_BUILDER_RELEASE_URL=https://github.com/repros-dev/repro-builders/releases/download/v0.1.0
 
 # save the path to the original build directory
 export REPRO_BUILD_DIR=$(readlink -f $(dirname $0))
