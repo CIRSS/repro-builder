@@ -3,4 +3,4 @@
 name=$1
 value=$2
 
-echo "export ${name}=${value}" >> ${REPRO_ENV}
+echo "export ${name}=${value}" >> ${REPRO_ENV_FILE}

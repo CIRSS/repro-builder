@@ -1,22 +1,24 @@
 
 export HOME=/home/${repro_user}
-export REPRO_ENV=${HOME}/.repro-env
-export REPRO_INDEX_DIR=${HOME}/.repro-index
-export REPRO_ORDER_FILE=${HOME}/.repro-order
+export REPRO_ENV_FILE=${HOME}/.repro-env
+
+export REPRO_ENV_VARS=""
 
 function repro.setenv {
     name=$1
     value=$2
     export ${name}=${value}
-    echo "export ${name}=${value}" >> ${REPRO_ENV}
+    export REPRO_ENV_VARS="${REPRO_ENV_VARS} \$${name}"
+    echo "export ${name}=${value}" >> ${REPRO_ENV_FILE}
 }
 
 repro.setenv HOME                    ${HOME}
+repro.setenv REPRO_ENV_FILE          ${REPRO_ENV_FILE}
 repro.setenv IN_RUNNING_REPRO        '${REPRO_NAME}'
-repro.setenv REPRO_ATSTART           ${HOME}/.repro-atstart
+repro.setenv REPRO_ATSTART_FILE      ${HOME}/.repro-atstart
 repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths
-repro.setenv REPRO_INDEX_DIR         ${REPRO_INDEX_DIR}
-repro.setenv REPRO_ORDER_FILE        ${REPRO_ORDER_FILE}
+repro.setenv REPRO_INDEX_DIR         ${HOME}/.repro-index
+repro.setenv REPRO_ORDER_FILE        ${HOME}/.repro-order
 repro.setenv REPRO_MODULES_DIR       ${HOME}/.repro-modules
 repro.setenv REPRO_EXPORTED_DIR      '${REPRO_MNT}/.repro/exported'
 repro.setenv REPRO_EXPORTED_SNAPSHOT ${REPRO_BUILD_DIR}/exported
@@ -24,6 +26,6 @@ repro.setenv REPRO_EXPORTED_SNAPSHOT ${REPRO_BUILD_DIR}/exported
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}
 mkdir -p ${REPRO_INDEX_DIR}
-touch ${REPRO_ATSTART}
+touch ${REPRO_ATSTART_FILE}
 touch ${REPRO_PATHS_FILE}
 touch ${REPRO_ORDER_FILE}

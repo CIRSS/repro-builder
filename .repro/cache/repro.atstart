@@ -2,7 +2,7 @@
 
 trimmed_new_command=$(echo "$@" | xargs)
 
-readarray current_commands < ${REPRO_ATSTART}
+readarray current_commands < ${REPRO_ATSTART_FILE}
 
 for command in "${current_commands[@]}" 
 do
@@ -14,4 +14,4 @@ do
     fi
 done
 
-echo $@ >> ${REPRO_ATSTART}
+echo $@ >> ${REPRO_ATSTART_FILE}
