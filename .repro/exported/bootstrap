@@ -13,7 +13,7 @@ function repro.require-file {
 }
 
 # 
-repro_builders_release=${1:-https://github.com/repros-dev/repro-builders/releases/download/v0.1.0}
+repro_builders_release=${1:-https://raw.githubusercontent.com/repros-dev/repro-builders/master/.repro/exported}
 
 # save the path to the original build directory
 export REPRO_BOOTSTRAP_DIR=$(readlink -f $(dirname $0))
