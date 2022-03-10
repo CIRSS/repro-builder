@@ -18,13 +18,13 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     cd ${module_dir}
 
     if [[ $module_version == exported ]] ; then
-        cp ${REPRO_EXPORTED_SNAPSHOT}/module.txt .
+        cp ${REPRO_EXPORTED_SNAPSHOT}/manifest.txt .
     else
         module_url=`eval echo ${module_url_template}`
-        wget --quiet ${module_url}/module.txt
+        wget --quiet ${module_url}/manifest.txt
     fi
 
-    readarray lines < module.txt
+    readarray lines < manifest.txt
 
     for full_line in "${lines[@]}"
     do
@@ -71,7 +71,7 @@ if [[ ! -f ${repro_index_entry} ]] ; then
             chmod u+x ${artifact_base}
         fi
 
-        if [[ ${artifact_name} == configure.sh ]] ; then
+        if [[ ${artifact_name} == setup.sh ]] ; then
             echo "Running  ${artifact_name}"
             source ${artifact_name}
         fi

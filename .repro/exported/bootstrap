@@ -1,0 +1,50 @@
+#!/bin/bash
+
+function repro.require-file {
+    file=$1
+    source=$2
+    if [[ ! -f ${file} ]] ; then
+        if [[ ${source} == http?:* ]] ; then
+            wget -no-verbose -O ${file} ${source}/${file}
+        else
+            cp ${source}/${file} ${file}
+        fi
+    fi 
+}
+
+# 
+repro_builders_release=${1:-https://github.com/repros-dev/repro-builders/releases/download/v0.1.0}
+
+# save the path to the original build directory
+export REPRO_BOOTSTRAP_DIR=$(readlink -f $(dirname $0))
+
+# work in the repro-builders subdirectory of the bootstrap directory
+repro_builders_dir=${REPRO_BOOTSTRAP_DIR}/repro-builders
+mkdir -p ${repro_builders_dir}
+cd ${repro_builders_dir}
+
+# install wget so that builders can be downloaded
+apt-get -y update
+apt-get -y install wget
+
+# download the list of builders
+builders_manifest="manifest-builds.txt"
+repro.require-file ${builders_manifest} ${repro_builders_release}
+
+# process each line in the builders manifest
+readarray lines < ${builders_manifest}
+for full_line in "${lines[@]}"
+do
+    # parse the builder name from the non-comment portion of the line
+    trimmed_line=${full_line%%#*}
+    read -ra tokens <<< ${trimmed_line}
+    builder=${tokens[0]}
+    repro.require-file ${builder} ${repro_builders_release}
+done
+
+# invoke each sequenced builder within the current shell
+for builder in [0-9]*; do
+    echo -e "STARTING  ${builder}"
+    source $builder
+done
+
