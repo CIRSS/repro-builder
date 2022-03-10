@@ -5,7 +5,7 @@ function repro.require-file {
     source=$2
     if [[ ! -f ${file} ]] ; then
         if [[ ${source} == http?:* ]] ; then
-            wget -no-verbose -O ${file} ${source}/${file}
+            wget --no-verbose -O ${file} ${source}/${file}
         else
             cp ${source}/${file} ${file}
         fi
