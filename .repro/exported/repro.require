@@ -1,30 +1,23 @@
 #!/usr/bin/env bash
 
+arguments=( "$@" )
+
 module_name=$1
 module_version=$2
 module_url_template=$3
 
-# determine path to index entry for this module
-repro_index_entry=${REPRO_INDEX_DIR}/${module_name}
+function process_manifest {
 
-# install the module if the index entry does not exist
-if [[ ! -f ${repro_index_entry} ]] ; then 
+    profile=$1
 
-    echo "Installing REPRO module ${module_name} version ${module_version}..."
-
-    module_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
-
-    mkdir -p ${module_dir}
-    cd ${module_dir}
-
-    if [[ $module_version == exported ]] ; then
-        cp ${REPRO_EXPORTED_SNAPSHOT}/manifest.txt .
+     if [[ $module_version == exported ]] ; then
+        cp ${REPRO_EXPORTED_SNAPSHOT}/manifest${profile}.txt . 2>/dev/null || return
     else
         module_url=`eval echo ${module_url_template}`
-        wget -nv ${module_url}/manifest.txt
+        wget -nv ${module_url}/manifest${profile}.txt || return
     fi
 
-    readarray lines < manifest.txt
+    readarray lines < manifest${profile}.txt
 
     for full_line in "${lines[@]}"
     do
@@ -72,11 +65,32 @@ if [[ ! -f ${repro_index_entry} ]] ; then
             chmod u+x ${artifact_base}
         fi
 
-        if [[ ${artifact_name} == setup.sh ]] ; then
+        if [[ ${artifact_name} == setup${profile}.sh ]] ; then
             echo "Running  ${artifact_name}"
             source ${artifact_name}
         fi
 
+    done
+}
+
+# determine path to index entry for this module
+repro_index_entry=${REPRO_INDEX_DIR}/${module_name}
+
+# install the module if the index entry does not exist
+if [[ ! -f ${repro_index_entry} ]] ; then 
+
+    echo "Installing REPRO module ${module_name} version ${module_version}..."
+
+    module_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
+
+    mkdir -p ${module_dir}
+    cd ${module_dir}
+
+    for profile in '' '-demo' '-dev' '-test'
+    do
+        if [[ ${arguments[*]} =~ $profile ]] ; then
+            process_manifest ${profile}
+        fi
     done
 
     echo "${module_name} ${module_version} ${module_dir}" > ${repro_index_entry}
