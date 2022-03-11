@@ -57,7 +57,8 @@ if [[ ! -f ${repro_index_entry} ]] ; then
         elif [[ $module_version == exported ]] ; then
             cp ${REPRO_EXPORTED_SNAPSHOT}/${artifact_path} ${artifact_base}
         else
-            wget -nv -O ${artifact_base} ${module_url}/${artifact_path}
+            wget -nv -O ${artifact_base} ${module_url}/${artifact_path} || \
+            wget -nv -O ${artifact_base} ${module_url}/${artifact_base}
         fi
 
         if [[ ${artifact_name} != ${artifact_base} ]] ; then
