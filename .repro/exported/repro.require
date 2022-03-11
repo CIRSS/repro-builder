@@ -7,6 +7,7 @@ export module_version=$2
 export module_url_template=$3
 
 function process_manifest {
+
     profile=$1
 
      if [[ $module_version == exported ]] ; then
@@ -88,7 +89,7 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     for profile in '' '-demo' '-dev' '-test'
     do
         if [[ ${arguments[*]} =~ $profile ]] ; then
-            process_manifest ${profile} $module_version $module_url_template
+            process_manifest ${profile}
         fi
     done
 
