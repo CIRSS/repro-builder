@@ -5,6 +5,7 @@
 050_install_optional_packages
 060_configure_startup
 repro-functions
+repro.atshell
 repro.atstart
 repro.prefixpath
 repro.require
