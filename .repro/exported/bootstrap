@@ -13,13 +13,13 @@ function repro.require-file {
 }
 
 # 
-repros_builder_release=${1:-https://raw.githubusercontent.com/repros-dev/repro-builders/master/.repro/exported}
+repros_builder_release=${1:-https://raw.githubusercontent.com/repros-dev/repros-builder/master/.repro/exported}
 
 # save the path to the original build directory
 export REPRO_BOOTSTRAP_DIR=$(readlink -f $(dirname $0))
 
-# work in the repro-builders subdirectory of the bootstrap directory
-repros_builder_dir=${REPRO_BOOTSTRAP_DIR}/repro-builders
+# work in the repros-builder subdirectory of the bootstrap directory
+repros_builder_dir=${REPRO_BOOTSTRAP_DIR}/repros-builder
 mkdir -p ${repros_builder_dir}
 cd ${repros_builder_dir}
 
