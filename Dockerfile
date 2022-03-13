@@ -1,4 +1,4 @@
-FROM cirss/repro-base:latest
+FROM cirss/repros-base:latest
 
 COPY .repro .repro
 COPY .repro/exported/bootstrap .repro/

@@ -85,12 +85,13 @@ function process_manifest {
             chmod u+x ${artifact_base}
         fi
 
-        if [[ ${artifact_name} == setup-${profile}.sh ]] ; then
-            echo "Running  ${artifact_name}"
-            source ${artifact_name}
-        fi
-
     done
+
+    profile_setup_file=setup-${profile}.sh
+    if [[ -f "${profile_setup_file}" ]] ; then
+        echo "Running ${profile_setup_file}"
+        source ${profile_setup_file}
+    fi
 }
 
 # determine path to index entry for this module
