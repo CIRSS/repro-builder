@@ -28,7 +28,8 @@ function process_manifest {
         fi
     else
         remote_manifest_file=${module_url}/${profile_manifest_file}
-        if [[ ! $(wget -O ${profile_manifest_file} -nv ${remote_manifest_file}) ]] ; then
+        wget -O ${profile_manifest_file} -nv ${remote_manifest_file}
+        if [[ $? -ne 0 ]] ; then
             echo "------No remote manifest file found at ${remote_manifest_file}------"
             return
         fi 
