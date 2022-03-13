@@ -7,7 +7,7 @@ RUN bash .repro/bootstrap /.repro/exported
 USER repro
 
 # install the exported module containing the tests
-RUN repro.require repro-builders exported -test
+RUN repro.require repro-builders exported --test --demo
 
 # run the tests
 RUN repro.atstart run_all_tests

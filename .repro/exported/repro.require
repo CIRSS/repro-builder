@@ -2,6 +2,8 @@
 
 arguments=( "$@" )
 
+echo "---------ARGUMENTS=${arguments[*]}------------"
+
 module_name=$1
 module_version=$2
 module_url_template=$3
@@ -11,14 +13,30 @@ module_url=`eval echo ${module_url_template}`
 function process_manifest {
 
     profile=$1
+    profile_manifest_file="manifest-${profile}.txt"
+
+    echo "------Processing ${profile} profile ----------"
 
      if [[ $module_version == exported ]] ; then
-        cp ${REPRO_EXPORTED_SNAPSHOT}/manifest${profile}.txt . 2>/dev/null || return
+        exported_manifest_file=${REPRO_EXPORTED_SNAPSHOT}/${profile_manifest_file}
+        if [[ -f ${exported_manifest_file} ]] ; then
+            echo "------Copying local manifest file from ${exported_manifest_file}------"
+            cp ${REPRO_EXPORTED_SNAPSHOT}/${profile_manifest_file} . 
+        else 
+            echo "------No local manifest file found at ${exported_manifest_file}------"
+            return
+        fi
     else
-        wget -nv ${module_url}/manifest${profile}.txt || return
+        remote_manifest_file=${module_url}/${profile_manifest_file}
+        if [[ ! $(wget -O ${profile_manifest_file} -nv ${remote_manifest_file}) ]] ; then
+            echo "------No remote manifest file found at ${remote_manifest_file}------"
+            return
+        fi 
     fi
 
-    readarray lines < manifest${profile}.txt
+    echo "------Processing contents of manifest file ${profile_manifest_file}------"
+
+    readarray lines < ${profile_manifest_file}
 
     for full_line in "${lines[@]}"
     do
@@ -66,7 +84,7 @@ function process_manifest {
             chmod u+x ${artifact_base}
         fi
 
-        if [[ ${artifact_name} == setup${profile}.sh ]] ; then
+        if [[ ${artifact_name} == setup-${profile}.sh ]] ; then
             echo "Running  ${artifact_name}"
             source ${artifact_name}
         fi
@@ -87,9 +105,15 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     mkdir -p ${module_dir}
     cd ${module_dir}
 
-    for profile in '' '-demo' '-dev' '-test'
+    # always process the base profile
+    process_manifest base
+
+    # process optional profiles specified in the script options
+    for profile in demo dev test
     do
-        if [[ ${arguments[*]} =~ $profile ]] ; then
+        echo "------Looking for --${profile} option in arguments----------"
+        if [[ ${arguments[*]} =~ "--$profile" ]] ; then
+            echo "------Found --${profile} option in arguments----------"
             process_manifest ${profile}
         fi
     done
