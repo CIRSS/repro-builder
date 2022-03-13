@@ -13,15 +13,15 @@ function repro.require-file {
 }
 
 # 
-repro_builders_release=${1:-https://raw.githubusercontent.com/repros-dev/repro-builders/master/.repro/exported}
+repros_builder_release=${1:-https://raw.githubusercontent.com/repros-dev/repro-builders/master/.repro/exported}
 
 # save the path to the original build directory
 export REPRO_BOOTSTRAP_DIR=$(readlink -f $(dirname $0))
 
 # work in the repro-builders subdirectory of the bootstrap directory
-repro_builders_dir=${REPRO_BOOTSTRAP_DIR}/repro-builders
-mkdir -p ${repro_builders_dir}
-cd ${repro_builders_dir}
+repros_builder_dir=${REPRO_BOOTSTRAP_DIR}/repro-builders
+mkdir -p ${repros_builder_dir}
+cd ${repros_builder_dir}
 
 # install wget so that builders can be downloaded
 apt-get -y update
@@ -29,7 +29,7 @@ apt-get -y install wget
 
 # download the list of builders
 builders_manifest="manifest-builds.txt"
-repro.require-file ${builders_manifest} ${repro_builders_release}
+repro.require-file ${builders_manifest} ${repros_builder_release}
 
 # process each line in the builders manifest
 readarray lines < ${builders_manifest}
@@ -39,7 +39,7 @@ do
     trimmed_line=${full_line%%#*}
     read -ra tokens <<< ${trimmed_line}
     builder=${tokens[0]}
-    repro.require-file ${builder} ${repro_builders_release}
+    repro.require-file ${builder} ${repros_builder_release}
 done
 
 # invoke each sequenced builder within the current shell
