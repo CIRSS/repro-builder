@@ -96,7 +96,7 @@ function process_manifest {
     fi
 }
 
-if [[ -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
+if [[  $module_version == exported && -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
     new_exported_dir="${REPRO_BOOTSTRAP_DIR}/exported-${module_name}"
     sudo mv /${REPRO_BOOTSTRAP_DIR}/exported ${new_exported_dir}
     echo ${new_exported_dir} > ${REPRO_LAST_EXPORTED_DIR}
