@@ -12,6 +12,7 @@ function repro.setenv {
     echo "export ${name}=${value}" >> ${REPRO_ENV_FILE}
 }
 
+repro.setenv REPRO_BOOTSTRAP_DIR     ${REPRO_BOOTSTRAP_DIR}
 repro.setenv HOME                    ${HOME}
 repro.setenv REPRO_ENV_FILE          ${REPRO_ENV_FILE}
 repro.setenv IN_RUNNING_REPRO        '${REPRO_NAME}'
@@ -21,8 +22,8 @@ repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths
 repro.setenv REPRO_INDEX_DIR         ${HOME}/.repro-index
 repro.setenv REPRO_ORDER_FILE        ${HOME}/.repro-order
 repro.setenv REPRO_MODULES_DIR       ${HOME}/.repro-modules
+repro.setenv REPRO_EXPORTED_SNAPSHOT_DIR ${HOME}/.repro-exported-snapshot-dir
 repro.setenv REPRO_EXPORTED_DIR      '${REPRO_MNT}/.repro/exported'
-repro.setenv REPRO_EXPORTED_SNAPSHOT ${REPRO_BOOTSTRAP_DIR}/exported
 repro.setenv REPRO_BASE_PATH         '${PATH}'
 
 # create the repro index directory
@@ -32,3 +33,4 @@ touch ${REPRO_ATSTART_FILE}
 touch ${REPRO_ATSHELL_FILE}
 touch ${REPRO_PATHS_FILE}
 touch ${REPRO_ORDER_FILE}
+

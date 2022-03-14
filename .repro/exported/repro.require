@@ -12,6 +12,8 @@ module_url=`eval echo ${module_url_template}`
 
 function process_manifest {
 
+    REPRO_EXPORTED_SNAPSHOT=$(cat ${REPRO_EXPORTED_SNAPSHOT_DIR})
+
     profile=$1
     profile_manifest_file="manifest-${profile}.txt"
 
@@ -94,6 +96,12 @@ function process_manifest {
     fi
 }
 
+if [[ -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
+    new_exported_dir="${REPRO_BOOTSTRAP_DIR}/${module_name}-exported"
+    sudo mv /${REPRO_BOOTSTRAP_DIR}/exported ${new_exported_dir}
+    echo ${new_exported_dir} > ${REPRO_EXPORTED_SNAPSHOT_DIR}
+fi
+
 # determine path to index entry for this module
 repro_index_entry=${REPRO_INDEX_DIR}/${module_name}
 
@@ -126,4 +134,6 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 else
     echo "Module ${module_name} was already installed."
 fi
+
+
 
