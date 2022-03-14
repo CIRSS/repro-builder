@@ -5,6 +5,6 @@
 ifndef IN_RUNNING_REPRO
 
 base-image:             ## Build the Docker base image.
-	docker build -f Dockerfile-base -t ${REPRO_DOCKER_ORG}/repros-base:${REPRO_IMAGE_TAG} .
+	docker build -f Dockerfile-base -t ${REPRO_DOCKER_ORG}/repro-builder-base:${REPRO_IMAGE_TAG} .
 
 endif
