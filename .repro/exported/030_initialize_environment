@@ -22,7 +22,6 @@ repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths
 repro.setenv REPRO_INDEX_DIR         ${HOME}/.repro-index
 repro.setenv REPRO_ORDER_FILE        ${HOME}/.repro-order
 repro.setenv REPRO_MODULES_DIR       ${HOME}/.repro-modules
-repro.setenv REPRO_LAST_EXPORTED_DIR ${HOME}/.repro-last-exported
 repro.setenv REPRO_EXPORTED_DIR      '${REPRO_MNT}/.repro/exported'
 repro.setenv REPRO_BASE_PATH         '${PATH}'
 

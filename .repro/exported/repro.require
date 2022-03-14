@@ -12,18 +12,22 @@ module_url=`eval echo ${module_url_template}`
 
 function process_manifest {
 
-    REPRO_EXPORTED_SNAPSHOT=$(cat ${REPRO_LAST_EXPORTED_DIR})
-
     profile=$1
     profile_manifest_file="manifest-${profile}.txt"
 
     echo "------Processing ${profile} profile ----------"
 
      if [[ $module_version == exported ]] ; then
-        exported_manifest_file=${REPRO_EXPORTED_SNAPSHOT}/${profile_manifest_file}
+
+        if [[ -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
+            export_snapshot_dir="${REPRO_BOOTSTRAP_DIR}/exported-${module_name}"
+            sudo mv /${REPRO_BOOTSTRAP_DIR}/exported ${export_snapshot_dir}
+        fi
+
+        exported_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
         if [[ -f ${exported_manifest_file} ]] ; then
             echo "------Copying local manifest file from ${exported_manifest_file}------"
-            cp ${REPRO_EXPORTED_SNAPSHOT}/${profile_manifest_file} . 
+            cp ${export_snapshot_dir}/${profile_manifest_file} . 
         else 
             echo "------No local manifest file found at ${exported_manifest_file}------"
             return
@@ -70,7 +74,7 @@ function process_manifest {
         if [[ ${artifact_path} == http?:* ]] ; then
             wget -nv -O ${artifact_base} ${artifact_path}
         elif [[ $module_version == exported ]] ; then
-            cp ${REPRO_EXPORTED_SNAPSHOT}/${artifact_path} ${artifact_base}
+            cp ${export_snapshot_dir}/${artifact_path} ${artifact_base}
         else
             wget -nv -O ${artifact_base} ${module_url}/${artifact_path} || \
             wget -nv -O ${artifact_base} ${module_url}/${artifact_base}
@@ -95,14 +99,6 @@ function process_manifest {
         source ${profile_setup_file}
     fi
 }
-
-if [[ -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
-    if [[ $module_version == exported ]] ; then
-        new_exported_dir="${REPRO_BOOTSTRAP_DIR}/exported-${module_name}"
-        sudo mv /${REPRO_BOOTSTRAP_DIR}/exported ${new_exported_dir}
-        echo ${new_exported_dir} > ${REPRO_LAST_EXPORTED_DIR}
-    fi
-fi
 
 # determine path to index entry for this module
 repro_index_entry=${REPRO_INDEX_DIR}/${module_name}
