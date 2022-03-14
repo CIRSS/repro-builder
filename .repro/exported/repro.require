@@ -12,7 +12,7 @@ module_url=`eval echo ${module_url_template}`
 
 function process_manifest {
 
-    REPRO_EXPORTED_SNAPSHOT=$(cat ${REPRO_EXPORTED_SNAPSHOT_DIR})
+    REPRO_EXPORTED_SNAPSHOT=$(cat ${REPRO_LAST_EXPORTED_DIR})
 
     profile=$1
     profile_manifest_file="manifest-${profile}.txt"
@@ -99,7 +99,7 @@ function process_manifest {
 if [[ -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
     new_exported_dir="${REPRO_BOOTSTRAP_DIR}/exported-${module_name}"
     sudo mv /${REPRO_BOOTSTRAP_DIR}/exported ${new_exported_dir}
-    echo ${new_exported_dir} > ${REPRO_EXPORTED_SNAPSHOT_DIR}
+    echo ${new_exported_dir} > ${REPRO_LAST_EXPORTED_DIR}
 fi
 
 # determine path to index entry for this module
