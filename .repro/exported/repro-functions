@@ -1,48 +1,52 @@
-
-
-function repro.get-prefix-path {
-    unset path_prefix
+function repro.get_prefix_paths {
+    unset prefix_paths
     readarray paths < ${REPRO_PATHS_FILE}
     for path_line in "${paths[@]}"
     do
         new_path=$(echo "$path_line" | envsubst | xargs )
-        if [[ -v path_prefix ]] ; then
-            path_prefix=${new_path}:${path_prefix}
+        if [[ -vprefix_paths ]] ; then
+           prefix_paths=${new_path}:${prefix_paths}
         else
-            path_prefix=${new_path}
+           prefix_paths=${new_path}
         fi
     done
-    echo ${path_prefix}
+    echo ${prefix_paths}
 }
 
-function repro.get-module-path {
-    unset module_path
+function repro.get_module_dir {
+    module_name=$1
+    read -ra tokens < ${REPRO_INDEX_DIR}/${module_name}
+    module_dir=${tokens[2]}
+    echo ${module_dir}
+}
+
+function repro.get_module_paths {
+    unset module_paths
     readarray modules < ${REPRO_ORDER_FILE}
     for module_name in "${modules[@]}"
     do
-        read -ra tokens < ${REPRO_INDEX_DIR}/${module_name}
-        module_dir=${tokens[2]}
-        if [[ -v module_path ]] ; then
-            module_path=${module_dir}:${module_path}
+        module_dir=$(repro.get_module_dir ${module_name})
+        if [[ -v module_paths ]] ; then
+            module_paths=${module_dir}:${module_paths}
         else
-            module_path=${module_dir}
+            module_paths=${module_dir}
         fi
     done
-    echo ${module_path}
+    echo ${module_paths}
 }
 
-function repro.update-path {
+function repro.update_path {
         
     updated_path=${REPRO_BASE_PATH}
     
-    module_path=$(repro.get-module-path)
-    if [[ ! -z ${module_path} ]] ; then
-        updated_path=${module_path}:${updated_path}
+    module_paths=$(repro.get_module_paths)
+    if [[ ! -z ${module_paths} ]] ; then
+        updated_path=${module_paths}:${updated_path}
     fi
     
-    path_prefix=$(repro.get-prefix-path)
-    if [[ ! -z ${path_prefix} ]] ; then
-        updated_path=${path_prefix}:${updated_path}
+   prefix_paths=$(repro.get_prefix_paths)
+    if [[ ! -z ${prefix_paths} ]] ; then
+        updated_path=${prefix_paths}:${updated_path}
     fi
     
     export PATH=${updated_path}
