@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function repro.require-file {
+function repro.require_file {
     file=$1
     source=$2
     if [[ ! -f ${file} ]] ; then
@@ -29,7 +29,7 @@ apt-get -y install wget
 
 # download the list of builders
 builders_manifest="manifest-builds.txt"
-repro.require-file ${builders_manifest} ${repro_builder_release}
+repro.require_file ${builders_manifest} ${repro_builder_release}
 
 # process each line in the builders manifest
 readarray lines < ${builders_manifest}
@@ -39,7 +39,7 @@ do
     trimmed_line=${full_line%%#*}
     read -ra tokens <<< ${trimmed_line}
     builder=${tokens[0]}
-    repro.require-file ${builder} ${repro_builder_release}
+    repro.require_file ${builder} ${repro_builder_release}
 done
 
 # invoke each sequenced builder within the current shell
