@@ -12,10 +12,16 @@ module_url=`eval echo ${module_url_template}`
 
 function process_manifest {
 
-    profile=$1
+    local profile=$1
+    local module_installation_dir=$2
+
+    mkdir -p ${module_installation_dir}
+    cd ${module_installation_dir}
+    echo "Now working in $(pwd)"
+
     profile_manifest_file="manifest-${profile}.txt"
 
-    echo "------Processing ${profile} profile ----------"
+    echo "------Processing ${profile} profile while working in in $(pwd)----------"
 
      if [[ $module_version == exported ]] ; then
 
@@ -26,7 +32,7 @@ function process_manifest {
 
         exported_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
         if [[ -f ${exported_manifest_file} ]] ; then
-            echo "------Copying local manifest file from ${exported_manifest_file}------"
+            echo "------Copying local manifest file from ${exported_manifest_file} ro $(pwd)------"
             cp ${export_snapshot_dir}/${profile_manifest_file} . 
         else 
             echo "------No local manifest file found at ${exported_manifest_file}------"
@@ -108,13 +114,10 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     echo "Installing REPRO module ${module_name} version ${module_version}..."
 
-    module_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
-
-    mkdir -p ${module_dir}
-    cd ${module_dir}
+    module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
     # always process the base profile
-    process_manifest base
+    process_manifest base ${module_installation_dir}
 
     # process optional profiles specified in the script options
     for profile in demo dev test
@@ -122,11 +125,11 @@ if [[ ! -f ${repro_index_entry} ]] ; then
         echo "------Looking for --${profile} option in arguments----------"
         if [[ ${arguments[*]} =~ "--$profile" ]] ; then
             echo "------Found --${profile} option in arguments----------"
-            process_manifest ${profile}
+            process_manifest ${profile} ${module_installation_dir}
         fi
     done
 
-    echo "${module_name} ${module_version} ${module_dir}" > ${repro_index_entry}
+    echo "${module_name} ${module_version} ${module_installation_dir}" > ${repro_index_entry}
     echo "${module_name}" >> ${REPRO_ORDER_FILE}
 
 else
