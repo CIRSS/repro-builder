@@ -116,8 +116,9 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
-    # always process the base profile
+    # always process the base and state profiles
     process_manifest base ${module_installation_dir}
+    process_manifest state ${module_installation_dir}
 
     # process optional profiles specified in the script options
     for profile in demo dev test

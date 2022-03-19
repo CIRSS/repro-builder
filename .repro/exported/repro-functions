@@ -12,7 +12,7 @@ function repro.get_prefix_paths {
     echo ${prefix_paths}
 }
 
-function repro.installation_dir_for_module {
+function repro.install_dir_for_module {
     module_name=$1
     read -ra tokens < ${REPRO_INDEX_DIR}/${module_name}
     module_install_dir=${tokens[2]}
@@ -23,7 +23,7 @@ function repro.get_module_paths {
     unset module_paths
     readarray modules < ${REPRO_ORDER_FILE}
     for module_name in "${modules[@]}" ; do
-        module_install_dir=$(repro.installation_dir_for_module ${module_name})
+        module_install_dir=$(repro.install_dir_for_module ${module_name})
         if [[ -v module_paths ]] ; then
             module_paths=${module_install_dir}:${module_paths}
         else
@@ -52,8 +52,8 @@ function repro.update_path {
 
 function repro.state_dir_for_module {
     module_name=$1
-    state_directory=${REPRO_MNT}/.${module_name}
-    echo ${state_directory}
+    state_dir=${REPRO_MNT}/.${module_name}
+    echo ${state_dir}
 }
 
 function repro.initialize_module_state {
@@ -61,14 +61,24 @@ function repro.initialize_module_state {
     module_name=$1
 
     # state directory is under the REPRO mount point
-    state_directory=$(repro.state_dir_for_module ${module_name})
+    state_dir=$(repro.state_dir_for_module ${module_name})
+    install_dir=$(repro.install_dir_for_module ${module_name})
 
     # create state directory if it does not exist
-    [[ -d ${state_directory} ]] || mkdir -p ${state_directory}
+    [[ -d ${state_dir} ]] || mkdir -p ${state_dir}
 
     # include the default .gitignore if it does not exist
-    git_ignore_file=${state_directory}/.gitignore
+    git_ignore_file=${state_dir}/.gitignore
     [[ -f ${git_ignore_file} ]] || echo "*" > ${git_ignore_file}
+
+    # copy module files listed in state manifest if present
+    state_manifest=${install_dir}/manifest-state.txt
+    if [[ -f ${state_manifest} ]] ; then
+        readarray state_manifest_lines < ${state_manifest}
+        for state_file in "${state_manifest_lines[@]}" ; do
+            cp --no-clobber ${install_dir}/${state_file} ${state_dir}/${state_file}
+        done
+    fi
 }
 
 function repro.initialize_modules {
