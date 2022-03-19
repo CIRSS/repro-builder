@@ -6,8 +6,10 @@ do
     cp ${dot_file} ${HOME}/.${dot_file}
 done
 
-# schedule per-shell initialization of REPRO user environment
-repro.atshell source ${HOME}/.repro-functions
+# schedule initialization of REPRO script environment
+repro.atscript source ${HOME}/.repro-functions
+
+repro.atshell source ${REPRO_ATSCRIPT_FILE}
 
 # schedule further one-time customization of REPRO user environment at REPRO start
 repro.atstart source ${REPRO_ENV_FILE}
