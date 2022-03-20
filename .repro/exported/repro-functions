@@ -75,8 +75,11 @@ function repro.initialize_module_state {
     state_manifest=${install_dir}/manifest-state.txt
     if [[ -f ${state_manifest} ]] ; then
         readarray state_manifest_lines < ${state_manifest}
-        for state_file in "${state_manifest_lines[@]}" ; do
-            cp --no-clobber ${install_dir}/${state_file} ${state_dir}/${state_file}
+        for state_file_line in "${state_manifest_lines[@]}" ; do
+            state_file=$(echo ${state_file_line%%#*} | xargs)
+            if [[ -n ${state_file} ]] ; then 
+                cp --no-clobber ${install_dir}/${state_file} ${state_dir}/${state_file}
+            fi
         done
     fi
 }
