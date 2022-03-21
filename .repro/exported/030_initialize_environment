@@ -19,6 +19,7 @@ repro.setenv IN_RUNNING_REPRO        '${REPRO_NAME}'
 repro.setenv REPRO_ATSTART_FILE      ${HOME}/.repro-atstart
 repro.setenv REPRO_ATSHELL_FILE      ${HOME}/.repro-atshell
 repro.setenv REPRO_ATSCRIPT_FILE     ${HOME}/.repro-atscript
+repro.setenv REPRO_TARGETS_FILE      '${REPRO_MNT}/.repro/repro-targets.txt'
 repro.setenv BASH_ENV                ${REPRO_ATSCRIPT_FILE}
 repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths
 repro.setenv REPRO_INDEX_DIR         ${HOME}/.repro-index

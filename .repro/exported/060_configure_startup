@@ -15,6 +15,7 @@ repro.atshell source ${REPRO_ATSCRIPT_FILE}
 repro.atstart source ${REPRO_ENV_FILE}
 repro.atstart repro.update_path
 repro.atstart repro.initialize_modules
+repro.atstart repro.update_targets
 repro.atstart 'cd ${REPRO_MNT}'
 
 # make sure all dot-repro files belong to the REPRO user
