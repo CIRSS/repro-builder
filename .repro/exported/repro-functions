@@ -96,7 +96,7 @@ function repro.update_targets {
     # do nothing if targets file already exists
     [[ ! -f ${REPRO_TARGETS_FILE} ]] || return
 
-    repro_targets=''
+    all_repro_targets=''
 
     readarray modules < ${REPRO_ORDER_FILE}
     for modules_line in "${modules[@]}" ; do
@@ -104,13 +104,14 @@ function repro.update_targets {
         install_dir=$(repro.install_dir_for_module ${module_name})
         module_targets_file=${install_dir}/targets.txt
         if [[ -f ${module_targets_file} ]] ; then 
+            repro_targets=''
             readarray module_targets < ${module_targets_file}
-            for module_target in "${module_targets[@]}" ; do
-                repro_target="${module_name} ${module_target}"
-                repro_targets="${repro_target}${repro_targets}"
+            for target_entry in "${module_targets[@]}" ; do
+                read -ra tokens <<< ${target_entry}
+                repro_target=${tokens[0]}
+                module_target=${tokens[1]}
+                printf '%s %s.%s\n' ${repro_target} ${module_name} ${module_target} >> ${REPRO_TARGETS_FILE}
             done
-        fi    
+        fi
     done
-
-    echo "$repro_targets" > $REPRO_TARGETS_FILE
 }

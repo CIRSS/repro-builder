@@ -1,3 +1,2 @@
-repro-builder baz gug
-repro-builder foo bar
-
+foo: repro-builder.bar
+baz: repro-builder.gug
