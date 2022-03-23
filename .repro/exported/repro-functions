@@ -102,17 +102,20 @@ function repro.update_targets {
     for modules_line in "${modules[@]}" ; do
         module_name=$(echo $modules_line | xargs)
         install_dir=$(repro.install_dir_for_module ${module_name})
-        module_targets_file=${install_dir}/targets.txt
-        if [[ -f ${module_targets_file} ]] ; then 
-            repro_targets=''
-            readarray module_targets < ${module_targets_file}
-            for target_entry in "${module_targets[@]}" ; do
-                read -ra tokens <<< ${target_entry}
-                repro_target=${tokens[0]}
-                module_target=${tokens[1]}
-                printf '%s %s.%s\n' ${repro_target} ${module_name} ${module_target} >> ${REPRO_TARGETS_FILE}
-            done
-        fi
+
+        for profile in base state demo dev test; do 
+            module_targets_file=${install_dir}/targets-${profile}.txt
+            if [[ -f ${module_targets_file} ]] ; then 
+                repro_targets=''
+                readarray module_targets < ${module_targets_file}
+                for target_entry in "${module_targets[@]}" ; do
+                    read -ra tokens <<< ${target_entry}
+                    repro_target=${tokens[0]}
+                    module_target=${tokens[1]}
+                    printf '%s %s.%s\n' ${repro_target} ${module_name} ${module_target} >> ${REPRO_TARGETS_FILE}
+                done
+            fi
+        done
     done
 }
 

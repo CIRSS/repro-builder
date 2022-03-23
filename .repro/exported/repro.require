@@ -51,8 +51,7 @@ function process_manifest {
 
     readarray lines < ${profile_manifest_file}
 
-    for full_line in "${lines[@]}"
-    do
+    for full_line in "${lines[@]}" ; do
         # trim comments starting with a `#` character on the line
         trimmed_line=${full_line%%#*}
 
@@ -121,8 +120,7 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     process_manifest state ${module_installation_dir}
 
     # process optional profiles specified in the script options
-    for profile in demo dev test
-    do
+    for profile in demo dev test ; do
         echo "------Looking for --${profile} option in arguments----------"
         if [[ ${arguments[*]} =~ "--$profile" ]] ; then
             echo "------Found --${profile} option in arguments----------"
