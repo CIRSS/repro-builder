@@ -132,7 +132,7 @@ function repro.run_target {
         read -ra tokens <<< ${target_entry}
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
             IFS='.' read module_name module_target <<< ${tokens[1]}
-            make -f ${REPRO_MNT}/.${module_name}/Makefile ${module_target}
+            make -C ${REPRO_MNT}/.${module_name} ${module_target}
             return
         fi
     done
