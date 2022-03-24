@@ -94,9 +94,12 @@ function repro.initialize_modules {
 function repro.update_targets {
     
     # do nothing if targets file already exists
-    [[ ! -f ${REPRO_TARGETS_FILE} ]] || return
-
-    all_repro_targets=''
+    if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
+        return
+    else 
+        repro_builder_install_dir=$(repro.install_dir_for_module repro-builder)
+        cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
+    fi
 
     readarray modules < ${REPRO_ORDER_FILE}
     for modules_line in "${modules[@]}" ; do

@@ -1,2 +1,0 @@
-foo: repro-builder.bar
-baz: repro-builder.gug
