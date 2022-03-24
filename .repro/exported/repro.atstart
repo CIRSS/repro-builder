@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 trimmed_new_command=$(echo "$@" | xargs)
 
 readarray current_commands < ${REPRO_ATSTART_FILE}

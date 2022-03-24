@@ -1,4 +1,2 @@
 # a comment 
-some_state.txt
 
-# a comment following a blank line

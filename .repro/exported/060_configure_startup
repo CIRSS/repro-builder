@@ -1,22 +1,15 @@
-
-
-# copy all predefined dot-repro files to REPRO home directory
-for dot_file in repro-*
-do
-    cp ${dot_file} ${HOME}/.${dot_file}
-done
-
-# schedule initialization of REPRO script environment
-repro.atscript source ${HOME}/.repro-functions
-
-repro.atshell source ${REPRO_ATSCRIPT_FILE}
-
-# schedule further one-time customization of REPRO user environment at REPRO start
+# schedule one-time customizations of REPRO user environment at REPRO start
 repro.atstart source ${REPRO_ENV_FILE}
 repro.atstart repro.update_path
 repro.atstart repro.initialize_modules
 repro.atstart repro.update_targets
 repro.atstart 'cd ${REPRO_MNT}'
+
+# schedule initialization of environment for non-interactive scripts
+repro.atscript source ${REPRO_MODULES_DIR}/repro-builder-*/functions-base
+
+# include non-interactive environment as part of each interactive shell
+repro.atshell source ${REPRO_ATSCRIPT_FILE}
 
 # make sure all dot-repro files belong to the REPRO user
 chown -R ${repro_uid}.${repro_gid} ${HOME}/.repro*
@@ -27,3 +20,4 @@ echo "source ${REPRO_ATSHELL_FILE}" >> ${HOME}/.bashrc
 # add a final line to .profile to source the atstart file
 echo "source ${REPRO_ATSTART_FILE}" >> ${HOME}/.profile
 
+echo "DONE with 060"
