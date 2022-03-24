@@ -5,11 +5,11 @@ repro.atstart repro.initialize_modules
 repro.atstart repro.update_targets
 repro.atstart 'cd ${REPRO_MNT}'
 
-# schedule initialization of environment for non-interactive scripts
-repro.atscript source ${REPRO_MODULES_DIR}/repro-builder-*/functions-base
-
 # include non-interactive environment as part of each interactive shell
 repro.atshell source ${REPRO_ATSCRIPT_FILE}
+
+# schedule initialization of environment for non-interactive scripts
+repro.atscript source ${REPRO_MODULES_DIR}/repro-builder-*/functions-base
 
 # make sure all dot-repro files belong to the REPRO user
 chown -R ${repro_uid}.${repro_gid} ${HOME}/.repro*
