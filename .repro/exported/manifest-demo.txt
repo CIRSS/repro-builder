@@ -1,1 +1,3 @@
+Makefile
 setup-demo.sh
+targets-demo.txt
