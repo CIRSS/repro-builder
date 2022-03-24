@@ -19,5 +19,3 @@ echo "source ${REPRO_ATSHELL_FILE}" >> ${HOME}/.bashrc
 
 # add a final line to .profile to source the atstart file
 echo "source ${REPRO_ATSTART_FILE}" >> ${HOME}/.profile
-
-echo "DONE with 060"
