@@ -50,7 +50,7 @@ function install_profile {
         fi
     else
         remote_manifest_file=${module_url}/${profile_manifest_file}
-        curl -f ${profile_manifest_file} ${remote_manifest_file}
+        curl -f ${remote_manifest_file} -o ${profile_manifest_file} 
         if [[ $? -ne 0 ]] ; then
             echo "------No remote manifest file found at ${remote_manifest_file}------"
             return
@@ -87,12 +87,12 @@ function install_profile {
         artifact_base=$(basename $artifact_path)
 
         if [[ ${artifact_path} == http?:* ]] ; then
-            curl -f ${artifact_base} ${artifact_path}
+            curl -f ${artifact_path} -o ${artifact_base} 
         elif [[ $module_version == exported ]] ; then
             cp ${export_snapshot_dir}/${artifact_path} ${artifact_base}
         else
-            curl -f ${artifact_base} ${module_url}/${artifact_path} || \
-            curl -f -O ${artifact_base} ${module_url}/${artifact_base}
+            curl -f ${module_url}/${artifact_path} -o ${artifact_base}  || \
+            curl -f ${module_url}/${artifact_base} -o ${artifact_base} 
         fi
 
         if [[ ${artifact_name} != ${artifact_base} ]] ; then
