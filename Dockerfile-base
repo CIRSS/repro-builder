@@ -1,7 +1,7 @@
 FROM ubuntu:22.04
 
-# preinstall wget so that builders can be downloaded
-RUN apt-get -y update && apt-get -y install wget
+# preinstall curl so that builders can be downloaded
+RUN apt-get -y update && apt-get -y install curl
 
 # preinstall packages needed to build any REPRO
 RUN apt-get -y update && apt-get -y install apt-utils gettext makepasswd sudo file

@@ -5,7 +5,7 @@ function repro.require_file {
     source=$2
     if [[ ! -f ${file} ]] ; then
         if [[ ${source} == http?:* ]] ; then
-            wget --no-verbose -O ${file} ${source}/${file}
+            curl --no-verbose -f ${file} ${source}/${file}
         else
             cp ${source}/${file} ${file}
         fi
@@ -23,9 +23,9 @@ repro_builder_dir=${REPRO_BOOTSTRAP_DIR}/repro-builder
 mkdir -p ${repro_builder_dir}
 cd ${repro_builder_dir}
 
-# install wget so that builders can be downloaded
+# install curl so that builders can be downloaded
 apt-get -y update
-apt-get -y install wget
+apt-get -y install curl
 
 # download the list of builders
 build_manifest="manifest-build"
