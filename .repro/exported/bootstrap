@@ -5,7 +5,7 @@ function repro.require_file {
     source=$2
     if [[ ! -f ${file} ]] ; then
         if [[ ${source} == http?:* ]] ; then
-            curl -L ${source}/${file} -o ${file}
+            curl -f -L ${source}/${file} -o ${file}
         else
             cp ${source}/${file} ${file}
         fi
