@@ -67,9 +67,15 @@ function repro.initialize_module_state {
     # create state directory if it does not exist
     [[ -d ${state_dir} ]] || mkdir -p ${state_dir}
 
-    # include the default .gitignore if it does not exist
+    # include a default .gitignore file
     git_ignore_file=${state_dir}/.gitignore
     [[ -f ${git_ignore_file} ]] || echo "*" > ${git_ignore_file}
+
+    # include any Makefiles found in the module installation directory
+    for makefile_path in "${install_dir}/Makefile-*" ; do
+        makefile_name=$(basename ${makefile_path})
+        cp --no-clobber ${install_dir}/${makefile_name} ${state_dir}/${makefile_name}
+    done
 
     # copy module files listed in state manifest if present
     state_manifest=${install_dir}/manifest-state.txt
@@ -82,6 +88,7 @@ function repro.initialize_module_state {
             fi
         done
     fi
+
 }
 
 function repro.initialize_modules {

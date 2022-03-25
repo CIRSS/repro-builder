@@ -28,11 +28,11 @@ apt-get -y update
 apt-get -y install wget
 
 # download the list of builders
-builders_manifest="manifest-builds.txt"
-repro.require_file ${builders_manifest} ${repro_builder_release}
+build_manifest="manifest-build.txt"
+repro.require_file ${build_manifest} ${repro_builder_release}
 
 # process each line in the builders manifest
-readarray lines < ${builders_manifest}
+readarray lines < ${build_manifest}
 for full_line in "${lines[@]}"
 do
     # parse the builder name from the non-comment portion of the line
