@@ -1,4 +1,4 @@
-Makefile
+Makefile-demo
 setup-demo.sh
 targets-demo.txt
 repro-targets.txt

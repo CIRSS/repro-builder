@@ -115,7 +115,7 @@ function repro.update_targets {
                     read -ra tokens <<< ${target_entry}
                     repro_target=${tokens[0]}
                     module_target=${tokens[1]}
-                    printf '%s %s.%s\n' ${repro_target} ${module_name} ${module_target} >> ${REPRO_TARGETS_FILE}
+                    printf '%s %s.%s.%s\n' ${repro_target} ${module_name} ${profile} ${module_target} >> ${REPRO_TARGETS_FILE}
                 done
             fi
         done
@@ -134,8 +134,8 @@ function repro.run_target {
     for target_entry in "${targets_file_lines[@]}" ; do
         read -ra tokens <<< ${target_entry}
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
-            IFS='.' read module_name module_target <<< ${tokens[1]}
-            make -C ${REPRO_MNT}/.${module_name} ${module_target}
+            IFS='.' read module_name profile module_target <<< ${tokens[1]}
+            make -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
             return
         fi
     done

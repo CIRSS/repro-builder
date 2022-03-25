@@ -32,7 +32,7 @@ function process_manifest {
 
         exported_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
         if [[ -f ${exported_manifest_file} ]] ; then
-            echo "------Copying local manifest file from ${exported_manifest_file} ro $(pwd)------"
+            echo "------Copying local manifest file from ${exported_manifest_file} to $(pwd)------"
             cp ${export_snapshot_dir}/${profile_manifest_file} . 
         else 
             echo "------No local manifest file found at ${exported_manifest_file}------"
