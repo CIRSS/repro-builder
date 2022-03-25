@@ -10,7 +10,17 @@ module_url_template=$3
 
 module_url=`eval echo ${module_url_template}`
 
-function process_manifest {
+function set_mode_bits {
+    artifact=$1
+    mimetype=`file --mime ${artifact}`
+    if echo ${mimetype} | grep -q "application/x-executable"; then
+        chmod u+x ${artifact}
+    elif echo ${mimetype} | grep -q "text/x-shellscript"; then
+        chmod u+x ${artifact}
+    fi
+}
+
+function install_profile {
 
     local profile=$1
     local module_installation_dir=$2
@@ -19,7 +29,7 @@ function process_manifest {
     cd ${module_installation_dir}
     echo "Now working in $(pwd)"
 
-    profile_manifest_file="manifest-${profile}.txt"
+    profile_manifest_file="manifest-${profile}"
 
     echo "------Processing ${profile} profile while working in in $(pwd)----------"
 
@@ -89,12 +99,7 @@ function process_manifest {
             ln -s ${artifact_base} ${artifact_name}
         fi
 
-        mimetype=`file --mime ${artifact_base}`
-        if echo ${mimetype} | grep -q "application/x-executable"; then
-            chmod u+x ${artifact_base}
-        elif echo ${mimetype} | grep -q "text/x-shellscript"; then
-            chmod u+x ${artifact_base}
-        fi
+        set_mode_bits ${artifact_base}
 
     done
 
@@ -116,15 +121,15 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
     # always process the base and state profiles
-    process_manifest base ${module_installation_dir}
-    process_manifest state ${module_installation_dir}
+    install_profile base ${module_installation_dir}
+    install_profile state ${module_installation_dir}
 
     # process optional profiles specified in the script options
     for profile in demo dev test ; do
         echo "------Looking for --${profile} option in arguments----------"
         if [[ ${arguments[*]} =~ "--$profile" ]] ; then
             echo "------Found --${profile} option in arguments----------"
-            process_manifest ${profile} ${module_installation_dir}
+            install_profile ${profile} ${module_installation_dir}
         fi
     done
 
