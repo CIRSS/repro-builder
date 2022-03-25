@@ -20,7 +20,7 @@ repro.setenv REPRO_ATSTART_FILE      ${HOME}/.repro-atstart
 repro.setenv REPRO_ATSHELL_FILE      ${HOME}/.repro-atshell
 repro.setenv REPRO_ATSCRIPT_FILE     ${HOME}/.repro-atscript
 repro.setenv REPRO_BUILDER_STATE_DIR '${REPRO_MNT}/.repro-builder'
-repro.setenv REPRO_TARGETS_FILENAME  repro-targets.txt
+repro.setenv REPRO_TARGETS_FILENAME  repro-targets
 repro.setenv REPRO_TARGETS_FILE      '${REPRO_BUILDER_STATE_DIR}/${REPRO_TARGETS_FILENAME}'
 repro.setenv BASH_ENV                ${REPRO_ATSCRIPT_FILE}
 repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths

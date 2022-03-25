@@ -59,7 +59,6 @@ function repro.state_dir_for_module {
 function ensure_nullglob {
     shopt -q nullglob
     if [[ $? == 1 ]] ; then
-        echo "Turning nullglob on"
         null_glob_was_enabled=true
         shopt -s nullglob
     fi
@@ -67,7 +66,6 @@ function ensure_nullglob {
 
 function restore_nullglob {
     if [[ -v null_glob_was_enabled ]] ; then
-        echo "Turning nullglob off"
         shopt -u nullglob
         unset null_glob_was_enabled
     fi
@@ -99,7 +97,7 @@ function repro.initialize_module_state {
     restore_nullglob
 
     # copy module files listed in state manifest if present
-    state_manifest=${install_dir}/manifest-state.txt
+    state_manifest=${install_dir}/manifest-state
     if [[ -f ${state_manifest} ]] ; then
         readarray state_manifest_lines < ${state_manifest}
         for state_file_line in "${state_manifest_lines[@]}" ; do
@@ -135,7 +133,7 @@ function repro.update_targets {
         install_dir=$(repro.install_dir_for_module ${module_name})
 
         for profile in base state demo dev test; do 
-            module_targets_file=${install_dir}/targets-${profile}.txt
+            module_targets_file=${install_dir}/targets-${profile}
             if [[ -f ${module_targets_file} ]] ; then 
                 repro_targets=''
                 readarray module_targets < ${module_targets_file}

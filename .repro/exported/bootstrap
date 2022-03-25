@@ -28,7 +28,7 @@ apt-get -y update
 apt-get -y install wget
 
 # download the list of builders
-build_manifest="manifest-build.txt"
+build_manifest="manifest-build"
 repro.require_file ${build_manifest} ${repro_builder_release}
 
 # process each line in the builders manifest
