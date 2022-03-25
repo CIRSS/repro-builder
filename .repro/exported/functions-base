@@ -56,6 +56,24 @@ function repro.state_dir_for_module {
     echo ${state_dir}
 }
 
+function ensure_nullglob {
+    shopt -q nullglob
+    if [[ $? == 1 ]] ; then
+        echo "Turning nullglob on"
+        null_glob_was_enabled=true
+        shopt -s nullglob
+    fi
+}
+
+function restore_nullglob {
+    if [[ -v null_glob_was_enabled ]] ; then
+        echo "Turning nullglob off"
+        shopt -u nullglob
+        unset null_glob_was_enabled
+    fi
+}
+
+
 function repro.initialize_module_state {
     
     module_name=$1
@@ -72,10 +90,13 @@ function repro.initialize_module_state {
     [[ -f ${git_ignore_file} ]] || echo "*" > ${git_ignore_file}
 
     # include any Makefiles found in the module installation directory
-    for makefile_path in "${install_dir}/Makefile-*" ; do
+    ensure_nullglob
+    makefiles=( ${install_dir}/Makefile-* )
+    for makefile_path in "${makefiles[@]}" ; do
         makefile_name=$(basename ${makefile_path})
         cp --no-clobber ${install_dir}/${makefile_name} ${state_dir}/${makefile_name}
     done
+    restore_nullglob
 
     # copy module files listed in state manifest if present
     state_manifest=${install_dir}/manifest-state.txt
