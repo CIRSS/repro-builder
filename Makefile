@@ -77,7 +77,24 @@ clean-examples:         ## Delete all products of examples.
 
 
 # include .repro/030_Makefile.reports
+## 
+## # Targets for creating the reports in this REPRO.
+## 
+
+create-reports:          ## Run all of the examples.
+
+clean-reports:           ## Delete all reports.
+
+
 # include .repro/040_Makefile.analyses
+## 
+## # Targets for performing the analyses in this REPRO.
+## 
+
+create-analyses:         ## Run all of the examples.
+
+clean-analyses:          ## Delete all reports.
+
 
 #include .repro/040_Makefile.data
 clean-database:       ## Delete the database logs.
