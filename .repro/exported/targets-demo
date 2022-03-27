@@ -1,1 +1,1 @@
-run-demos: run-the-demo
+run-demo: run-the-demo
