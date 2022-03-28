@@ -17,14 +17,11 @@ repro_builder_release=${1:-/repro/exports}
 
 # save the path to the original build directory
 export REPRO_EXPORTS_DIR=$(readlink -f $(dirname $0))
-echo "REPRO_EXPORTS_DIR=$REPRO_EXPORTS_DIR"
 
 export REPRO_ROOT_DIR=$(readlink -f $(dirname ${REPRO_EXPORTS_DIR}))
-echo "REPRO_ROOT_DIR=$REPRO_ROOT_DIR"
 
 # work in the repro-boot subdirectory of the bootstrap directory
 repro_boot_dir=${REPRO_ROOT_DIR}/repro-boot
-echo "REPRO_BOOT_DIR=$repro_boot_dir"
 mkdir -p ${repro_boot_dir}
 cd ${repro_boot_dir}
 
@@ -49,7 +46,6 @@ done
 
 # invoke each sequenced builder within the current shell
 for builder in [0-9]*; do
-    echo -e "STARTING  ${builder}"
     source $builder
 done
 

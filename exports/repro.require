@@ -2,8 +2,6 @@
 
 arguments=( "$@" )
 
-echo "---------ARGUMENTS=${arguments[*]}------------"
-
 module_name=$1
 module_version=$2
 module_url_template=$3
@@ -27,11 +25,8 @@ function install_profile {
 
     mkdir -p ${module_installation_dir}
     cd ${module_installation_dir}
-    echo "Now working in $(pwd)"
 
     profile_manifest_file="manifest-${profile}"
-
-    echo "------Processing ${profile} profile while working in in $(pwd)----------"
 
      if [[ $module_version == exports ]] ; then
 
@@ -56,8 +51,6 @@ function install_profile {
             return
         fi 
     fi
-
-    echo "------Processing contents of manifest file ${profile_manifest_file}------"
 
     readarray lines < ${profile_manifest_file}
 
@@ -121,14 +114,15 @@ if [[ ! -f ${repro_index_entry} ]] ; then
     module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
     # always process the base and state profiles
-    install_profile base ${module_installation_dir}
-    install_profile state ${module_installation_dir}
+    mandatory_profiles=( base state )
+    for profile in "${mandatory_profiles[@]}" ; do
+        install_profile ${profile} ${module_installation_dir}
+    done
 
     # process optional profiles specified in the script options
-    for profile in demo dev test ; do
-        echo "------Looking for --${profile} option in arguments----------"
+    optional_profiles=( demo code util )
+    for profile in "${optional_profiles[@]}" ; do
         if [[ ${arguments[*]} =~ "--$profile" ]] ; then
-            echo "------Found --${profile} option in arguments----------"
             install_profile ${profile} ${module_installation_dir}
         fi
     done

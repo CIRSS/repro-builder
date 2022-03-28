@@ -151,8 +151,6 @@ function repro.update_targets {
 function repro.run_target {
 
     requested_target=$1
-    echo "Running target $requested_target"
-
     [[ ! -f ${REPRO_TARGETS_FILE} ]] && return
 
     readarray targets_file_lines < ${REPRO_TARGETS_FILE}
@@ -165,6 +163,5 @@ function repro.run_target {
             return
         fi
     done
-
     echo "Target $requested_target not found"
 }
