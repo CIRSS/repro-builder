@@ -9,7 +9,7 @@ repro.atstart 'cd ${REPRO_MNT}'
 repro.atshell source ${REPRO_ATSCRIPT_FILE}
 
 # schedule initialization of environment for non-interactive scripts
-repro.atscript source ${REPRO_MODULES_DIR}/repro-builder-*/functions-base
+repro.atscript source ${REPRO_MODULES_DIR}/repro-*/functions-base
 
 # make sure all dot-repro files belong to the REPRO user
 chown -R ${repro_uid}.${repro_gid} ${HOME}/.repro*

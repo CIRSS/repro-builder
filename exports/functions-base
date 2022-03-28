@@ -123,7 +123,7 @@ function repro.update_targets {
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
         return
     else 
-        repro_builder_install_dir=$(repro.install_dir_for_module repro-builder)
+        repro_builder_install_dir=$(repro.install_dir_for_module repro)
         cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
     fi
 

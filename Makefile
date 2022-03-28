@@ -5,7 +5,7 @@
 default_target: help
 
 # identify the REPRO and associated Docker image
-REPRO_NAME=repro-builder
+REPRO_NAME=repro
 REPRO_DOCKER_ORG=cirss
 REPRO_IMAGE_TAG=latest
 REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
@@ -182,7 +182,7 @@ endif
 ifndef IN_RUNNING_REPRO
 
 base-image:             ## Build the Docker base image.
-	docker build -f Dockerfile-base -t ${REPRO_DOCKER_ORG}/repro-builder-base:${REPRO_IMAGE_TAG} .
+	docker build -f Dockerfile-base -t ${REPRO_DOCKER_ORG}/repro-base:${REPRO_IMAGE_TAG} .
 
 endif
 

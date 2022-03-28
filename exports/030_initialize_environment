@@ -12,24 +12,23 @@ function repro.setenv {
     echo "export ${name}=${value}" >> ${REPRO_ENV_FILE}
 }
 
-repro.setenv REPRO_ROOT_DIR     ${REPRO_ROOT_DIR}
-repro.setenv HOME                    ${HOME}
-repro.setenv REPRO_ENV_FILE          ${REPRO_ENV_FILE}
-repro.setenv IN_RUNNING_REPRO        '${REPRO_NAME}'
-repro.setenv REPRO_ATSTART_FILE      ${HOME}/.repro-atstart
-repro.setenv REPRO_ATSHELL_FILE      ${HOME}/.repro-atshell
-repro.setenv REPRO_ATSCRIPT_FILE     ${HOME}/.repro-atscript
-repro.setenv REPRO_BUILDER_STATE_DIR '${REPRO_MNT}/.repro-builder'
-repro.setenv REPRO_TARGETS_FILENAME  repro-targets
-repro.setenv REPRO_TARGETS_FILE      '${REPRO_BUILDER_STATE_DIR}/${REPRO_TARGETS_FILENAME}'
-repro.setenv BASH_ENV                ${REPRO_ATSCRIPT_FILE}
-repro.setenv REPRO_PATHS_FILE        ${HOME}/.repro-paths
-repro.setenv REPRO_INDEX_DIR         ${HOME}/.repro-index
-repro.setenv REPRO_ORDER_FILE        ${HOME}/.repro-order
-repro.setenv REPRO_MODULES_DIR       ${HOME}/.repro-modules
+repro.setenv REPRO_ROOT_DIR         ${REPRO_ROOT_DIR}
+repro.setenv HOME                   ${HOME}
+repro.setenv REPRO_ENV_FILE         ${REPRO_ENV_FILE}
+repro.setenv IN_RUNNING_REPRO       '${REPRO_NAME}'
+repro.setenv REPRO_ATSTART_FILE     ${HOME}/.repro-atstart
+repro.setenv REPRO_ATSHELL_FILE     ${HOME}/.repro-atshell
+repro.setenv REPRO_ATSCRIPT_FILE    ${HOME}/.repro-atscript
+repro.setenv REPRO_STATE_DIR        '${REPRO_MNT}/.repro'
+repro.setenv REPRO_TARGETS_FILENAME repro-targets
+repro.setenv REPRO_TARGETS_FILE     '${REPRO_STATE_DIR}/${REPRO_TARGETS_FILENAME}'
+repro.setenv BASH_ENV               ${REPRO_ATSCRIPT_FILE}
+repro.setenv REPRO_PATHS_FILE       ${HOME}/.repro-paths
+repro.setenv REPRO_INDEX_DIR        ${HOME}/.repro-index
+repro.setenv REPRO_ORDER_FILE       ${HOME}/.repro-order
+repro.setenv REPRO_MODULES_DIR      ${HOME}/.repro-modules
 repro.setenv REPRO_EXPORTS_DIR      '${REPRO_MNT}/exports'
-repro.setenv REPRO_BASE_PATH         '${PATH}'
-
+repro.setenv REPRO_BASE_PATH        '${PATH}'
 
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}
