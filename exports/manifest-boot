@@ -1,3 +1,4 @@
+setup-boot
 010_install_required_packages
 020_create_repro_user
 030_initialize_environment

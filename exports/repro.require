@@ -33,19 +33,19 @@ function install_profile {
 
     echo "------Processing ${profile} profile while working in in $(pwd)----------"
 
-     if [[ $module_version == exported ]] ; then
+     if [[ $module_version == exports ]] ; then
 
-        if [[ -d ${REPRO_BOOTSTRAP_DIR}/exported ]] ; then
-            export_snapshot_dir="${REPRO_BOOTSTRAP_DIR}/exported-${module_name}"
-            sudo mv /${REPRO_BOOTSTRAP_DIR}/exported ${export_snapshot_dir}
+        if [[ -d ${REPRO_ROOT_DIR}/exports ]] ; then
+            export_snapshot_dir="${REPRO_ROOT_DIR}/${module_name}-exports"
+            sudo mv /${REPRO_ROOT_DIR}/exports ${export_snapshot_dir}
         fi
 
-        exported_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
-        if [[ -f ${exported_manifest_file} ]] ; then
-            echo "------Copying local manifest file from ${exported_manifest_file} to $(pwd)------"
+        exports_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
+        if [[ -f ${exports_manifest_file} ]] ; then
+            echo "------Copying local manifest file from ${exports_manifest_file} to $(pwd)------"
             cp ${export_snapshot_dir}/${profile_manifest_file} . 
         else 
-            echo "------No local manifest file found at ${exported_manifest_file}------"
+            echo "------No local manifest file found at ${exports_manifest_file}------"
             return
         fi
     else
@@ -88,7 +88,7 @@ function install_profile {
 
         if [[ ${artifact_path} == http?:* ]] ; then
             curl -f -L ${artifact_path} -o ${artifact_base} 
-        elif [[ $module_version == exported ]] ; then
+        elif [[ $module_version == exports ]] ; then
             cp ${export_snapshot_dir}/${artifact_path} ${artifact_base}
         else
             curl -f -L ${module_url}/${artifact_path} -o ${artifact_base}  || \
