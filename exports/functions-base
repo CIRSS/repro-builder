@@ -72,7 +72,7 @@ function restore_nullglob {
 }
 
 
-function repro.initialize_module_state {
+function repro.initialize_module_trim {
     
     module_name=$1
 
@@ -96,14 +96,14 @@ function repro.initialize_module_state {
     done
     restore_nullglob
 
-    # copy module files listed in state manifest if present
-    state_manifest=${install_dir}/manifest-state
-    if [[ -f ${state_manifest} ]] ; then
-        readarray state_manifest_lines < ${state_manifest}
-        for state_file_line in "${state_manifest_lines[@]}" ; do
-            state_file=$(echo ${state_file_line%%#*} | xargs)
-            if [[ -n ${state_file} ]] ; then 
-                cp --no-clobber ${install_dir}/${state_file} ${state_dir}/${state_file}
+    # copy module files listed in trun manifest if present
+    trim_manifest=${install_dir}/manifest-trim
+    if [[ -f ${trim_manifest} ]] ; then
+        readarray trim_manifest_lines < ${trim_manifest}
+        for trim_file_line in "${trim_manifest_lines[@]}" ; do
+            trim_file=$(echo ${trim_file_line%%#*} | xargs)
+            if [[ -n ${trim_file} ]] ; then 
+                cp --no-clobber ${install_dir}/${trim_file} ${state_dir}/${trim_file}
             fi
         done
     fi
@@ -113,7 +113,7 @@ function repro.initialize_module_state {
 function repro.initialize_modules {
     readarray modules < ${REPRO_ORDER_FILE}
     for module in "${modules[@]}" ; do
-        repro.initialize_module_state ${module}
+        repro.initialize_module_trim ${module}
     done
 }
 
@@ -132,7 +132,7 @@ function repro.update_targets {
         module_name=$(echo $modules_line | xargs)
         install_dir=$(repro.install_dir_for_module ${module_name})
 
-        for profile in base state demo dev test; do 
+        for profile in base trim code demo util; do 
             module_targets_file=${install_dir}/targets-${profile}
             if [[ -f ${module_targets_file} ]] ; then 
                 repro_targets=''

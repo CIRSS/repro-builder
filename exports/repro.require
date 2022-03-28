@@ -113,8 +113,8 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
-    # always process the base and state profiles
-    mandatory_profiles=( base state )
+    # always process the base and trim profiles
+    mandatory_profiles=( base trim )
     for profile in "${mandatory_profiles[@]}" ; do
         install_profile ${profile} ${module_installation_dir}
     done
