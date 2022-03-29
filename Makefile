@@ -201,4 +201,4 @@ endif
 
 ## 
 reset-makefile:         ## Replace local Makefile with latest version from repo
-	curl -L https://raw.githubusercontent.com/repros-dev/repro/master/Makefile -o Makefile
+	curl -L https://raw.githubusercontent.com/repros-dev/repro-template/master/Makefile -o Makefile
