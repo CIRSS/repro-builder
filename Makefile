@@ -200,3 +200,5 @@ start:    start-image   ## Start the REPRO using the Docker image.
 endif
 
 ## 
+reset-makefile:         ## Replace local Makefile with latest version from repo
+	curl -L https://raw.githubusercontent.com/repros-dev/repro/master/Makefile -o Makefile
