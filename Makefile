@@ -4,10 +4,10 @@
 # set the default Make target
 default_target: help
 
+include repro-config
+repro-config:
+
 # identify the REPRO and associated Docker image
-REPRO_NAME=repro
-REPRO_DOCKER_ORG=cirss
-REPRO_IMAGE_TAG=latest
 REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
 
 # provide runtime options for Docker when running this REPRO
