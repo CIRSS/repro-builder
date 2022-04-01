@@ -1,4 +1,4 @@
-FROM cirss/repro-base:latest
+FROM cirss/repro-parent:latest
 
 COPY exports /repro/exports
 RUN bash /repro/exports/setup-boot

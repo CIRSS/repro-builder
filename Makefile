@@ -6,6 +6,7 @@ default_target: help
 
 include repro-config
 repro-config:
+	$(error The repro-config file is required to set the REPRO_NAME and other REPRO properties)
 
 # identify the REPRO and associated Docker image
 REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
@@ -173,16 +174,17 @@ push-image:             ## Push the Docker image to Docker Hub.
 
 endif
 
-
-#include .repro/085_Makefile.base
 ## 
-## # Targets for building the base image.
+## # Targets for building a custom parent image.
 ## 
 
 ifndef IN_RUNNING_REPRO
 
-base-image:             ## Build the Docker base image.
-	docker build -f Dockerfile-base -t ${REPRO_DOCKER_ORG}/repro-base:${REPRO_IMAGE_TAG} .
+build-parent-image:       ## Build a custom parent Docker image.
+	docker build -f Dockerfile-parent -t ${PARENT_IMAGE} .
+
+push-parent-image:        ## Push the custom parent image to Docker Hub.
+	docker push ${PARENT_IMAGE}
 
 endif
 

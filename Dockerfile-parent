@@ -1,0 +1,24 @@
+FROM ubuntu:22.04
+
+# define URL templates for common REPRO module sources
+ENV REPROS_DEV 'https://raw.githubusercontent.com/repros-dev/${1}/${2}/exports'
+ENV REPROS_DEV_RELEASE 'https://github.com/repros-dev/${1}/releases/download/v${2}/'
+ENV CIRSS 'https://raw.githubusercontent.com/cirss/${1}/${2}/exports'
+ENV CIRSS_RELEASE 'https://github.com/cirss/${1}/releases/download/v${2}/'
+
+# define URLs of REPRO distributions
+ENV REPROS_DEV_REPRO 'https://raw.githubusercontent.com/repros-dev/repro/master/exports'
+
+# preinstall packages needed to build any REPRO
+RUN apt-get -y update && \
+	apt-get -y install curl apt-utils gettext makepasswd sudo file
+
+# preinstall tzdata and ensure timezone is set
+RUN apt-get -y update && \
+	DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles" \
+	apt-get -y install tzdata
+
+# preinstall optional utilities
+RUN apt-get -y update && \
+	apt-get -y install wget make git less tree vim-tiny
+
