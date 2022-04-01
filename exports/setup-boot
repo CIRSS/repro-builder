@@ -13,7 +13,7 @@ function repro.require_file {
 }
 
 # 
-repro_builder_release=${1:-/repro/exports}
+repro_distribution=${1:-${REPRO_DIST}}
 
 # save the path to the original build directory
 export REPRO_EXPORTS_DIR=$(readlink -f $(dirname $0))
@@ -31,7 +31,7 @@ apt-get -y install curl
 
 # download the list of builders
 boot_manifest="manifest-boot"
-repro.require_file ${boot_manifest} ${repro_builder_release}
+repro.require_file ${boot_manifest} ${repro_distribution}
 
 # process each line in the builders manifest
 readarray lines < ${boot_manifest}
@@ -41,7 +41,7 @@ do
     trimmed_line=${full_line%%#*}
     read -ra tokens <<< ${trimmed_line}
     builder=${tokens[0]}
-    repro.require_file ${builder} ${repro_builder_release}
+    repro.require_file ${builder} ${repro_distribution}
 done
 
 # invoke each sequenced builder within the current shell
