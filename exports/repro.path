@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 newpath=$1
 
 echo "$newpath" >> ${REPRO_PATHS_FILE}

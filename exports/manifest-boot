@@ -1,4 +1,4 @@
-setup-boot
+setup
 010_install_required_packages
 020_create_repro_user
 030_initialize_environment
@@ -8,6 +8,6 @@ setup-boot
 repro.atscript
 repro.atshell
 repro.atstart
-repro.prefixpath
+repro.env
+repro.path
 repro.require
-repro.setenv
