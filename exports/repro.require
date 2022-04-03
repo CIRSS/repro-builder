@@ -113,18 +113,30 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
-    # always process the base and trim profiles
     mandatory_profiles=( base trim )
+    optional_profiles=( demo code util )
+    standard_profiles=( "${mandatory_profiles[@]}" "${optional_profiles[@]}" )
+
+    # always process the base and trim profiles
     for profile in "${mandatory_profiles[@]}" ; do
         install_profile ${profile} ${module_installation_dir}
     done
 
-    # process optional profiles specified in the script options
-    optional_profiles=( demo code util )
+    # process optional standard profiles specified in the script options
     for profile in "${optional_profiles[@]}" ; do
         if [[ ${arguments[*]} =~ "--$profile" ]] ; then
             install_profile ${profile} ${module_installation_dir}
         fi
+    done
+
+    # process optional custom profiles specified in the script options
+    for i in "${!arguments[@]}"; do
+        if [[ "${arguments[i]}" =~ -[-]?([a-zA-Z0-9_.-]+) ]] ; then
+        profile="${BASH_REMATCH[1]}"
+             if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
+                install_profile ${profile} ${module_installation_dir}
+            fi
+        fi 
     done
 
     echo "${module_name} ${module_version} ${module_installation_dir}" > ${repro_index_entry}
