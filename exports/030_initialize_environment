@@ -19,9 +19,9 @@ repro.env IN_RUNNING_REPRO       '${REPRO_NAME}'
 repro.env REPRO_ATSTART_FILE     ${HOME}/.repro-atstart
 repro.env REPRO_ATSHELL_FILE     ${HOME}/.repro-atshell
 repro.env REPRO_ATSCRIPT_FILE    ${HOME}/.repro-atscript
-repro.env REPRO_STATE_DIR        '${REPRO_MNT}/.repro'
+repro.env REPRO_DOT_DIR          '${REPRO_MNT}/.repro'
 repro.env REPRO_TARGETS_FILENAME repro-targets
-repro.env REPRO_TARGETS_FILE     '${REPRO_STATE_DIR}/${REPRO_TARGETS_FILENAME}'
+repro.env REPRO_TARGETS_FILE     '${REPRO_DOT_DIR}/${REPRO_TARGETS_FILENAME}'
 repro.env BASH_ENV               ${REPRO_ATSCRIPT_FILE}
 repro.env REPRO_PATHS_FILE       ${HOME}/.repro-paths
 repro.env REPRO_INDEX_DIR        ${HOME}/.repro-index
