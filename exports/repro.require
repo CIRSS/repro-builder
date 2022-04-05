@@ -21,10 +21,10 @@ function set_mode_bits {
 function install_profile {
 
     local profile=$1
-    local module_installation_dir=$2
+    local module_install_dir=$2
 
-    mkdir -p ${module_installation_dir}
-    cd ${module_installation_dir}
+    mkdir -p ${module_install_dir}
+    cd ${module_install_dir}
 
     profile_manifest_file="manifest-${profile}"
 
@@ -111,35 +111,34 @@ if [[ ! -f ${repro_index_entry} ]] ; then
 
     echo "Installing REPRO module ${module_name} version ${module_version}..."
 
-    module_installation_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
-
-    mandatory_profiles=( base trim )
-    optional_profiles=( demo code util )
-    standard_profiles=( "${mandatory_profiles[@]}" "${optional_profiles[@]}" )
+    module_install_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
     # always process the base and trim profiles
+    mandatory_profiles=( base trim )
     for profile in "${mandatory_profiles[@]}" ; do
-        install_profile ${profile} ${module_installation_dir}
+        install_profile ${profile} ${module_install_dir}
     done
 
     # process optional standard profiles specified in the script options
+    optional_profiles=( demo code util )
     for profile in "${optional_profiles[@]}" ; do
         if [[ ${arguments[*]} =~ "--$profile" ]] ; then
-            install_profile ${profile} ${module_installation_dir}
+            install_profile ${profile} ${module_install_dir}
         fi
     done
 
     # process optional custom profiles specified in the script options
+    standard_profiles=( "${mandatory_profiles[@]}" "${optional_profiles[@]}" )
     for i in "${!arguments[@]}"; do
         if [[ "${arguments[i]}" =~ -[-]?([a-zA-Z0-9_.-]+) ]] ; then
         profile="${BASH_REMATCH[1]}"
              if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
-                install_profile ${profile} ${module_installation_dir}
+                install_profile ${profile} ${module_install_dir}
             fi
         fi 
     done
 
-    echo "${module_name} ${module_version} ${module_installation_dir}" > ${repro_index_entry}
+    echo "${module_name} ${module_version} ${module_install_dir}" > ${repro_index_entry}
     echo "${module_name}" >> ${REPRO_ORDER_FILE}
 
 else
