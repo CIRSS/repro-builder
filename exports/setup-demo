@@ -1,5 +1,9 @@
 
+module_install_dir=$1
+
 sudo apt-get update
 sudo apt-get -y install jq
 
 repro.env demo TRUE
+
+echo TRUE > ${module_install_dir}/demo-file

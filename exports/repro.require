@@ -99,7 +99,7 @@ function install_profile {
     profile_setup_file=setup-${profile}
     if [[ -f "${profile_setup_file}" ]] ; then
         echo "Running ${profile_setup_file}"
-        source ${profile_setup_file}
+        source ${profile_setup_file} ${module_install_dir}
     fi
 }
 
