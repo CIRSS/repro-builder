@@ -17,8 +17,3 @@ useradd ${repro_user} --uid ${repro_uid} --gid ${repro_gid}                     
 sudoer_file=/etc/sudoers.d/${repro_user}
 echo "${repro_user} ALL=(ALL) NOPASSWD: ALL" > ${sudoer_file}
 chmod 0440 ${sudoer_file}
-
-
-
-
-

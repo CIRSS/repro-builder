@@ -11,5 +11,5 @@ echo TRUE > ${module_install_dir}/demo-file
 sudo mkdir ${module_install_dir}/lib
 sudo mkdir ${module_install_dir}/lib2
 
-repro.ldcache repro ${module_install_dir}/lib
-repro.ldcache repro ${module_install_dir}/lib2
+repro.ldconfig  ${module_install_dir}/lib
+repro.ldconfig ${module_install_dir}/lib2
