@@ -23,8 +23,8 @@ repro.env REPRO_DOT_DIR          '${REPRO_MNT}/.repro'
 repro.env REPRO_TARGETS_FILENAME repro-targets
 repro.env REPRO_TARGETS_FILE     '${REPRO_DOT_DIR}/${REPRO_TARGETS_FILENAME}'
 repro.env BASH_ENV               ${REPRO_ATSCRIPT_FILE}
-repro.env REPRO_PATHS_FILE       ${HOME}/.repro-paths
-repro.env REPRO_LDCONFIG_FILE    ${HOME}/.repro-ldconfig
+repro.env REPRO_PATH_FILE       ${HOME}/.repro-path
+repro.env REPRO_LDPATH_FILE      ${HOME}/.repro-ldpath
 repro.env REPRO_INDEX_DIR        ${HOME}/.repro-index
 repro.env REPRO_ORDER_FILE       ${HOME}/.repro-order
 repro.env REPRO_EXPORTS_DIR      '${REPRO_MNT}/exports'
@@ -37,9 +37,9 @@ mkdir -p ${REPRO_INDEX_DIR}
 touch ${REPRO_ATSTART_FILE}
 touch ${REPRO_ATSHELL_FILE}
 touch ${REPRO_ATSCRIPT_FILE}
-touch ${REPRO_PATHS_FILE}
+touch ${REPRO_PATH_FILE}
 touch ${REPRO_ORDER_FILE}
-touch ${REPRO_LDCONFIG_FILE}
+touch ${REPRO_LDPATH_FILE}
 
-# include contents of REPRO_LDCONFIG_FILE in list of directories searched by ldconfig
-ln -s ${REPRO_LDCONFIG_FILE} /etc/ld.so.conf.d/repro.conf
+# include contents of REPRO_LDPATH_FILE in list of directories searched by ldconfig
+ln -s ${REPRO_LDPATH_FILE} /etc/ld.so.conf.d/repro.conf

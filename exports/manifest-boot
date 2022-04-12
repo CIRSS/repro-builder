@@ -9,6 +9,6 @@ repro.atscript
 repro.atshell
 repro.atstart
 repro.env
-repro.ldconfig
+repro.ldpath
 repro.path
 repro.require

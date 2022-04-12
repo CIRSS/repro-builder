@@ -1,7 +1,0 @@
-#!/bin/bash
-
-directory=$1
-
-echo "${directory}" >> ${REPRO_LDCONFIG_FILE}
-
-sudo ldconfig

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+directory=$1
+
+echo "${directory}" >> ${REPRO_LDPATH_FILE}
+
+sudo ldconfig
