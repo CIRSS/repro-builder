@@ -1,0 +1,7 @@
+#!/bin/bash
+
+module=$1
+directory=$2
+
+sudo sh -c "echo ${directory} >> /etc/ld.so.conf.d/${module}.conf"
+sudo ldconfig

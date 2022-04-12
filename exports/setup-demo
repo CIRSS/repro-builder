@@ -7,3 +7,9 @@ sudo apt-get -y install jq
 repro.env demo TRUE
 
 echo TRUE > ${module_install_dir}/demo-file
+
+sudo mkdir ${module_install_dir}/lib
+sudo mkdir ${module_install_dir}/lib2
+
+repro.ldcache repro ${module_install_dir}/lib
+repro.ldcache repro ${module_install_dir}/lib2
