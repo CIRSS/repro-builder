@@ -2,6 +2,6 @@
 
 directory=$1
 
-echo "${directory}" >> ${REPRO_LDPATH_FILE}
+echo "${directory}" >> ${REPRO_LIBPATH_FILE}
 
 sudo ldconfig
