@@ -1,3 +1,15 @@
+
+function repro.wait_for_interrupt {
+    while [ true ] ; do
+        echo "Type 'q' key to stop the services."
+        read -n 1 key
+        if [[ $key = 'q' ]] ; then
+            echo
+            break
+        fi
+    done
+}
+
 function repro.get_prefix_paths {
     unset prefix_paths
     readarray paths < ${REPRO_PATH_FILE}
