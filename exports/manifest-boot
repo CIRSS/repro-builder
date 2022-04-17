@@ -3,8 +3,9 @@ setup
 020_create_repro_user
 030_initialize_environment
 040_install_builders
-050_install_optional_packages
-060_configure_startup
+050_install_base_module
+060_install_optional_packages
+070_configure_startup
 repro.atscript
 repro.atshell
 repro.atstart
