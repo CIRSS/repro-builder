@@ -28,122 +28,130 @@ function install_profile {
 
     profile_manifest_file="manifest-${profile}"
 
-     if [[ $module_version == exports ]] ; then
-
-        if [[ -d ${REPRO_ROOT_DIR}/exports ]] ; then
-            export_snapshot_dir="${REPRO_ROOT_DIR}/${module_name}-exports"
-            sudo mv /${REPRO_ROOT_DIR}/exports ${export_snapshot_dir}
-        fi
-
-        exports_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
-        if [[ -f ${exports_manifest_file} ]] ; then
-            echo "------Copying local manifest file from ${exports_manifest_file} to $(pwd)------"
-            cp ${export_snapshot_dir}/${profile_manifest_file} . 
-        else 
-            echo "------No local manifest file found at ${exports_manifest_file}------"
-            return
-        fi
+    if [[ -f ${profile_manifest_file} ]] ; then
+        echo "The ${profile} profile for the ${module_name} module already has been installed."
     else
-        remote_manifest_file=${module_url}/${profile_manifest_file}
-        curl -f -L ${remote_manifest_file} -o ${profile_manifest_file} 
-        if [[ $? -ne 0 ]] ; then
-            echo "------No remote manifest file found at ${remote_manifest_file}------"
-            return
-        fi 
-    fi
 
-    readarray lines < ${profile_manifest_file}
+        if [[ $module_version == exports ]] ; then
 
-    for full_line in "${lines[@]}" ; do
-        # trim comments starting with a `#` character on the line
-        trimmed_line=${full_line%%#*}
+            export_snapshot_dir="${REPRO_ROOT_DIR}/${module_name}-exports"
 
-        # split the trimmed line using whitespace as token delimiter
-        read -ra tokens <<< ${trimmed_line}
+            if [[ -d ${REPRO_ROOT_DIR}/exports ]] ; then
+                sudo mv /${REPRO_ROOT_DIR}/exports ${export_snapshot_dir}
+            fi
 
-        # interpret the line based on the number its tokens
-        case ${#tokens[@]} in
-
-        1)  artifact_name=${tokens[0]}
-            artifact_path=${artifact_name}
-        ;;
-
-        2)  artifact_name=${tokens[0]}
-            artifact_path=${tokens[1]}
-        ;;
-
-        *) continue
-        ;;
-
-        esac
-
-        artifact_base=$(basename $artifact_path)
-
-        if [[ ${artifact_path} == http?:* ]] ; then
-            curl -f -L ${artifact_path} -o ${artifact_base} 
-        elif [[ $module_version == exports ]] ; then
-            cp ${export_snapshot_dir}/${artifact_path} ${artifact_base}
+            exports_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
+            if [[ -f ${exports_manifest_file} ]] ; then
+                echo "------Copying local manifest file from ${exports_manifest_file} to $(pwd)------"
+                cp ${export_snapshot_dir}/${profile_manifest_file} . 
+            else 
+                echo "------No local manifest file found at ${exports_manifest_file}------"
+                return
+            fi
         else
-            curl -f -L ${module_url}/${artifact_path} -o ${artifact_base}  || \
-            curl -f -L ${module_url}/${artifact_base} -o ${artifact_base} 
+            remote_manifest_file=${module_url}/${profile_manifest_file}
+            curl -f -L ${remote_manifest_file} -o ${profile_manifest_file} 
+            if [[ $? -ne 0 ]] ; then
+                echo "------No remote manifest file found at ${remote_manifest_file}------"
+                return
+            fi 
         fi
 
-        if [[ ${artifact_name} != ${artifact_base} ]] ; then
-            ln -s ${artifact_base} ${artifact_name}
+        readarray lines < ${profile_manifest_file}
+
+        for full_line in "${lines[@]}" ; do
+            # trim comments starting with a `#` character on the line
+            trimmed_line=${full_line%%#*}
+
+            # split the trimmed line using whitespace as token delimiter
+            read -ra tokens <<< ${trimmed_line}
+
+            # interpret the line based on the number its tokens
+            case ${#tokens[@]} in
+
+            1)  artifact_name=${tokens[0]}
+                artifact_path=${artifact_name}
+            ;;
+
+            2)  artifact_name=${tokens[0]}
+                artifact_path=${tokens[1]}
+            ;;
+
+            *) continue
+            ;;
+
+            esac
+
+            artifact_base=$(basename $artifact_path)
+
+            if [[ ${artifact_path} == http?:* ]] ; then
+                curl -f -L ${artifact_path} -o ${artifact_base} 
+            elif [[ $module_version == exports ]] ; then
+                cp ${export_snapshot_dir}/${artifact_path} ${artifact_base}
+            else
+                curl -f -L ${module_url}/${artifact_path} -o ${artifact_base}  || \
+                curl -f -L ${module_url}/${artifact_base} -o ${artifact_base} 
+            fi
+
+            if [[ ${artifact_name} != ${artifact_base} ]] ; then
+                ln -s ${artifact_base} ${artifact_name}
+            fi
+
+            set_mode_bits ${artifact_base}
+
+        done
+
+        profile_setup_file=setup-${profile}
+        if [[ -f "${profile_setup_file}" ]] ; then
+            echo "Running ${profile_setup_file}"
+            source ${profile_setup_file} ${module_install_dir}
         fi
-
-        set_mode_bits ${artifact_base}
-
-    done
-
-    profile_setup_file=setup-${profile}
-    if [[ -f "${profile_setup_file}" ]] ; then
-        echo "Running ${profile_setup_file}"
-        source ${profile_setup_file} ${module_install_dir}
     fi
 }
 
 # determine path to index entry for this module
 repro_index_entry=${REPRO_INDEX_DIR}/${module_name}
 
-# install the module if the index entry does not exist
-if [[ ! -f ${repro_index_entry} ]] ; then 
+echo "Installing REPRO module ${module_name} version ${module_version}..."
 
-    echo "Installing REPRO module ${module_name} version ${module_version}..."
+module_install_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
-    module_install_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
-
-    # always process the base and trim profiles
-    mandatory_profiles=( base trim )
-    for profile in "${mandatory_profiles[@]}" ; do
-        install_profile ${profile} ${module_install_dir}
-    done
-
-    # process optional standard profiles specified in the script options
-    optional_profiles=( demo code util )
-    for profile in "${optional_profiles[@]}" ; do
-        if [[ ${arguments[*]} =~ "--$profile" ]] ; then
-            install_profile ${profile} ${module_install_dir}
-        fi
-    done
-
-    # process optional custom profiles specified in the script options
-    standard_profiles=( "${mandatory_profiles[@]}" "${optional_profiles[@]}" )
-    for i in "${!arguments[@]}"; do
-        if [[ "${arguments[i]}" =~ -[-]?([a-zA-Z0-9_.-]+) ]] ; then
-        profile="${BASH_REMATCH[1]}"
-             if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
-                install_profile ${profile} ${module_install_dir}
-            fi
-        fi 
-    done
-
+# if the module is already in the index check that the versions are compatible
+if [[ -f ${repro_index_entry} ]] ; then 
+    read -ra tokens < ${repro_index_entry}
+    installed_version=${tokens[1]}
+    if [[ ${module_version} != ${installed_version} ]] ; then
+        echo "Requested version '${module_version}' of module '${module_name}' does not match installed version '${installed_version}'."
+        exit 1
+    fi
+else
+    # otherwise index the new module
     echo "${module_name} ${module_version} ${module_install_dir}" > ${repro_index_entry}
     echo "${module_name}" >> ${REPRO_ORDER_FILE}
-
-else
-    echo "Module ${module_name} was already installed."
 fi
 
+# always process the base and trim profiles
+mandatory_profiles=( base trim )
+for profile in "${mandatory_profiles[@]}" ; do
+    install_profile ${profile} ${module_install_dir}
+done
 
+# process optional standard profiles specified in the script options
+optional_profiles=( demo code util )
+for profile in "${optional_profiles[@]}" ; do
+    if [[ ${arguments[*]} =~ "--$profile" ]] ; then
+        install_profile ${profile} ${module_install_dir}
+    fi
+done
+
+# process optional custom profiles specified in the script options
+standard_profiles=( "${mandatory_profiles[@]}" "${optional_profiles[@]}" )
+for i in "${!arguments[@]}"; do
+    if [[ "${arguments[i]}" =~ -[-]?([a-zA-Z0-9_.-]+) ]] ; then
+    profile="${BASH_REMATCH[1]}"
+            if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
+            install_profile ${profile} ${module_install_dir}
+        fi
+    fi 
+done
 
