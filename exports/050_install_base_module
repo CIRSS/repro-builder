@@ -1,2 +1,6 @@
 
-repro.require repro exports
+if [[ ${repro_distribution} == ${REPRO_DIST} ]] ; then
+    repro.require repro master ${REPRO_DIST}
+else
+    repro.require repro exports
+fi
