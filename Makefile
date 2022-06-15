@@ -1,13 +1,13 @@
 # This is the top-level Makefile for this REPRO.
-# Type 'make help' to list the available targets.
+# Type 'make' with no arguments to list the available targets.
+
+# invoke the `list` target run if no argument is provided to make
+default_target: list
 
 # detect if running in a Windows environment
 ifeq ('$(OS)', 'Windows_NT')
 PWSH=powershell -noprofile -command
 endif
-
-# invoke the `hints` target run if no argument is provided to make
-default_target: targets
 
 ## 
 #- =============================================================================
@@ -15,18 +15,18 @@ default_target: targets
 #- =============================================================================
 ## 
 
+list:                   ## List Makefile targets (default target).
+ifdef PWSH
+	@${PWSH} "Get-ChildItem .repro | Select-String -Pattern '#\# ' | % {$$_.Line.replace('##','')}"
+else
+	@sed -ne '/@sed/!s/#[#] //p' $(MAKEFILE_LIST)
+endif
+
 help:                   ## Show detailed Makefile help.
 ifdef PWSH
 	@${PWSH} "Get-ChildItem .repro | Select-String -Pattern '#\# ' | % {$$_.Line.replace('##','')}"
 else
 	@sed -ne '/@sed/!s/#[#-] //p' $(MAKEFILE_LIST)
-endif
-
-targets:                ## List Makefile targets (default target).
-ifdef PWSH
-	@${PWSH} "Get-ChildItem .repro | Select-String -Pattern '#\# ' | % {$$_.Line.replace('##','')}"
-else
-	@sed -ne '/@sed/!s/#[#] //p' $(MAKEFILE_LIST)
 endif
 
 ## 
