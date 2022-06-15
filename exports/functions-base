@@ -172,5 +172,5 @@ function repro.run_target {
             return
         fi
     done
-    echo "Target $requested_target not found"
+    echo "ERROR: The $requested_target target is not supported by this REPRO."
 }
