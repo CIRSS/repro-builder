@@ -190,7 +190,7 @@ clean-database:         ## Delete the database logs.
 drop-database:          ## Delete the database storage files.
 	$(RUN_IN_REPRO) 'repro.run_target drop-database'
 
-purge-database:        ## Delete all artifacts associated with database instance.
+purge-database:         ## Delete all artifacts associated with database instance.
 	$(RUN_IN_REPRO) 'repro.run_target purge-database'
 
 ## 
