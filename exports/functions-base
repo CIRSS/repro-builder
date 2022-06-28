@@ -141,7 +141,7 @@ function repro.update_targets {
         module_name=$(echo $modules_line | xargs)
         install_dir=$(repro.module_install_dir ${module_name})
 
-        for profile in base trim code demo util; do 
+        for profile in base trim code demos util; do 
             module_targets_file=${install_dir}/targets-${profile}
             if [[ -f ${module_targets_file} ]] ; then 
                 repro_targets=''

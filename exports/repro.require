@@ -137,7 +137,7 @@ for profile in "${mandatory_profiles[@]}" ; do
 done
 
 # process optional standard profiles specified in the script options
-optional_profiles=( demo code util )
+optional_profiles=( demos code util )
 for profile in "${optional_profiles[@]}" ; do
     if [[ ${arguments[*]} =~ "--$profile" ]] ; then
         install_profile ${profile} ${module_install_dir}
