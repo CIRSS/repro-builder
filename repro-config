@@ -11,3 +11,8 @@ PARENT_IMAGE=cirss/repro-parent:latest
 #REPRO_MOUNT_BLAZE=--volume $(CURDIR)/../blaze:/mnt/blaze
 
 #REPRO_MOUNT_OTHER_VOLUMES=$(REPRO_MOUNT_CLI) $(REPRO_MOUNT_BLAZE)
+
+image:                  build-image   ## 
+start:                  start-repro   ## 
+
+## 
