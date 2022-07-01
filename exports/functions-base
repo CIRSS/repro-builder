@@ -52,19 +52,19 @@ function repro.get_module_paths {
 }
 
 function repro.update_path {
-        
+
     updated_path=${REPRO_BASE_PATH}
-    
+
     module_paths=$(repro.get_module_paths)
     if [[ ! -z ${module_paths} ]] ; then
         updated_path=${module_paths}:${updated_path}
     fi
-    
+
    prefix_paths=$(repro.get_prefix_paths)
     if [[ ! -z ${prefix_paths} ]] ; then
         updated_path=${prefix_paths}:${updated_path}
     fi
-    
+
     export PATH=${updated_path}
 }
 
@@ -84,7 +84,7 @@ function restore_nullglob {
 }
 
 function repro.initialize_module_trim {
-    
+
     module_name=$1
 
     # create module dot directory if it does not exist
@@ -111,7 +111,7 @@ function repro.initialize_module_trim {
         readarray trim_manifest_lines < ${trim_manifest}
         for trim_file_line in "${trim_manifest_lines[@]}" ; do
             trim_file=$(echo ${trim_file_line%%#*} | xargs)
-            if [[ -n ${trim_file} ]] ; then 
+            if [[ -n ${trim_file} ]] ; then
                 cp --no-clobber ${install_dir}/${trim_file} ${dot_dir}/${trim_file}
             fi
         done
@@ -127,11 +127,11 @@ function repro.initialize_modules {
 }
 
 function repro.update_targets {
-    
+
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
         return
-    else 
+    else
         repro_builder_install_dir=$(repro.module_install_dir repro)
         cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
     fi
@@ -141,9 +141,9 @@ function repro.update_targets {
         module_name=$(echo $modules_line | xargs)
         install_dir=$(repro.module_install_dir ${module_name})
 
-        for profile in base trim code demos util; do 
+        for profile in base trim code demos util; do
             module_targets_file=${install_dir}/targets-${profile}
-            if [[ -f ${module_targets_file} ]] ; then 
+            if [[ -f ${module_targets_file} ]] ; then
                 repro_targets=''
                 readarray module_targets < ${module_targets_file}
                 for target_entry in "${module_targets[@]}" ; do
@@ -156,6 +156,7 @@ function repro.update_targets {
         done
     done
 }
+
 
 function repro.run_target {
 
@@ -173,4 +174,33 @@ function repro.run_target {
         fi
     done
     echo "ERROR: The $requested_target target is not implemented by this REPRO."
+    return -1
+}
+
+function repro.start_services {
+
+    repro.run_target start-services
+
+    if [[ $? -ne 0 ]] ; then
+        return
+    fi
+
+    if [[ "$1" == "--wait-for-key" ]] ; then
+        echo
+        echo "--------------------------------------------------------------------------"
+        echo "The REPRO services are now running in the REPRO."
+        echo "Terminate them by pressing the 'q' key in this terminal."
+        echo "--------------------------------------------------------------------------"
+        while [ true ] ; do
+            read -n 1 key
+            if [[ $key = 'q' ]] ; then
+                echo
+                exit
+            else
+                echo
+                echo "Type 'q' key to stop the REPRO services."
+            fi
+
+        done
+    fi
 }

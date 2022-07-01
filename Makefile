@@ -147,7 +147,7 @@ start-repro:            ## Start this REPRO in interactive mode.
 
 ## 
 start-services:         ## Start the services provided by this REPRO.
-	$(RUN_IN_REPRO) 'repro.run_target start-services'
+	$(RUN_IN_REPRO) 'repro.start_services --wait-for-key'
 
 ## 
 #- ---------- Targets for running the examples in this REPRO --------------------
