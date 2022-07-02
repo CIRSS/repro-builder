@@ -188,6 +188,9 @@ function repro.start_services {
         return
     fi
 
+    if [[ "${REPRO_START_SERVICES_AT_STARTUP}" != "true" ]] ; then
+        repro.run_target start-services
+    fi
 
     if [[ $? -ne 0 ]] ; then
         return
