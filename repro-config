@@ -4,8 +4,9 @@ REPRO_IMAGE_TAG=latest
 
 PARENT_IMAGE=cirss/repro-parent:latest
 
-# provide runtime options for Docker when running this REPRO
-#REPRO_DOCKER_OPTIONS=-p 9999:9999
+REPRO_START_SERVICES_AT_STARTUP=true
+
+REPRO_DOCKER_OPTIONS=-e REPRO_START_SERVICES_AT_STARTUP='true'
 
 #REPRO_MOUNT_CLI=--volume $(CURDIR)/../go-cli:/mnt/go-cli
 #REPRO_MOUNT_BLAZE=--volume $(CURDIR)/../blaze:/mnt/blaze

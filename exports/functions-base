@@ -179,7 +179,15 @@ function repro.run_target {
 
 function repro.start_services {
 
-    repro.run_target start-services
+    if [[ "$1" == "--at-start" ]] ; then
+        if [[ -z "${IN_RUNNING_REPRO}" ]] ; then
+            if [[ "${REPRO_START_SERVICES_AT_STARTUP}" == "true" ]] ; then
+                repro.run_target start-services
+            fi
+        fi
+        return
+    fi
+
 
     if [[ $? -ne 0 ]] ; then
         return
