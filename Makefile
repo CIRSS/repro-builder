@@ -155,7 +155,7 @@ ifdef IN_RUNNING_REPRO
 start-services:         ## Start the services provided by this REPRO.
 	$(RUN_IN_REPRO) 'repro.start_services'
 else
-start-services:         ## Start the services provided by this REPRO.
+start-services:
 	$(RUN_IN_REPRO) 'repro.start_services --wait-for-key'
 endif
 
