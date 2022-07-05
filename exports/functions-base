@@ -213,35 +213,23 @@ function repro.run_start_services_target {
 
 function repro.start_services {
 
-    echo rss-1
-
     # handle case where this function is being called during REPRO startup
     if [[ "$1" == "--at-start" ]] ; then
 
-        echo rss-2
-
         # only start the services if auto-startup is enabled
         if [[ "${REPRO_START_SERVICES_AT_STARTUP}" == "true" ]] ; then
-
-            echo rss-3
 
             # use the --quiet option to hide warning when REPRO has no services
             repro.run_target start-services --quiet
         fi
 
-        echo rss-4
-
         # no more to do if function was called during REPRO startup
         return
     fi
 
-    echo rss-5
-
     # this function is being called after startup so start the services
     # now only if auto startup is *not* enabled
     if [[ "${REPRO_START_SERVICES_AT_STARTUP}" != "true" ]] ; then
-
-    echo rss-6
 
         # start services and allow warning that REPRO has no services
         repro.run_target start-services
@@ -249,12 +237,8 @@ function repro.start_services {
         # an error code indicates that there were no services to start
         # so there is nothing else to do
         if [[ $? -ne 0 ]] ; then
-            echo rss-7
             return
         fi
-
-        echo rss-8
-
     fi
 
     # the current call to this function started the services after REPRO
@@ -263,7 +247,6 @@ function repro.start_services {
     # wait for a key stroke before returning if requested
 
     if [[ "$1" == "--wait-for-key" ]] ; then
-        echo rss-9
         echo
         echo "--------------------------------------------------------------------------"
         echo "The REPRO services are now running in the REPRO."
@@ -281,7 +264,4 @@ function repro.start_services {
 
         done
     fi
-
-    echo rss-10
-
 }
