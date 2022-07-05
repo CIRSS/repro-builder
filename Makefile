@@ -152,7 +152,7 @@ endif
 
 ## 
 start-services:         ## Start the services provided by this REPRO.
-	$(RUN_IN_REPRO) 'repro.start_services --wait-for-key'
+	$(RUN_IN_REPRO) 'repro.start_services'
 
 ## 
 #- ---------- Targets for running the examples in this REPRO --------------------

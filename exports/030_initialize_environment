@@ -12,24 +12,26 @@ function repro.env {
     echo "export ${name}=${value}" >> ${REPRO_ENV_FILE}
 }
 
-repro.env REPRO_ROOT_DIR         ${REPRO_ROOT_DIR}
-repro.env HOME                   ${HOME}
-repro.env REPRO_MODULES_DIR      ${HOME}/repro-modules
-repro.env REPRO_ENV_FILE         ${REPRO_ENV_FILE}
-repro.env REPRO_ATSTART_FILE     ${HOME}/.repro-atstart
-repro.env REPRO_ATSHELL_FILE     ${HOME}/.repro-atshell
-repro.env REPRO_ATSCRIPT_FILE    ${HOME}/.repro-atscript
-repro.env REPRO_DOT_DIR          '${REPRO_MNT}/.repro'
-repro.env REPRO_TARGETS_FILENAME repro-targets
-repro.env REPRO_TARGETS_FILE     '${REPRO_DOT_DIR}/${REPRO_TARGETS_FILENAME}'
-repro.env BASH_ENV               ${REPRO_ATSCRIPT_FILE}
-repro.env REPRO_PATH_FILE        ${HOME}/.repro-path
-repro.env REPRO_LIBPATH_FILE     ${HOME}/.repro-libpath
-repro.env REPRO_INDEX_DIR        ${HOME}/.repro-index
-repro.env REPRO_ORDER_FILE       ${HOME}/.repro-order
-repro.env REPRO_EXPORTS_DIR      '${REPRO_MNT}/exports'
-repro.env REPRO_BASE_PATH        '${PATH}'
-#repro.env IN_RUNNING_REPRO       '${REPRO_NAME}'
+repro.env REPRO_ROOT_DIR            ${REPRO_ROOT_DIR}
+repro.env HOME                      ${HOME}
+repro.env REPRO_MODULES_DIR         ${HOME}/repro-modules
+repro.env REPRO_ENV_FILE            ${REPRO_ENV_FILE}
+repro.env REPRO_ATSTART_FILE        ${HOME}/.repro-atstart
+repro.env REPRO_ATSHELL_FILE        ${HOME}/.repro-atshell
+repro.env REPRO_ATSCRIPT_FILE       ${HOME}/.repro-atscript
+repro.env REPRO_DOT_DIR             '${REPRO_MNT}/.repro'
+repro.env REPRO_TARGETS_FILENAME    repro-targets
+repro.env REPRO_TARGETS_FILE        '${REPRO_DOT_DIR}/${REPRO_TARGETS_FILENAME}'
+repro.env BASH_ENV                  ${REPRO_ATSCRIPT_FILE}
+repro.env REPRO_PATH_FILE           ${HOME}/.repro-path
+repro.env REPRO_LIBPATH_FILE        ${HOME}/.repro-libpath
+repro.env REPRO_INDEX_DIR           ${HOME}/.repro-index
+repro.env REPRO_ORDER_FILE          ${HOME}/.repro-order
+repro.env REPRO_EXPORTS_DIR         '${REPRO_MNT}/exports'
+repro.env REPRO_BASE_PATH           '${PATH}'
+repro.env REPRO_STATE_DIR           ${REPRO_DOT_DIR}/run-state
+repro.env REPRO_START_TIME          ${REPRO_STATE_DIR}/start-time
+repro.env REPRO_SERVICES_START_TIME ${REPRO_STATE_DIR}/services-start-time
 
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}

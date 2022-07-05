@@ -1,12 +1,8 @@
 # schedule one-time customizations of REPRO user environment at REPRO start
 repro.atstart source ${REPRO_ENV_FILE}
-repro.atstart repro.update_path
-repro.atstart repro.initialize_modules
-repro.atstart repro.update_targets
-repro.atstart repro.start_services --at-start
-repro.atstart 'cd ${REPRO_MNT}'
-repro.atstart echo "IN ATSTART"
+repro.atstart repro.initialize_state
 repro.atstart export 'IN_RUNNING_REPRO=${REPRO_NAME}'
+repro.atstart 'cd ${REPRO_MNT}'
 
 # include non-interactive environment as part of each interactive shell
 repro.atshell source ${REPRO_ATSCRIPT_FILE}

@@ -1,14 +1,34 @@
 
-function repro.wait_for_interrupt {
-    while [ true ] ; do
-        echo "Type 'q' key to stop the services."
-        read -n 1 key
-        if [[ $key = 'q' ]] ; then
-            echo
-            break
-        fi
-    done
+
+# returns seconds since the epoch
+function repro.timestamp_seconds {
+    echo $(date +"%s")
 }
+
+# returns a time-sortable dated timestamp
+function repro.timestamp {
+    echo $(date +"%Y-%m-%d %T")
+}
+
+function repro.initialize_state {
+    mkdir -p ${REPRO_STATE_DIR}
+    repro.timestamp > ${REPRO_START_TIME}
+    repro.update_path
+    repro.initialize_modules
+    repro.update_targets
+    repro.start_services --at-start
+}
+
+# function repro.wait_for_interrupt {
+#     while [ true ] ; do
+#         echo "Type 'q' key to stop the services."
+#         read -n 1 key
+#         if [[ $key = 'q' ]] ; then
+#             echo
+#             break
+#         fi
+#     done
+# }
 
 function repro.get_prefix_paths {
     unset prefix_paths
@@ -161,6 +181,7 @@ function repro.update_targets {
 function repro.run_target {
 
     requested_target=$1
+    options=$2
     [[ ! -f ${REPRO_TARGETS_FILE} ]] && return
 
     readarray targets_file_lines < ${REPRO_TARGETS_FILE}
@@ -170,33 +191,79 @@ function repro.run_target {
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
             IFS='.' read module_name profile module_target <<< ${tokens[1]}
             make -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
+
+            if [[ ${requested_target} == "start-services" ]] ; then
+                repro.timestamp > ${REPRO_SERVICES_START_TIME}
+            fi
+
             return
         fi
     done
-    echo "ERROR: The $requested_target target is not implemented by this REPRO."
+    if [[ $options != "--quiet" ]] ; then
+        echo "INFO: The $requested_target target is not implemented by this REPRO."
+    fi
     return -1
+}
+
+function repro.run_start_services_target {
+
+    repro.timestamp > ${REPRO_SERVICES_START_TIME}
+
 }
 
 function repro.start_services {
 
+    echo rss-1
+
+    # handle case where this function is being called during REPRO startup
     if [[ "$1" == "--at-start" ]] ; then
-        if [[ -z "${IN_RUNNING_REPRO}" ]] ; then
-            if [[ "${REPRO_START_SERVICES_AT_STARTUP}" == "true" ]] ; then
-                repro.run_target start-services
-            fi
+
+        echo rss-2
+
+        # only start the services if auto-startup is enabled
+        if [[ "${REPRO_START_SERVICES_AT_STARTUP}" == "true" ]] ; then
+
+            echo rss-3
+
+            # use the --quiet option to hide warning when REPRO has no services
+            repro.run_target start-services --quiet
         fi
+
+        echo rss-4
+
+        # no more to do if function was called during REPRO startup
         return
     fi
 
+    echo rss-5
+
+    # this function is being called after startup so start the services
+    # now only if auto startup is *not* enabled
     if [[ "${REPRO_START_SERVICES_AT_STARTUP}" != "true" ]] ; then
+
+    echo rss-6
+
+        # start services and allow warning that REPRO has no services
         repro.run_target start-services
+
+        # an error code indicates that there were no services to start
+        # so there is nothing else to do
+        if [[ $? -ne 0 ]] ; then
+            echo rss-7
+            return
+        fi
+
+        echo rss-8
+
     fi
 
-    if [[ $? -ne 0 ]] ; then
-        return
-    fi
+    # the current call to this function started the services after REPRO
+    # startup
+
+    # wait for a key stroke before returning if requested
 
     if [[ "$1" == "--wait-for-key" ]] ; then
+        echo rss-9
         echo
         echo "--------------------------------------------------------------------------"
         echo "The REPRO services are now running in the REPRO."
@@ -214,4 +281,7 @@ function repro.start_services {
 
         done
     fi
+
+    echo rss-10
+
 }
