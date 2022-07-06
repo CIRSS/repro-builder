@@ -10,6 +10,10 @@ function repro.timestamp {
     echo $(date +"%Y-%m-%d %T")
 }
 
+function repro.info {
+    echo $(repro.timestamp) INFO $*
+}
+
 function repro.initialize_state {
     mkdir -p ${REPRO_STATE_DIR}
     repro.timestamp > ${REPRO_START_TIME}
@@ -205,8 +209,8 @@ function repro.announce_services {
         echo "----------------------------------------------------------------------------------"
         for line in "${lines[@]}" ; do
             read service_name internal_port external_port <<< ${line}
-            printf "The %s service is now running. " ${service_name}
-            printf "Connect to it at http://localhost:%d/.\n" ${external_port}
+            repro.info The ${service_name} service is now running. \
+                       Connect to it at http://localhost:${external_port}.
         done
         echo "----------------------------------------------------------------------------------"
     fi
