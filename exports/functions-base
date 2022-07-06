@@ -264,7 +264,6 @@ function repro.start_services {
     # wait for a key stroke before returning if requested
 
     if [[ "$1" == "--wait-for-key" ]] ; then
-        echo
         echo "Terminate the services by pressing the 'q' key in this terminal."
         while [ true ] ; do
             read -n 1 key

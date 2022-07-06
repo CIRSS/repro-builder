@@ -2,6 +2,8 @@ REPRO_NAME=repro
 REPRO_DOCKER_ORG=cirss
 REPRO_IMAGE_TAG=latest
 
+# REPRO_VERBOSE_MAKEFILE=true
+
 PARENT_IMAGE=cirss/repro-parent:latest
 
 REPRO_START_SERVICES_AT_STARTUP=true
