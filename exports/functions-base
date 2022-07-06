@@ -205,7 +205,8 @@ function repro.announce_services {
         echo "----------------------------------------------------------------------------------"
         for line in "${lines[@]}" ; do
             read service_name internal_port external_port <<< ${line}
-            printf "The %s service is now running. Connect to it at http://localhost:%d\n" ${service_name} ${external_port}
+            printf "The %s service is now running." ${service_name}
+            printf "Connect to it at http://localhost:%d/.\n" ${external_port}
         done
         echo "----------------------------------------------------------------------------------"
     fi
