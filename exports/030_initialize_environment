@@ -19,6 +19,7 @@ repro.env REPRO_ENV_FILE            ${REPRO_ENV_FILE}
 repro.env REPRO_ATSTART_FILE        ${HOME}/.repro-atstart
 repro.env REPRO_ATSHELL_FILE        ${HOME}/.repro-atshell
 repro.env REPRO_ATSCRIPT_FILE       ${HOME}/.repro-atscript
+repro.env REPRO_SERVICES_FILE       ${HOME}/.repro-services
 repro.env REPRO_DOT_DIR             '${REPRO_MNT}/.repro'
 repro.env REPRO_TARGETS_FILENAME    repro-targets
 repro.env REPRO_TARGETS_FILE        '${REPRO_DOT_DIR}/${REPRO_TARGETS_FILENAME}'
@@ -39,6 +40,7 @@ mkdir -p ${REPRO_INDEX_DIR}
 touch ${REPRO_ATSTART_FILE}
 touch ${REPRO_ATSHELL_FILE}
 touch ${REPRO_ATSCRIPT_FILE}
+touch ${REPRO_SERVICES_FILE}
 touch ${REPRO_PATH_FILE}
 touch ${REPRO_ORDER_FILE}
 touch ${REPRO_LIBPATH_FILE}

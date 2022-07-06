@@ -1,0 +1,17 @@
+#!/bin/bash
+
+trimmed_arguments=$(echo "$@" | xargs)
+
+readarray lines < ${REPRO_SERVICES_FILE}
+
+for line in "${lines[@]}"
+do
+    trimmed_line=$(echo "$line" | xargs)
+
+    if [[ "${trimmed_arguments}" == "${trimmed_line}" ]] ; then
+        echo "**** Service already registered: ${trimmed_line} ****"
+        exit
+    fi
+done
+
+echo $@ >> ${REPRO_SERVICES_FILE}

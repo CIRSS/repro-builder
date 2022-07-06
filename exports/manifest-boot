@@ -9,6 +9,7 @@ setup
 repro.atscript
 repro.atshell
 repro.atstart
+repro.service
 repro.env
 repro.libpath
 repro.path
