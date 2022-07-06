@@ -205,7 +205,7 @@ function repro.announce_services {
         echo "----------------------------------------------------------------------------------"
         for line in "${lines[@]}" ; do
             read service_name internal_port external_port <<< ${line}
-            printf "The %s service is now running." ${service_name}
+            printf "The %s service is now running. " ${service_name}
             printf "Connect to it at http://localhost:%d/.\n" ${external_port}
         done
         echo "----------------------------------------------------------------------------------"
@@ -261,10 +261,7 @@ function repro.start_services {
 
     if [[ "$1" == "--wait-for-key" ]] ; then
         echo
-        echo "--------------------------------------------------------------------------"
-        echo "The REPRO services are now running in the REPRO."
-        echo "Terminate them by pressing the 'q' key in this terminal."
-        echo "--------------------------------------------------------------------------"
+        echo "Terminate the services by pressing the 'q' key in this terminal."
         while [ true ] ; do
             read -n 1 key
             if [[ $key = 'q' ]] ; then
