@@ -2,13 +2,9 @@ REPRO_NAME=repro
 REPRO_DOCKER_ORG=cirss
 REPRO_IMAGE_TAG=latest
 
-# REPRO_VERBOSE_MAKEFILE=true
-
 PARENT_IMAGE=cirss/repro-parent:latest
 
-REPRO_START_SERVICES_AT_STARTUP=true
-
-REPRO_DOCKER_OPTIONS=-e REPRO_START_SERVICES_AT_STARTUP='true'
+# REPRO_VERBOSITY=debug
 
 #REPRO_MOUNT_CLI=--volume $(CURDIR)/../go-cli:/mnt/go-cli
 #REPRO_MOUNT_BLAZE=--volume $(CURDIR)/../blaze:/mnt/blaze

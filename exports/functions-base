@@ -234,7 +234,7 @@ function repro.start_services {
     if [[ "$1" == "--at-start" ]] ; then
 
         # only start the services if auto-startup is enabled
-        if [[ "${REPRO_START_SERVICES_AT_STARTUP}" == "true" ]] ; then
+        if [[ "${REPRO_SERVICES}" == 'auto' ]] ; then
 
             # use the --quiet option to hide warning when REPRO has no services
             repro.run_target start-services --quiet
@@ -245,8 +245,8 @@ function repro.start_services {
     fi
 
     # this function is being called after startup so start the services
-    # now only if auto startup is *not* enabled
-    if [[ "${REPRO_START_SERVICES_AT_STARTUP}" != "true" ]] ; then
+    # now only if service startup is configured to be manual
+    if [[ "${REPRO_SERVICES}" == 'manual' ]] ; then
 
         # start services and allow warning that REPRO has no services
         repro.run_target start-services
