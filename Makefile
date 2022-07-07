@@ -28,9 +28,9 @@ REPRO_SERVICES ?= auto
 #- --- REPRO_VERBOSITY --------------------------------------------------------
 #- 
 #-  silent : The REPRO framework will make no output at all.
-#-   quiet : Only error messages will be shown (DEFAULT).
-#-    warn : Error and warning messages will be shown.
-#-    info : Error, warning, and informational messages will be shown.
+#-   quiet : Only errors and essential messages will be shown (DEFAULT).
+#-    warn : Errors and warning messages will be shown.
+#-    info : Errors, warnings, and informational messages will be shown.
 #-   debug : All messages will be shown along with script and basic Makefile
 #-           execution information.
 #-   trace : All possible output including detailed Makefile target execution
