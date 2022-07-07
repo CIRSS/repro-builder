@@ -18,7 +18,9 @@ function repro.instruct {
 }
 
 function repro.info {
-    if [[ ${REPRO_VERBOSITY} != 'SILENT' ]] ; then
+    if [[ ${REPRO_VERBOSITY} == 'INFO'  || \
+          ${REPRO_VERBOSITY} == 'DEBUG' || \
+          ${REPRO_VERBOSITY} == 'TRACE' ]] ; then
         echo $(repro.timestamp) INFO $*
     fi
 }
