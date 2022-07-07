@@ -36,7 +36,7 @@ REPRO_SERVICES ?= auto
 #-   trace : All possible output including detailed Makefile target execution
 #-           information.
 #
-REPRO_VERBOSITY ?= quiet
+REPRO_VERBOSITY ?= info
 
 # Use working directory as name of REPRO if REPRO_NAME undefined.
 ifndef REPRO_NAME

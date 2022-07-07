@@ -10,18 +10,11 @@ function repro.timestamp {
     echo $(date +"%Y-%m-%d %T")
 }
 
-
-function repro.instruct {
-    if [[ ${REPRO_VERBOSITY} != 'SILENT' ]] ; then
-       echo REPRO: $*
-    fi
-}
-
 function repro.info {
     if [[ ${REPRO_VERBOSITY} == 'info'  || \
           ${REPRO_VERBOSITY} == 'debug' || \
           ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        echo $(repro.timestamp) INFO $*
+        echo $(repro.timestamp) INFO '|' $*
     fi
 }
 
@@ -274,7 +267,7 @@ function repro.start_services {
 
     if [[ "$1" == "--wait-for-key" ]] ; then
         while [ true ] ; do
-            repro.instruct "Type 'q' key to stop the REPRO and its services."
+            repro.info "Type 'q' key to stop the REPRO and its services."
             read -n 1 key
             if [[ $key = 'q' ]] ; then
                 echo
