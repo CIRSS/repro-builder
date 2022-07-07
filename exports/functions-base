@@ -217,13 +217,11 @@ function repro.announce_services {
     # write a message to the terminal for each service
     readarray lines < ${REPRO_SERVICES_FILE}
     if [[ -n "${lines}" ]] ; then
-        echo "----------------------------------------------------------------------------------"
         for line in "${lines[@]}" ; do
             read service_name internal_port external_port <<< ${line}
             repro.info The ${service_name} service is now running.
             repro.info Connect to ${service_name} at http://localhost:${external_port}.
         done
-        echo "----------------------------------------------------------------------------------"
     fi
 }
 
