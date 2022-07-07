@@ -10,8 +10,17 @@ function repro.timestamp {
     echo $(date +"%Y-%m-%d %T")
 }
 
+
+function repro.instruct {
+    if [[ ${REPRO_VERBOSITY} != 'SILENT' ]] ; then
+       echo REPRO: $*
+    fi
+}
+
 function repro.info {
-    echo $(repro.timestamp) INFO $*
+    if [[ ${REPRO_VERBOSITY} != 'SILENT' ]] ; then
+        echo $(repro.timestamp) INFO $*
+    fi
 }
 
 function repro.initialize_state {
@@ -209,8 +218,8 @@ function repro.announce_services {
         echo "----------------------------------------------------------------------------------"
         for line in "${lines[@]}" ; do
             read service_name internal_port external_port <<< ${line}
-            repro.info The ${service_name} service is now running. \
-                       Connect to it at http://localhost:${external_port}.
+            repro.info The ${service_name} service is now running.
+            repro.info Connect to ${service_name} at http://localhost:${external_port}.
         done
         echo "----------------------------------------------------------------------------------"
     fi
@@ -264,16 +273,14 @@ function repro.start_services {
     # wait for a key stroke before returning if requested
 
     if [[ "$1" == "--wait-for-key" ]] ; then
-        echo "Terminate the services by pressing the 'q' key in this terminal."
         while [ true ] ; do
+            repro.instruct "Type 'q' key to stop the REPRO and its services."
             read -n 1 key
             if [[ $key = 'q' ]] ; then
                 echo
                 exit
-            else
-                echo "Type 'q' key to stop the REPRO services."
             fi
-
+            echo
         done
     fi
 }
