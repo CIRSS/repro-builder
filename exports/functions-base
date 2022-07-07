@@ -12,7 +12,7 @@ function repro.timestamp {
 
 function repro.alert {
     if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
-        echo $(repro.timestamp) ALERT '|' $*
+        echo $(repro.timestamp) 'ALERT |' $*
     fi
 }
 
@@ -20,7 +20,7 @@ function repro.info {
     if [[ ${REPRO_VERBOSITY} == 'info'  || \
           ${REPRO_VERBOSITY} == 'debug' || \
           ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        echo $(repro.timestamp) INFO  '|' $*
+        echo $(repro.timestamp) 'INFO  |' $*
     fi
 }
 
