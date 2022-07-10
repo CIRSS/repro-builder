@@ -47,9 +47,9 @@ function repro.trace {
     if [[ "$1" == "--call" ]] ; then
         shift
         arguments=" $(echo $* | xargs)"
-        printf "%s  CALL | %s -> %s%s [%s:%d -> %s:%d]\n" "$(repro.timestamp)" "${func1}" "${func2}" "${arguments}" "${file1}" "${line1}" "${file2}" "${line2}"
+        printf "%s TRACE | CALL %s -> %s%s [%s:%d -> %s:%d]\n" "$(repro.timestamp)" "${func1}" "${func2}" "${arguments}" "${file1}" "${line1}" "${file2}" "${line2}"
     else
-        printf "%s   RET | %s <- %s [%s:%d <- %s:%d]\n" "$(repro.timestamp)" "${func1}" "${func2}" "${file1}" "${line1}" "${file2}" "${line2}"
+        printf "%s TRACE | RET  %s <- %s [%s:%d <- %s:%d]\n" "$(repro.timestamp)" "${func1}" "${func2}" "${file1}" "${line1}" "${file2}" "${line2}"
     fi
 }
 
