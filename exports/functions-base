@@ -120,6 +120,8 @@ function repro.update_path { $_TRACE_CALL_
     fi
 
     export PATH=${updated_path}
+
+    $_TRACE_RETURN_
 }
 
 function ensure_nullglob {
