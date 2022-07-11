@@ -19,7 +19,8 @@ function repro.alert {
 
 function repro.error {
     if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
-        echo $(repro.timestamp) 'ERROR |' $*
+		read line func file  <<< "$(caller 0)"
+        printf "%s ERROR | %s [%s:%s:%s]\n" "$(repro.timestamp)" "$*" "$file" "$func" "$line"
     fi
 }
 
@@ -34,7 +35,8 @@ function repro.info {
 function repro.debug {
     if [[ ${REPRO_VERBOSITY} == 'debug' || \
           ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        echo $(repro.timestamp) 'DEBUG |' "$*"
+		read line func file  <<< "$(caller 0)"
+        printf "%s DEBUG | %s [%s:%s:%s]\n" "$(repro.timestamp)" "$*" "$file" "$func" "$line"
     fi
 }
 
@@ -54,17 +56,19 @@ function repro.trace {
     fi
 }
 
-function repro.initialize_state { $_TRACE_CALL_ "$*"
+function repro.initialize_state { $_TRACE_CALL_ $*
     mkdir -p ${REPRO_STATE_DIR}
     repro.timestamp > ${REPRO_START_TIME}
     repro.update_path
     repro.initialize_modules
     repro.update_targets
+
+	repro.debug Triggering automatic service startup
     repro.start_services --at-start
     $_TRACE_RETURN_
 }
 
-function repro.get_prefix_paths { $_TRACE_CALL_ "$*"
+function repro.get_prefix_paths { $_TRACE_CALL_ $*
     unset prefix_paths
     readarray paths < ${REPRO_PATH_FILE}
     for path_line in "${paths[@]}" ; do
@@ -92,7 +96,7 @@ function repro.module_dot_dir {
     echo ${dot_dir}
 }
 
-function repro.get_module_paths { $_TRACE_CALL_ "$*"
+function repro.get_module_paths { $_TRACE_CALL_ $*
     unset module_paths
     readarray modules < ${REPRO_ORDER_FILE}
     for module_name in "${modules[@]}" ; do
@@ -107,7 +111,7 @@ function repro.get_module_paths { $_TRACE_CALL_ "$*"
     $_TRACE_RETURN_
 }
 
-function repro.update_path { $_TRACE_CALL_ "$*"
+function repro.update_path { $_TRACE_CALL_ $*
 
     updated_path=${REPRO_BASE_PATH}
 
@@ -141,7 +145,7 @@ function restore_nullglob {
     fi
 }
 
-function repro.initialize_module_trim { $_TRACE_CALL_ "$*"
+function repro.initialize_module_trim { $_TRACE_CALL_ $*
 
     module_name=$1
 
@@ -178,7 +182,7 @@ function repro.initialize_module_trim { $_TRACE_CALL_ "$*"
     $_TRACE_RETURN_
 }
 
-function repro.initialize_modules { $_TRACE_CALL_ "$*"
+function repro.initialize_modules { $_TRACE_CALL_ $*
     readarray modules < ${REPRO_ORDER_FILE}
     for module in "${modules[@]}" ; do
         repro.initialize_module_trim ${module}
@@ -186,7 +190,7 @@ function repro.initialize_modules { $_TRACE_CALL_ "$*"
     $_TRACE_RETURN_
 }
 
-function repro.update_targets { $_TRACE_CALL_ "$*"
+function repro.update_targets { $_TRACE_CALL_ $*
 
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
@@ -218,7 +222,7 @@ function repro.update_targets { $_TRACE_CALL_ "$*"
     $_TRACE_RETURN_
 }
 
-function repro.run_target { $_TRACE_CALL_ "$*"
+function repro.run_target { $_TRACE_CALL_ $*
 
     requested_target=$1
     options=$2
@@ -250,7 +254,7 @@ function repro.run_target { $_TRACE_CALL_ "$*"
     $_TRACE_RETURN_
 }
 
-function repro.announce_services { $_TRACE_CALL_ "$*"
+function repro.announce_services { $_TRACE_CALL_ $*
 
     # nothing to do if the repro services file is missing
     if [[ ! -f ${REPRO_SERVICES_FILE} ]] ; then
@@ -274,17 +278,19 @@ function repro.announce_services { $_TRACE_CALL_ "$*"
 }
 
 
-function repro.start_services { $_TRACE_CALL_ "$*"
+function repro.start_services { $_TRACE_CALL_ $*
 
     # handle case where this function is being called during REPRO startup
     if [[ "$1" == "--at-start" ]] ; then
 
         # only start the services if auto-startup is enabled
         if [[ "${REPRO_SERVICES}" == 'auto' ]] ; then
-
+			repro.debug 'Starting REPRO services now because REPRO_SERVICES == auto'
             # use the --quiet option to hide warning when REPRO has no services
             repro.run_target start-services --quiet
-        fi
+        else
+			repro.debug 'Not starting REPRO services now because REPRO_SERVICES != auto'
+		fi
 
         # no more to do if function was called during REPRO startup
         $_TRACE_RETURN_
@@ -294,7 +300,9 @@ function repro.start_services { $_TRACE_CALL_ "$*"
     # now only if service startup is configured to be manual
     if [[ "${REPRO_SERVICES}" == 'manual' ]] ; then
 
-        # start services and allow warning that REPRO has no services
+		repro.debug 'Starting REPRO services now because REPRO_SERVICES == manual'
+
+		# start services and allow warning that REPRO has no services
         repro.run_target start-services
 
         # an error code indicates that there were no services to start
