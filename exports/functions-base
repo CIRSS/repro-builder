@@ -1,60 +1,4 @@
-_TRACE_CALL_="repro.trace --call"
-_TRACE_RETURN_="repro.trace --ret; return"
 
-# returns seconds since the epoch
-function repro.timestamp_seconds {
-    echo $(date +"%s")
-}
-
-# returns a time-sortable dated timestamp
-function repro.timestamp {
-    echo $(date +"%Y-%m-%d %T")
-}
-
-function repro.alert {
-    if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
-        echo $(repro.timestamp) 'ALERT |' $*
-    fi
-}
-
-function repro.error {
-    if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
-		read line func file  <<< "$(caller 0)"
-        printf "%s ERROR | %s [%s:%s:%s]\n" "$(repro.timestamp)" "$*" "$file" "$func" "$line"
-    fi
-}
-
-function repro.info {
-    if [[ ${REPRO_VERBOSITY} == 'info'  || \
-          ${REPRO_VERBOSITY} == 'debug' || \
-          ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        echo $(repro.timestamp) ' INFO |' $*
-    fi
-}
-
-function repro.debug {
-    if [[ ${REPRO_VERBOSITY} == 'debug' || \
-          ${REPRO_VERBOSITY} == 'trace' ]] ; then
-		read line func file  <<< "$(caller 0)"
-        printf "%s DEBUG | %s [%s:%s:%s]\n" "$(repro.timestamp)" "$*" "$file" "$func" "$line"
-    fi
-}
-
-function repro.trace {
-
-    [[ ${REPRO_VERBOSITY} != 'trace' ]] && return
-
-    read line2 func2 file2  <<< "$(caller 0)"
-    read line1 func1 file1  <<< "$(caller 1)"
-
-    if [[ "$1" == "--call" ]] ; then
-        shift
-        arguments=" $(echo $* | xargs)"
-        printf "%s TRACE | CALL %s -> %s%s [%s:%d -> %s:%d]\n" "$(repro.timestamp)" "${func1}" "${func2}" "${arguments}" "${file1}" "${line1}" "${file2}" "${line2}"
-    else
-        printf "%s TRACE | RET  %s <- %s [%s:%d <- %s:%d]\n" "$(repro.timestamp)" "${func1}" "${func2}" "${file1}" "${line1}" "${file2}" "${line2}"
-    fi
-}
 
 function repro.initialize_state { $_TRACE_CALL_ $*
     mkdir -p ${REPRO_STATE_DIR}
@@ -146,6 +90,8 @@ function restore_nullglob {
 }
 
 function repro.initialize_module_trim { $_TRACE_CALL_ $*
+
+	repro.info Initializing module trims
 
     module_name=$1
 

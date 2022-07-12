@@ -38,6 +38,15 @@ REPRO_SERVICES ?= auto
 #
 REPRO_VERBOSITY ?= info
 
+#- 
+#- --- REPRO_VERBOSITY --------------------------------------------------------
+#- 
+#-    true : REPRO messages will be prepended by timestamps.
+#-   false : No timestamps will be included in REPRO messages
+#
+REPRO_TIMESTAMPS ?= true
+
+
 # Use working directory as name of REPRO if REPRO_NAME undefined.
 ifndef REPRO_NAME
 REPRO_NAME=$(shell basename $$(pwd))
@@ -60,9 +69,10 @@ $(warning The REPRO_IMAGE_TAG variable is not set. Defaulting to \
 endif
 
 # Assemble REPRO settings available within the running REPRO.
-REPRO_SETTINGS=	-e REPRO_SERVICES="$(REPRO_SERVICES)"	\
-				-e REPRO_VERBOSITY="$(REPRO_VERBOSITY)"	\
-               	-e REPRO_NAME="${REPRO_NAME}"                  			\
+REPRO_SETTINGS=	-e REPRO_SERVICES="$(REPRO_SERVICES)"       \
+				-e REPRO_VERBOSITY="$(REPRO_VERBOSITY)"     \
+				-e REPRO_TIMESTAMPS="$(REPRO_TIMESTAMPS)"   \
+               	-e REPRO_NAME="${REPRO_NAME}"               \
                	-e REPRO_MNT="${REPRO_MNT}"
 
 # Identify the Docker image associated with this REPRO
