@@ -1,6 +1,7 @@
 
 function logging_prefix {
     echo "# Load the REPRO logging functions"
+    echo "REPRO_TRACE_SOURCE=$1"
     echo "source ${HOME}/.repro-logging"
     echo "repro.trace Processing remainder of $1"
     echo

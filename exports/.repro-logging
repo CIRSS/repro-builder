@@ -2,9 +2,7 @@
 
 # nothing to do if this file has already been sourced
 if [[ "$REPRO_LOGGING_FUNCTIONS_DEFINED" == true ]] ; then
-    # if [[ -n $FILE_SOURCES ]] ; then
-    #     repro.trace .repro-logging
-    # fi
+    repro.trace_source
     repro.trace REPRO logging functions already loaded.
     return
 fi
@@ -20,6 +18,12 @@ function repro.timestamp_seconds {
 # returns a time-sortable dated timestamp
 function repro.timestamp {
     echo "$(date +'%Y-%m-%d %T') "
+}
+
+function _caller_file {
+	stack_level=$1
+	read _ _ file  <<< "$(caller $(($stack_level+1)))"
+	echo $file
 }
 
 function _caller_func {
@@ -94,6 +98,17 @@ function repro.trace {
     fi
 }
 
+function repro.trace_source {
+    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+        if [[ -n $1 ]] ; then
+            REPRO_TRACE_SOURCE=$1
+        else
+            _write_log_entry TRACE SRCE "${REPRO_TRACE_SOURCE} -> $(_caller_file 0)"
+            unset REPRO_TRACE_SOURCE
+        fi
+    fi
+}
+
 function repro.trace_call {
     if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
         arguments=" $(echo $* | xargs)"
@@ -116,4 +131,5 @@ _TRACE_CALL_="repro.trace_call"
 _TRACE_RETURN_="repro.trace_ret ; return"
 
 # report definition of logging functions succeeeded
-repro.trace "Loaded logging functions"
+repro.trace_source
+repro.trace "Loaded REPRO logging functions"
