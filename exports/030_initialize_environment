@@ -33,6 +33,9 @@ repro.env REPRO_BASE_PATH           '${PATH}'
 repro.env REPRO_STATE_DIR           ${REPRO_DOT_DIR}/run-state
 repro.env REPRO_START_TIME          ${REPRO_STATE_DIR}/start-time
 repro.env REPRO_SERVICES_START_TIME ${REPRO_STATE_DIR}/services-start-time
+repro.env REPRO_LOGGING_FUNCTIONS   ${HOME}/.repro-logging
+
+cp .repro-logging ${REPRO_LOGGING_FUNCTIONS}
 
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}

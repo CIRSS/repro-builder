@@ -1,3 +1,11 @@
+
+function logging_prefix {
+    echo "# Load the REPRO logging functions"
+    echo "source ${HOME}/.repro-logging"
+    echo "repro.trace Processing remainder of $1"
+    echo
+}
+
 # schedule one-time customizations of REPRO user environment at REPRO start
 repro.atstart source ${REPRO_ENV_FILE}
 repro.atstart repro.initialize_state
@@ -8,11 +16,14 @@ repro.atstart 'cd ${REPRO_MNT}'
 repro.atshell source ${REPRO_ATSCRIPT_FILE}
 
 # schedule initialization of environment for non-interactive scripts
-repro.atscript source ${REPRO_MODULES_DIR}/repro-*/functions-logging
 repro.atscript source ${REPRO_MODULES_DIR}/repro-*/functions-base
 
 # ensure all repro-dash and dot-repro files and directories belong to REPRO user
 chown -R ${repro_uid}.${repro_gid} ${HOME}/.repro* ${HOME}/repro-*
+
+# prefix login scripts with definitions of logging functions
+echo -e "$(logging_prefix ${HOME}/.bashrc)\n$(cat ${HOME}/.bashrc)" > ${HOME}/.bashrc
+echo -e "$(logging_prefix ${HOME}/.profile)\n$(cat ${HOME}/.profile)" > ${HOME}/.profile
 
 # add a final line to .bashrc to source the atshell file
 echo "source ${REPRO_ATSHELL_FILE}" >> ${HOME}/.bashrc

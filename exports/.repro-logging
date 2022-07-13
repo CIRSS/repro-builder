@@ -1,0 +1,119 @@
+
+
+# nothing to do if this file has already been sourced
+if [[ "$REPRO_LOGGING_FUNCTIONS_DEFINED" == true ]] ; then
+    # if [[ -n $FILE_SOURCES ]] ; then
+    #     repro.trace .repro-logging
+    # fi
+    repro.trace REPRO logging functions already loaded.
+    return
+fi
+
+# record sourcing this file
+REPRO_LOGGING_FUNCTIONS_DEFINED=true
+
+# returns seconds since the epoch
+function repro.timestamp_seconds {
+    echo $(date +"%s")
+}
+
+# returns a time-sortable dated timestamp
+function repro.timestamp {
+    echo "$(date +'%Y-%m-%d %T') "
+}
+
+function _caller_func {
+	stack_level=$1
+	read _ func _  <<< "$(caller $(($stack_level+1)))"
+	echo $func
+}
+
+function _caller {
+	stack_level=$1
+	read line func file  <<< "$(caller $(($stack_level+1)))"
+	printf "%s:%s:%s\n" "$file" "$func" "$line"
+}
+
+function _log_prefix {
+    if [[ ${REPRO_TIMESTAMPS} == "true" ]] ; then
+        repro.timestamp
+    fi
+}
+
+function _write_log_entry {
+
+    # support an --location option overriding the default source location
+    if [[ "$1" == "--location" ]] ; then
+        location=" $2"
+        shift 2
+    else
+        printf -v location " [%s]" "$(_caller 1)"
+    fi
+
+    level="$1"  # first argument indicates the logging level of the entry
+    type="$2"   # second argument indicates the type of the entry body
+
+    shift 2
+    arguments="$*"
+
+    prefix="$(_log_prefix)"
+    printf -v entry "%s%-5s %s %s%s" "$prefix" "$level" "$type" "$arguments" "$location"
+    echo "$entry" >&2
+}
+
+function repro.alert {
+    if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
+        _write_log_entry ALERT MESG $*
+    fi
+}
+
+function repro.error {
+    if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
+        _write_log_entry ERROR MESG $*
+    fi
+}
+
+function repro.info {
+    if [[ ${REPRO_VERBOSITY} == 'info'  || \
+          ${REPRO_VERBOSITY} == 'debug' || \
+          ${REPRO_VERBOSITY} == 'trace' ]] ; then
+        _write_log_entry INFO MESG $*
+    fi
+}
+
+function repro.debug {
+    if [[ ${REPRO_VERBOSITY} == 'debug' || \
+          ${REPRO_VERBOSITY} == 'trace' ]] ; then
+        _write_log_entry DEBUG MESG $*
+    fi
+}
+
+function repro.trace {
+    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+        _write_log_entry TRACE MESG $*
+    fi
+}
+
+function repro.trace_call {
+    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+        arguments=" $(echo $* | xargs)"
+        printf -v location "[%s -> %s]" "$(_caller 1)" "$(_caller 0)"
+        printf -v message "%s -> %s%s" "$(_caller_func 1)" "$(_caller_func 0)" "${arguments}"
+        _write_log_entry --location "$location" TRACE CALL $message
+    fi
+}
+
+function repro.trace_ret {
+    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+        printf -v location "[%s <- %s]" "$(_caller 1)" "$(_caller 0)"
+        printf -v message "%s <- %s" "$(_caller_func 1)" "$(_caller_func 0)"
+        _write_log_entry --location "$location" TRACE RETN $message
+    fi
+}
+
+# define REPRO tracing macros
+_TRACE_CALL_="repro.trace_call"
+_TRACE_RETURN_="repro.trace_ret ; return"
+
+# report definition of logging functions succeeeded
+repro.trace "Loaded logging functions"
