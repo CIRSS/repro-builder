@@ -62,19 +62,19 @@ function _write_log_entry {
     arguments="$*"
 
     prefix="$(_log_prefix)"
-    printf -v entry "%s%-5s %s %s%s" "$prefix" "$level" "$type" "$arguments" "$location"
+    printf -v entry "%s%s %s %s%s" "$prefix" "$level" "$type" "$arguments" "$location"
     echo "$entry" >&2
 }
 
 function repro.alert {
     if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
-        _write_log_entry ALERT MESG $*
+        _write_log_entry A MESG $*
     fi
 }
 
 function repro.error {
     if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
-        _write_log_entry ERROR MESG $*
+        _write_log_entry E MESG $*
     fi
 }
 
@@ -82,20 +82,20 @@ function repro.info {
     if [[ ${REPRO_VERBOSITY} == 'info'  || \
           ${REPRO_VERBOSITY} == 'debug' || \
           ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        _write_log_entry INFO MESG $*
+        _write_log_entry I MESG $*
     fi
 }
 
 function repro.debug {
     if [[ ${REPRO_VERBOSITY} == 'debug' || \
           ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        _write_log_entry DEBUG MESG $*
+        _write_log_entry D MESG $*
     fi
 }
 
 function repro.trace {
     if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
-        _write_log_entry TRACE MESG $*
+        _write_log_entry T MESG $*
     fi
 }
 
@@ -104,7 +104,7 @@ function repro.trace_source {
         if [[ -n $1 ]] ; then
             REPRO_TRACE_SOURCE=$1
         else
-            _write_log_entry TRACE SRCE "${REPRO_TRACE_SOURCE} -> $(_caller_file 0)"
+            _write_log_entry T SRCE "${REPRO_TRACE_SOURCE} -> $(_caller_file 0)"
             unset REPRO_TRACE_SOURCE
         fi
     fi
@@ -115,7 +115,7 @@ function repro.trace_call {
         arguments=" $(echo $* | xargs)"
         printf -v location "[%s -> %s]" "$(_caller 1)" "$(_caller 0)"
         printf -v message "%s -> %s%s" "$(_caller_func 1)" "$(_caller_func 0)" "${arguments}"
-        _write_log_entry --location "$location" TRACE CALL $message
+        _write_log_entry --location "$location" T CALL $message
     fi
 }
 
@@ -123,7 +123,7 @@ function repro.trace_ret {
     if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
         printf -v location "[%s <- %s]" "$(_caller 1)" "$(_caller 0)"
         printf -v message "%s <- %s" "$(_caller_func 1)" "$(_caller_func 0)"
-        _write_log_entry --location "$location" TRACE RETN $message
+        _write_log_entry --location "$location" T RETN $message
     fi
 }
 
