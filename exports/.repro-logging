@@ -78,16 +78,6 @@ function repro.trace_ret {
     fi
 }
 
-function _repro.initialize_logging {
-    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TIMESTAMPS"* ]]; then
-        REPRO_LOGGING_TIMESTAMPS=true
-    fi
-
-    if [[ $REPRO_LOGGING_OPTIONS != *"NO_LOCATIONS"* ]]; then
-        REPRO_LOGGING_LOCATIONS=true
-    fi
-}
-
 # returns seconds since the epoch
 function _repro.timestamp_seconds {
     echo $(date +"%s")
@@ -114,6 +104,39 @@ function _repro.caller {
 	stack_level=$1
 	read line func file  <<< "$(caller $(($stack_level+1)))"
 	printf "%s:%s:%s\n" "$file" "$func" "$line"
+}
+
+function _repro.create_log_dir {
+    export REPRO_LOG_DIR=${REPRO_MNT}/.repro-log
+    if [[ ! -d ${REPRO_LOG_DIR} ]] ; then
+        mkdir ${REPRO_LOG_DIR}
+        echo "*" > ${REPRO_LOG_DIR}/.gitignore
+    fi
+}
+
+function _repro.create_log_file {
+    _repro.create_log_dir
+    REPRO_RUN_LOG_FILE=${REPRO_LOG_DIR}/log.txt
+    touch ${REPRO_RUN_LOG_FILE}
+}
+
+function _repro.initialize_logging {
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TIMESTAMPS"* ]]; then
+        REPRO_LOGGING_TIMESTAMPS=true
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_LOCATIONS"* ]]; then
+        REPRO_LOGGING_LOCATIONS=true
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_FILE"* ]]; then
+        REPRO_LOG_TO_FILE=true
+        _repro.create_log_file
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TERMINAL"* ]]; then
+        REPRO_LOG_TO_TERMINAL=true
+    fi
 }
 
 function _repro.log {
@@ -143,7 +166,14 @@ function _repro.log {
     fi
 
     printf -v entry "%s%s %s %s%s" "$timestamp" "$level" "$type" "$arguments" "$location"
-    echo "$entry" >&2
+
+    if [[ ${REPRO_LOG_TO_TERMINAL} == 'true' ]] ; then
+        echo "$entry" >&2
+    fi
+
+    if [[ ${REPRO_LOG_TO_FILE} == 'true' ]] ; then
+        echo "$entry" >> ${REPRO_RUN_LOG_FILE}
+    fi
 }
 
 # define REPRO tracing macros
