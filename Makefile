@@ -40,10 +40,10 @@ REPRO_LOGGING ?= info
 #- 
 #- --- REPRO_LOGGING_OPTIONS ---------------------------------------------------
 #- 
-#-    true : REPRO messages will be prepended by timestamps.
-#-   false : No timestamps will be included in REPRO messages
+#-  NO_TIMESTAMPS : Messages will not be prepended by timestamps.
+#-  NO_LOCATIONS  : Source file locations will not be included in trace messages.
 #
-REPRO_TIMESTAMPS ?= true
+REPRO_LOGGING_OPTIONS ?= 
 
 
 # Use working directory as name of REPRO if REPRO_NAME undefined.
@@ -68,10 +68,10 @@ $(warning The REPRO_IMAGE_TAG variable is not set. Defaulting to \
 endif
 
 # Assemble REPRO settings available within the running REPRO.
-REPRO_SETTINGS=	-e REPRO_SERVICES="$(REPRO_SERVICES)"       \
-				-e REPRO_LOGGING="$(REPRO_LOGGING)"     \
-				-e REPRO_TIMESTAMPS="$(REPRO_TIMESTAMPS)"   \
-               	-e REPRO_NAME="${REPRO_NAME}"               \
+REPRO_SETTINGS=	-e REPRO_SERVICES="$(REPRO_SERVICES)"               \
+				-e REPRO_LOGGING="$(REPRO_LOGGING)"                 \
+				-e REPRO_LOGGING_OPTIONS="$(REPRO_LOGGING_OPTIONS)" \
+               	-e REPRO_NAME="${REPRO_NAME}"                       \
                	-e REPRO_MNT="${REPRO_MNT}"
 
 # Identify the Docker image associated with this REPRO

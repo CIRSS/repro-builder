@@ -2,7 +2,7 @@
 
 function repro.initialize_state { $_TRACE_CALL_ $*
     mkdir -p ${REPRO_STATE_DIR}
-    repro.timestamp > ${REPRO_START_TIME}
+    _repro.timestamp > ${REPRO_START_TIME}
     repro.update_path
     repro.initialize_modules
     repro.update_targets
@@ -186,7 +186,7 @@ function repro.run_target { $_TRACE_CALL_ $*
             make --quiet -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
 
             if [[ ${requested_target} == "start-services" ]] ; then
-                repro.timestamp > ${REPRO_SERVICES_START_TIME}
+                _repro.timestamp > ${REPRO_SERVICES_START_TIME}
                 repro.announce_services
             fi
 
