@@ -17,7 +17,7 @@ default_target: list
 #- =============================================================================
 
 #- 
-#- --- REPRO_SERVICES ---------------------------------------------------------
+#- --- REPRO_SERVICES ----------------------------------------------------------
 #- 
 #-    auto : Services start automatically when the REPRO starts (DEFAULT).
 #-  manual : Services start when the start-services target is invoked manually.
@@ -25,21 +25,20 @@ default_target: list
 REPRO_SERVICES ?= auto
 
 #- 
-#- --- REPRO_VERBOSITY --------------------------------------------------------
+#- --- REPRO_LOGGING -----------------------------------------------------------
 #- 
-#-  silent : The REPRO framework will make no output at all.
-#-   quiet : Only alerts and error messages will be shown (DEFAULT).
-#-    warn : Alerts, errors and warning messages will be shown.
-#-    info : Alerts, errors, warnings and informational messages will be shown.
-#-   debug : All messages will be shown along with script and basic Makefile
+#-    none : The REPRO framework will perform no logging.
+#-   alert : Only alerts and error messages will be logged (DEFAULT).
+#-    warn : Alerts, errors and warning messages will be logged.
+#-    info : Alerts, errors, warnings and informational messages will be logged.
+#-   debug : All messages will be logged along with script and basic Makefile
 #-           execution information.
-#-   trace : All possible output including detailed Makefile target execution
-#-           information.
+#-   trace : REPRO will log all messages.
 #
-REPRO_VERBOSITY ?= info
+REPRO_LOGGING ?= info
 
 #- 
-#- --- REPRO_VERBOSITY --------------------------------------------------------
+#- --- REPRO_LOGGING_OPTIONS ---------------------------------------------------
 #- 
 #-    true : REPRO messages will be prepended by timestamps.
 #-   false : No timestamps will be included in REPRO messages
@@ -70,7 +69,7 @@ endif
 
 # Assemble REPRO settings available within the running REPRO.
 REPRO_SETTINGS=	-e REPRO_SERVICES="$(REPRO_SERVICES)"       \
-				-e REPRO_VERBOSITY="$(REPRO_VERBOSITY)"     \
+				-e REPRO_LOGGING="$(REPRO_LOGGING)"     \
 				-e REPRO_TIMESTAMPS="$(REPRO_TIMESTAMPS)"   \
                	-e REPRO_NAME="${REPRO_NAME}"               \
                	-e REPRO_MNT="${REPRO_MNT}"
@@ -148,9 +147,9 @@ endif # ifdef PARENT_IMAGE
 
 endif # ifndef IN_RUNNING_REPRO
 
-ifeq ($(REPRO_VERBOSITY), debug)
+ifeq ($(REPRO_LOGGING), debug)
 QUIET=
-else ifeq ($(REPRO_VERBOSITY), trace)
+else ifeq ($(REPRO_LOGGING), trace)
 QUIET=
 else 
 QUIET=@

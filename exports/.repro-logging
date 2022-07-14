@@ -67,40 +67,47 @@ function _write_log_entry {
 }
 
 function repro.alert {
-    if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
+    if [[ ${REPRO_LOGGING} != 'none' ]] ; then
         _write_log_entry A MESG $*
     fi
 }
 
 function repro.error {
-    if [[ ${REPRO_VERBOSITY} != 'silent' ]] ; then
+    if [[ ${REPRO_LOGGING} != 'none' ]] ; then
         _write_log_entry E MESG $*
     fi
 }
 
+function repro.warn {
+    if [[ ${REPRO_LOGGING} != 'none'  && \
+          ${REPRO_LOGGING} != 'alert' ]] ; then
+        _write_log_entry W MESG $*
+    fi
+}
+
 function repro.info {
-    if [[ ${REPRO_VERBOSITY} == 'info'  || \
-          ${REPRO_VERBOSITY} == 'debug' || \
-          ${REPRO_VERBOSITY} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING} == 'info'  || \
+          ${REPRO_LOGGING} == 'debug' || \
+          ${REPRO_LOGGING} == 'trace' ]] ; then
         _write_log_entry I MESG $*
     fi
 }
 
 function repro.debug {
-    if [[ ${REPRO_VERBOSITY} == 'debug' || \
-          ${REPRO_VERBOSITY} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING} == 'debug' || \
+          ${REPRO_LOGGING} == 'trace' ]] ; then
         _write_log_entry D MESG $*
     fi
 }
 
 function repro.trace {
-    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
         _write_log_entry T MESG $*
     fi
 }
 
 function repro.trace_source {
-    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
         if [[ -n $1 ]] ; then
             REPRO_TRACE_SOURCE=$1
         else
@@ -111,7 +118,7 @@ function repro.trace_source {
 }
 
 function repro.trace_call {
-    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
         arguments=" $(echo $* | xargs)"
         printf -v location "[%s -> %s]" "$(_caller 1)" "$(_caller 0)"
         printf -v message "%s -> %s%s" "$(_caller_func 1)" "$(_caller_func 0)" "${arguments}"
@@ -120,7 +127,7 @@ function repro.trace_call {
 }
 
 function repro.trace_ret {
-    if [[ ${REPRO_VERBOSITY} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
         printf -v location "[%s <- %s]" "$(_caller 1)" "$(_caller 0)"
         printf -v message "%s <- %s" "$(_caller_func 1)" "$(_caller_func 0)"
         _write_log_entry --location "$location" T RETN $message
