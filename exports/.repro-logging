@@ -4,6 +4,7 @@
 if [[ "$REPRO_LOGGING_FUNCTIONS_DEFINED" == true ]] ; then
     repro.trace_source
     repro.trace REPRO logging functions already loaded.
+    ${_TRACE_RETURN_}
     return
 fi
 
@@ -133,3 +134,5 @@ _TRACE_RETURN_="repro.trace_ret ; return"
 # report definition of logging functions succeeeded
 repro.trace_source
 repro.trace "Loaded REPRO logging functions"
+
+${_TRACE_RETURN_}
