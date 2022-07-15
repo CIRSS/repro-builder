@@ -1,10 +1,8 @@
-
-
 # ensure this file is sourced only once
 if [[ "$REPRO_LOGGING_FILE_SOURCED" == true ]] ; then
-    repro.trace_source
-    repro.trace REPRO logging functions already loaded.
-    ${_TRACE_RETURN_}
+    $_REPRO_TRACE_SOURCE_
+    $_REPRO_TRACE_ REPRO logging functions already loaded.
+    $_REPRO_TRACE_RETURN_
     return
 else
     REPRO_LOGGING_FILE_SOURCED=true
@@ -120,25 +118,6 @@ function _repro.create_log_file {
     touch ${REPRO_RUN_LOG_FILE}
 }
 
-function _repro.initialize_logging {
-    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TIMESTAMPS"* ]]; then
-        REPRO_LOGGING_TIMESTAMPS=true
-    fi
-
-    if [[ $REPRO_LOGGING_OPTIONS != *"NO_LOCATIONS"* ]]; then
-        REPRO_LOGGING_LOCATIONS=true
-    fi
-
-    if [[ $REPRO_LOGGING_OPTIONS != *"NO_FILE"* ]]; then
-        REPRO_LOG_TO_FILE=true
-        _repro.create_log_file
-    fi
-
-    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TERMINAL"* ]]; then
-        REPRO_LOG_TO_TERMINAL=true
-    fi
-}
-
 function _repro.log {
 
     # support an --location option overriding the default source location
@@ -176,15 +155,56 @@ function _repro.log {
     fi
 }
 
-# define REPRO tracing macros
-_TRACE_CALL_="repro.trace_call"
-_TRACE_RETURN_="repro.trace_ret ; return"
+function _repro.initialize_logging {
+
+    # if logging is disabled set logging macros to do nothing
+    if [[ ${REPRO_LOGGING} == 'none' ]] ; then
+        export _REPRO_ALERT_=:
+        export _REPRO_ERROR_=:
+        export _REPRO_WARN_=:
+        export _REPRO_INFO_=:
+        export _REPRO_DEBUG_=:
+        export _REPRO_TRACE_=:
+        export _REPRO_TRACE_CALL_=:
+        export _REPRO_TRACE_SOURCE_=:
+        export _REPRO_TRACE_RETURN_='return'
+        return
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TIMESTAMPS"* ]] ; then
+        REPRO_LOGGING_TIMESTAMPS=true
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_LOCATIONS"* ]] ; then
+        REPRO_LOGGING_LOCATIONS=true
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_FILE"* ]] ; then
+        REPRO_LOG_TO_FILE=true
+        _repro.create_log_file
+    fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_TERMINAL"* ]] ; then
+        REPRO_LOG_TO_TERMINAL=true
+    fi
+
+    # define logging macros
+    export _REPRO_ALERT_=repro.alert
+    export _REPRO_ERROR_=repro.error
+    export _REPRO_WARN_=repro.warn
+    export _REPRO_INFO_=repro.info
+    export _REPRO_DEBUG_=repro.debug
+    export _REPRO_TRACE_=repro.trace
+    export _REPRO_TRACE_CALL_=repro.trace_call
+    export _REPRO_TRACE_SOURCE_=repro.trace_source
+    export _REPRO_TRACE_RETURN_='repro.trace_ret ; return'
+
+}
 
 # initialize logger state
 _repro.initialize_logging
 
 # report definition of logging functions succeeeded
-repro.trace_source
-repro.trace "Loaded REPRO logging functions"
-
-${_TRACE_RETURN_}
+$_REPRO_TRACE_SOURCE_
+$_REPRO_TRACE_ "Loaded REPRO logging functions"
+$_REPRO_TRACE_RETURN_

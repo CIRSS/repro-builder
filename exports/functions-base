@@ -1,18 +1,18 @@
 
 
-function repro.initialize_state { $_TRACE_CALL_ $*
+function repro.initialize_state { $_REPRO_TRACE_CALL_ $*
     mkdir -p ${REPRO_STATE_DIR}
     _repro.timestamp > ${REPRO_START_TIME}
     repro.update_path
     repro.initialize_modules
     repro.update_targets
 
-	repro.debug Triggering automatic service startup
+	$_REPRO_DEBUG_ Triggering automatic service startup
     repro.start_services --at-start
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
-function repro.get_prefix_paths { $_TRACE_CALL_ $*
+function repro.get_prefix_paths { $_REPRO_TRACE_CALL_ $*
     unset prefix_paths
     readarray paths < ${REPRO_PATH_FILE}
     for path_line in "${paths[@]}" ; do
@@ -24,7 +24,7 @@ function repro.get_prefix_paths { $_TRACE_CALL_ $*
         fi
     done
     echo ${prefix_paths}
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
 function repro.module_install_dir {
@@ -40,7 +40,7 @@ function repro.module_dot_dir {
     echo ${dot_dir}
 }
 
-function repro.get_module_paths { $_TRACE_CALL_ $*
+function repro.get_module_paths { $_REPRO_TRACE_CALL_ $*
     unset module_paths
     readarray modules < ${REPRO_ORDER_FILE}
     for module_name in "${modules[@]}" ; do
@@ -52,10 +52,10 @@ function repro.get_module_paths { $_TRACE_CALL_ $*
         fi
     done
     echo ${module_paths}
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
-function repro.update_path { $_TRACE_CALL_ $*
+function repro.update_path { $_REPRO_TRACE_CALL_ $*
 
     updated_path=${REPRO_BASE_PATH}
 
@@ -71,7 +71,7 @@ function repro.update_path { $_TRACE_CALL_ $*
 
     export PATH=${updated_path}
 
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
 function ensure_nullglob {
@@ -89,9 +89,9 @@ function restore_nullglob {
     fi
 }
 
-function repro.initialize_module_trim { $_TRACE_CALL_ $*
+function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 
-	repro.info Initializing module trims
+	$_REPRO_INFO_ Initializing module trims
 
     module_name=$1
 
@@ -125,22 +125,22 @@ function repro.initialize_module_trim { $_TRACE_CALL_ $*
         done
     fi
 
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
-function repro.initialize_modules { $_TRACE_CALL_ $*
+function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
     readarray modules < ${REPRO_ORDER_FILE}
     for module in "${modules[@]}" ; do
         repro.initialize_module_trim ${module}
     done
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
-function repro.update_targets { $_TRACE_CALL_ $*
+function repro.update_targets { $_REPRO_TRACE_CALL_ $*
 
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
-        $_TRACE_RETURN_
+        $_REPRO_TRACE_RETURN_
     else
         repro_builder_install_dir=$(repro.module_install_dir repro)
         cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
@@ -165,16 +165,16 @@ function repro.update_targets { $_TRACE_CALL_ $*
             fi
         done
     done
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
-function repro.run_target { $_TRACE_CALL_ $*
+function repro.run_target { $_REPRO_TRACE_CALL_ $*
 
     requested_target=$1
     options=$2
 
     if [[ ! -f ${REPRO_TARGETS_FILE} ]] ; then
-        $_TRACE_RETURN_
+        $_REPRO_TRACE_RETURN_
     fi
 
     readarray targets_file_lines < ${REPRO_TARGETS_FILE}
@@ -190,22 +190,22 @@ function repro.run_target { $_TRACE_CALL_ $*
                 repro.announce_services
             fi
 
-            $_TRACE_RETURN_
+            $_REPRO_TRACE_RETURN_
         fi
     done
     if [[ $options != "--quiet" ]] ; then
-        repro.error "The $requested_target target is not implemented by this REPRO."
+        $_REPRO_ERROR_ "The $requested_target target is not implemented by this REPRO."
     fi
 
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
-function repro.announce_services { $_TRACE_CALL_ $*
+function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 
     # nothing to do if the repro services file is missing
     if [[ ! -f ${REPRO_SERVICES_FILE} ]] ; then
-        repro.debug File not found: ${REPRO_SERVICES_FILE}
-        $_TRACE_RETURN_
+        $_REPRO_DEBUG_ File not found: ${REPRO_SERVICES_FILE}
+        $_REPRO_TRACE_RETURN_
     fi
 
     # write a message to the terminal for each service
@@ -213,40 +213,40 @@ function repro.announce_services { $_TRACE_CALL_ $*
     if [[ -n "${lines}" ]] ; then
         for line in "${lines[@]}" ; do
             read service_name internal_port external_port <<< ${line}
-            repro.info The ${service_name} service is now running.
-            repro.info Connect to ${service_name} at http://localhost:${external_port}.
+            $_REPRO_INFO_ The ${service_name} service is now running.
+            $_REPRO_INFO_ Connect to ${service_name} at http://localhost:${external_port}.
         done
     else
-        repro.debug No registered services to start.
+        $_REPRO_DEBUG_ No registered services to start.
     fi
 
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
 
 
-function repro.start_services { $_TRACE_CALL_ $*
+function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
     # handle case where this function is being called during REPRO startup
     if [[ "$1" == "--at-start" ]] ; then
 
         # only start the services if auto-startup is enabled
         if [[ "${REPRO_SERVICES}" == 'auto' ]] ; then
-			repro.debug 'Starting REPRO services now because REPRO_SERVICES == auto'
+			$_REPRO_DEBUG_ 'Starting REPRO services now because REPRO_SERVICES == auto'
             # use the --quiet option to hide warning when REPRO has no services
             repro.run_target start-services --quiet
         else
-			repro.debug 'Not starting REPRO services now because REPRO_SERVICES != auto'
+			$_REPRO_DEBUG_ 'Not starting REPRO services now because REPRO_SERVICES != auto'
 		fi
 
         # no more to do if function was called during REPRO startup
-        $_TRACE_RETURN_
+        $_REPRO_TRACE_RETURN_
     fi
 
     # this function is being called after startup so start the services
     # now only if service startup is configured to be manual
     if [[ "${REPRO_SERVICES}" == 'manual' ]] ; then
 
-		repro.debug 'Starting REPRO services now because REPRO_SERVICES == manual'
+		$_REPRO_DEBUG_ 'Starting REPRO services now because REPRO_SERVICES == manual'
 
 		# start services and allow warning that REPRO has no services
         repro.run_target start-services
@@ -254,7 +254,7 @@ function repro.start_services { $_TRACE_CALL_ $*
         # an error code indicates that there were no services to start
         # so there is nothing else to do
         if [[ $? -ne 0 ]] ; then
-            $_TRACE_RETURN_
+            $_REPRO_TRACE_RETURN_
         fi
     fi
 
@@ -265,7 +265,7 @@ function repro.start_services { $_TRACE_CALL_ $*
 
     if [[ "$1" == "--wait-for-key" ]] ; then
         while [ true ] ; do
-            repro.alert "Type 'q' key to stop the REPRO and its services."
+            $_REPRO_ALERT_ "Type 'q' key to stop the REPRO and its services."
             read -n 1 key
             if [[ $key = 'q' ]] ; then
                 echo
@@ -275,5 +275,5 @@ function repro.start_services { $_TRACE_CALL_ $*
         done
     fi
 
-    $_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_
 }
