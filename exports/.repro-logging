@@ -83,7 +83,7 @@ function _repro.timestamp_seconds {
 
 # returns a time-sortable dated timestamp
 function _repro.timestamp {
-    echo "$(date +'%Y-%m-%d %T.%2N')"
+    echo "$(date +'%Y-%m-%d %T.%3N')"
 }
 
 # returns a time-sortable ISO-timestamp with no spaces or punctuation
