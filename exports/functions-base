@@ -113,7 +113,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 
     # include any Makefiles found in the module installation directory
     install_dir=$(repro.module_install_dir ${module_name})
-    $_REPRO_DEBUG_ "Looking for Makfiles in '${module_name}' module installation directory to copy to ${dot_dir}"
+    $_REPRO_DEBUG_ "Looking for Makefiles in '${module_name}' module installation directory to copy to the corresponding '${module_name}' module trim directory"
     ensure_nullglob
     makefiles=( ${install_dir}/Makefile-* )
     for makefile_path in "${makefiles[@]}" ; do
