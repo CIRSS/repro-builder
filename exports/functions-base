@@ -140,32 +140,40 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
 
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
-        $_REPRO_TRACE_RETURN_
-    else
-        repro_builder_install_dir=$(repro.module_install_dir repro)
-        cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
+      $_REPRO_TRACE_RETURN_ "The targets file ${REPRO_TARGETS_FILE} already exists so nothing to do." ; return
     fi
 
+    $_REPRO_DEBUG_ 'Copying the default (empty) targets file from the repro module install directory'
+    repro_builder_install_dir=$(repro.module_install_dir repro)
+    cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
+
+    $_REPRO_DEBUG_ "Reading the module order file ${REPRO_ORDER_FILE} to get list of installed modules"
     readarray modules < ${REPRO_ORDER_FILE}
+
+    $_REPRO_DEBUG_ "Iterating over the lines in the module order file"
     for modules_line in "${modules[@]}" ; do
         module_name=$(echo $modules_line | xargs)
         install_dir=$(repro.module_install_dir ${module_name})
 
+        $_REPRO_DEBUG_ "Looking for targets files in module ${module_name}"
         for profile in base trim code demos util; do
             module_targets_file=${install_dir}/targets-${profile}
             if [[ -f ${module_targets_file} ]] ; then
+                $_REPRO_DEBUG_ "Found ${module_targets_file}"
                 repro_targets=''
                 readarray module_targets < ${module_targets_file}
                 for target_entry in "${module_targets[@]}" ; do
                     read -ra tokens <<< ${target_entry}
                     repro_target=${tokens[0]}
                     module_target=${tokens[1]}
+                    $_REPRO_DEBUG_ "Mapping the REPRO target ${repro_target} to ${module_target} in the ${module_name} module"
                     printf '%s %s.%s.%s\n' ${repro_target} ${module_name} ${profile} ${module_target} >> ${REPRO_TARGETS_FILE}
                 done
             fi
         done
     done
-    $_REPRO_TRACE_RETURN_
+
+    $_REPRO_TRACE_RETURN_ 'Done building the REPRO target mapping file'
 }
 
 function repro.run_target { $_REPRO_TRACE_CALL_ $*
@@ -174,13 +182,14 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     options=$2
 
     if [[ ! -f ${REPRO_TARGETS_FILE} ]] ; then
-        $_REPRO_TRACE_RETURN_
+        $_REPRO_TRACE_RETURN_ "No targets file ${REPRO_TARGETS_FILE} found." ; return
     fi
 
     readarray targets_file_lines < ${REPRO_TARGETS_FILE}
 
     for target_entry in "${targets_file_lines[@]}" ; do
         read -ra tokens <<< ${target_entry}
+        $_REPRO_DEBUG_ Processing line in target file: ${tokens}
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
             IFS='.' read module_name profile module_target <<< ${tokens[1]}
             make --quiet -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
@@ -190,7 +199,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
                 repro.announce_services
             fi
 
-            $_REPRO_TRACE_RETURN_
+            $_REPRO_TRACE_RETURN_ ; return
         fi
     done
     if [[ $options != "--quiet" ]] ; then
@@ -204,8 +213,7 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 
     # nothing to do if the repro services file is missing
     if [[ ! -f ${REPRO_SERVICES_FILE} ]] ; then
-        $_REPRO_DEBUG_ File not found: ${REPRO_SERVICES_FILE}
-        $_REPRO_TRACE_RETURN_
+        $_REPRO_TRACE_RETURN_ "File not found: ${REPRO_SERVICES_FILE}" ; return
     fi
 
     # write a message to the terminal for each service
@@ -226,23 +234,23 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 
 function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
-    # handle case where this function is being called during REPRO startup
     if [[ "$1" == "--at-start" ]] ; then
+        $_REPRO_DEBUG_ "This function is being called during REPRO startup"
 
-        # only start the services if auto-startup is enabled
         if [[ "${REPRO_SERVICES}" == 'auto' ]] ; then
 			$_REPRO_DEBUG_ 'Starting REPRO services now because REPRO_SERVICES == auto'
-            # use the --quiet option to hide warning when REPRO has no services
+            $_REPRO_DEBUG_ 'Invoking the start-services target with the --quiet option to
+                            hide warning when REPRO has no services'
             repro.run_target start-services --quiet
         else
-			$_REPRO_DEBUG_ 'Not starting REPRO services now because REPRO_SERVICES != auto'
+			$_REPRO_DEBUG_ 'NOT starting REPRO services now because REPRO_SERVICES != auto'
 		fi
 
-        # no more to do if function was called during REPRO startup
-        $_REPRO_TRACE_RETURN_
+        $_REPRO_TRACE_RETURN_ "Done handling repro.start_services call during REPRO startup" ; return
     fi
 
-    # this function is being called after startup so start the services
+    $_REPRO_DEBUG_ 'This function is being called *after* REPRO startup'
+
     # now only if service startup is configured to be manual
     if [[ "${REPRO_SERVICES}" == 'manual' ]] ; then
 
@@ -250,30 +258,32 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
 		# start services and allow warning that REPRO has no services
         repro.run_target start-services
+        return_code=$?
 
         # an error code indicates that there were no services to start
         # so there is nothing else to do
-        if [[ $? -ne 0 ]] ; then
-            $_REPRO_TRACE_RETURN_
+        if [[ $return_code -ne 0 ]] ; then
+            $_REPRO_DEBUG "The return code of $return_code indicates there were no services to start"
+            $_REPRO_TRACE_RETURN_ "Because no services were started there is nothing left to do"; return
         fi
+    else
+        $_REPRO_DEBUG_ 'NOT starting REPRO services now because REPRO_SERVICES != manual'
     fi
 
-    # the current call to this function started the services after REPRO
-    # startup
-
-    # wait for a key stroke before returning if requested
 
     if [[ "$1" == "--wait-for-key" ]] ; then
+        _REPRO_DEBUG "Will now wait for a key stroke before returning because the --wait-for-key option was given"
         while [ true ] ; do
             $_REPRO_ALERT_ "Type 'q' key to stop the REPRO and its services."
+            $_REPRO_DEBUG_ "Waiting for keystroke"
             read -n 1 key
-            if [[ $key = 'q' ]] ; then
-                echo
-                exit
-            fi
             echo
+            $_REPRO_DEBUG_ "The ${key} key was pressed"
+            if [[ $key = 'q' ]] ; then
+                $_REPRO_TRACE_RETURN_ "Returning because the 'q' key was pressed." ; return
+            fi
         done
+    else
+         $_REPRO_TRACE_RETURN_ "Returning without waiting for a key press." ; return
     fi
-
-    $_REPRO_TRACE_RETURN_
 }

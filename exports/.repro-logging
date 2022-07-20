@@ -1,9 +1,7 @@
 # ensure this file is sourced only once
 if [[ "$REPRO_LOGGING_FILE_SOURCED" == true ]] ; then
     $_REPRO_TRACE_SOURCE_
-    $_REPRO_TRACE_ REPRO logging functions already loaded.
-    $_REPRO_TRACE_RETURN_
-    return
+    $_REPRO_TRACE_RETURN_ 'Logging functions already loaded' ; return
 else
     REPRO_LOGGING_FILE_SOURCED=true
 fi
@@ -69,6 +67,11 @@ function repro.trace_call {
 }
 
 function repro.trace_ret {
+
+	if [[ -n "$*" && ( ${REPRO_LOGGING} == 'trace' || ${REPRO_LOGGING} == 'debug' ) ]] ; then
+			_repro.log D MESG $*
+	fi
+
     if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
         printf -v location "[%s <- %s]" "$(_repro.caller 1)" "$(_repro.caller 0)"
         printf -v message "%s <- %s" "$(_repro.caller_func 1)" "$(_repro.caller_func 0)"
@@ -172,7 +175,7 @@ function _repro.initialize_logging {
         export _REPRO_TRACE_=:
         export _REPRO_TRACE_CALL_=:
         export _REPRO_TRACE_SOURCE_=:
-        export _REPRO_TRACE_RETURN_='return'
+        export _REPRO_TRACE_RETURN_='return ; '
         return
     fi
 
@@ -202,8 +205,9 @@ function _repro.initialize_logging {
     export _REPRO_TRACE_=repro.trace
     export _REPRO_TRACE_CALL_=repro.trace_call
     export _REPRO_TRACE_SOURCE_=repro.trace_source
-    export _REPRO_TRACE_RETURN_='repro.trace_ret ; return'
+    export _REPRO_TRACE_RETURN_=repro.trace_ret
 
+	$_REPRO_TRACE_RETURN_
 }
 
 # initialize logger state
@@ -211,5 +215,4 @@ _repro.initialize_logging
 
 # report definition of logging functions succeeeded
 $_REPRO_TRACE_SOURCE_
-$_REPRO_TRACE_ "Loaded REPRO logging functions"
-$_REPRO_TRACE_RETURN_
+$_REPRO_TRACE_RETURN_ 'Finished loaded logging functions'

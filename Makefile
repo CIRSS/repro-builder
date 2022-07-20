@@ -28,12 +28,14 @@ REPRO_SERVICES ?= auto
 #- --- REPRO_LOGGING -----------------------------------------------------------
 #- 
 #-    none : The REPRO framework will perform no logging.
-#-   alert : Only alerts and error messages will be logged (DEFAULT).
+#-   alert : Only alerts and error messages will be logged.
 #-    warn : Alerts, errors and warning messages will be logged.
-#-    info : Alerts, errors, warnings and informational messages will be logged.
-#-   debug : All messages will be logged along with script and basic Makefile
-#-           execution information.
-#-   trace : REPRO will log all messages.
+#-    info : Alerts, errors, warnings and informational messages will be 
+#-           logged (DEFAULT).
+#-   debug : Detailed messages will be included in log output along with script 
+#-           and Makefile target invocation records.
+#-   trace : REPRO will additionally log tracepoints placed at function entry
+#-           and return points, etc.
 #
 REPRO_LOGGING ?= info
 
