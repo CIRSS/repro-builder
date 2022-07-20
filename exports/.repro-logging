@@ -84,14 +84,14 @@ function _repro.timestamp_seconds {
     echo $(date +"%s")
 }
 
-# returns a time-sortable dated timestamp
+#  returns a sortable timestamp
 function _repro.timestamp {
     echo "$(date +'%Y-%m-%d %T.%3N')"
 }
 
-# returns a time-sortable ISO-timestamp with no spaces or punctuation
-function _repro.timestamp_nopunct {
-    echo "$(date +'%s%3N')"
+# returns a sortable timestamp with no spaces
+function _repro.timestamp_nospaces {
+    echo "$(date +'%Y%m%d.%H%M%S.%3N')"
 }
 
 function _repro.caller_file {
@@ -122,7 +122,7 @@ function _repro.create_log_dir {
 
 function _repro.create_log_file {
     _repro.create_log_dir
-    REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nopunct).log"
+    REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nospaces).log"
     touch ${REPRO_RUN_LOG_FILE}
 }
 
@@ -149,7 +149,7 @@ function _repro.log {
 
     timestamp=''
     if [[ ${REPRO_LOGGING_TIMESTAMPS} == 'true' ]] ; then
-        timestamp="$(_repro.timestamp) "
+        timestamp="$(_repro.timestamp_nospaces) "
     fi
 
     printf -v entry "%s%s %s %s%s" "$timestamp" "$level" "$type" "$arguments" "$location"
