@@ -95,7 +95,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 
     module_name=$1
 
-	$_REPRO_DEBUG_ "Initializing trimming files for module ${module_name}"
+	$_REPRO_DEBUG_ "Initializing trim files for module '${module_name}'"
 
     # create module dot directory if it does not exist
     dot_dir=$(repro.module_dot_dir ${module_name})
@@ -153,11 +153,11 @@ function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
 
 function repro.update_targets { $_REPRO_TRACE_CALL_ $*
 
-    $_REPRO_DEBUG_ "Ensuring that the target mapping file ${REPRO_TARGETS_FILE} exists"
+    $_REPRO_DEBUG_ "Ensuring that the global target mapping file ${REPRO_TARGETS_FILE} exists"
 
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
-      $_REPRO_TRACE_RETURN_ "The target mapping file ${REPRO_TARGETS_FILE} already exists so nothing to do." ; return
+      $_REPRO_TRACE_RETURN_ "The global target mapping file ${REPRO_TARGETS_FILE} already exists so nothing to do." ; return
     fi
 
     $_REPRO_DEBUG_ "Copying the default (empty) target mapping file to ${REPRO_TARGETS_FILE}"
@@ -187,7 +187,7 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
         done
     done
 
-    $_REPRO_TRACE_RETURN_ 'Done building the target mapping file'
+    $_REPRO_TRACE_RETURN_ 'Done building the global target mapping file'
 }
 
 function repro.run_target { $_REPRO_TRACE_CALL_ $*
