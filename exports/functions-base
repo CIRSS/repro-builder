@@ -77,13 +77,15 @@ function repro.update_path { $_REPRO_TRACE_CALL_ $*
 function ensure_nullglob {
     shopt -q nullglob
     if [[ $? == 1 ]] ; then
-        null_glob_was_enabled=true
+        $_REPRO_DEBUG_ "Enabling nullglob shell option"
         shopt -s nullglob
+        null_glob_was_enabled=true
     fi
 }
 
 function restore_nullglob {
     if [[ -v null_glob_was_enabled ]] ; then
+        $_REPRO_DEBUG_ "Restoring nullglob shell option to disabled state"
         shopt -u nullglob
         unset null_glob_was_enabled
     fi
@@ -91,29 +93,42 @@ function restore_nullglob {
 
 function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 
-	$_REPRO_INFO_ Initializing module trims
-
     module_name=$1
+
+	$_REPRO_DEBUG_ "Initializing trimming files for module ${module_name}"
 
     # create module dot directory if it does not exist
     dot_dir=$(repro.module_dot_dir ${module_name})
-    [[ -d ${dot_dir} ]] || mkdir -p ${dot_dir}
+    if [[ ! -d ${dot_dir} ]] ; then
+        $_REPRO_DEBUG_ "Creating the module ${module_name} trim directory ${dot_dir}"
+         mkdir -p ${dot_dir}
+    fi
 
     # include a default .gitignore file
     git_ignore_file=${dot_dir}/.gitignore
-    [[ -f ${git_ignore_file} ]] || echo "*" > ${git_ignore_file}
+    if [[ ! -f ${git_ignore_file} ]] ; then
+        $_REPRO_DEBUG_ "Creating a .gitignore file that ignores everything in ${dot_dir}"
+        echo "*" > ${git_ignore_file}
+    fi
 
     # include any Makefiles found in the module installation directory
     install_dir=$(repro.module_install_dir ${module_name})
+    $_REPRO_DEBUG_ "Looking for Makfiles in '${module_name}' module installation directory to copy to ${dot_dir}"
     ensure_nullglob
     makefiles=( ${install_dir}/Makefile-* )
     for makefile_path in "${makefiles[@]}" ; do
         makefile_name=$(basename ${makefile_path})
-        cp --no-clobber ${install_dir}/${makefile_name} ${dot_dir}/${makefile_name}
+
+        if [[ -f ${dot_dir}/${makefile_name} ]] ; then
+            $_REPRO_DEBUG_ "The file ${makefile_name} is already present in ${dot_dir}"
+        else
+            $_REPRO_DEBUG_ "Copying ${install_dir}/${makefile_name} to ${dot_dir}"
+            cp ${install_dir}/${makefile_name} ${dot_dir}/${makefile_name}
+        fi
     done
     restore_nullglob
 
-    # copy module files listed in trun manifest if present
+    # copy module files listed in trim manifest if present
     trim_manifest=${install_dir}/manifest-trim
     if [[ -f ${trim_manifest} ]] ; then
         readarray trim_manifest_lines < ${trim_manifest}
@@ -138,14 +153,14 @@ function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
 
 function repro.update_targets { $_REPRO_TRACE_CALL_ $*
 
-    $_REPRO_DEBUG_ "Ensuring that the target mapping file exists"
+    $_REPRO_DEBUG_ "Ensuring that the target mapping file ${REPRO_TARGETS_FILE} exists"
 
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
       $_REPRO_TRACE_RETURN_ "The target mapping file ${REPRO_TARGETS_FILE} already exists so nothing to do." ; return
     fi
 
-    $_REPRO_DEBUG_ "Copying the default (empty) target mapping file from the repro module install directory to ${REPRO_TARGETS_FILE}"
+    $_REPRO_DEBUG_ "Copying the default (empty) target mapping file to ${REPRO_TARGETS_FILE}"
     repro_builder_install_dir=$(repro.module_install_dir repro)
     cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
 
@@ -159,14 +174,13 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
         for profile in base trim code demos util; do
             module_targets_file=${install_dir}/targets-${profile}
             if [[ -f ${module_targets_file} ]] ; then
-                $_REPRO_DEBUG_ "Found targets for the '${profile}' profile of the '${module_name}' module in ${module_targets_file}"
                 repro_targets=''
                 readarray module_targets < ${module_targets_file}
                 for target_entry in "${module_targets[@]}" ; do
                     read -ra tokens <<< ${target_entry}
                     repro_target=${tokens[0]%?} # trims last character (':') from token 0 to get the module name
                     module_target=${tokens[1]}
-                    $_REPRO_DEBUG_ "Mapping the '${module_target}' target in the '${module_name}' module to the global '${repro_target}' target"
+                    $_REPRO_DEBUG_ "Mapping the '${module_target}' target in the '${profile}' profile of the '${module_name}' module to the global '${repro_target}' target"
                     printf '%s: %s.%s.%s\n' ${repro_target} ${module_name} ${profile} ${module_target} >> ${REPRO_TARGETS_FILE}
                 done
             fi

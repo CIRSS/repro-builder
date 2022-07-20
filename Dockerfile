@@ -8,6 +8,6 @@ USER repro
 # install the exported module containing the tests
 RUN repro.require repro exports --demos --custom
 
-RUN repro.service foo 100 200
+# RUN repro.service foo 100 200
 
 CMD  /bin/bash -il
