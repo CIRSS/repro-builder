@@ -7,7 +7,7 @@ function repro.initialize_state { $_REPRO_TRACE_CALL_ $*
     repro.initialize_modules
     repro.update_targets
 
-	$_REPRO_DEBUG_ Triggering automatic service startup
+	$_REPRO_DEBUG_ "Triggering automatic service startup if so configured"
     repro.start_services --at-start
     $_REPRO_TRACE_RETURN_
 }
@@ -113,7 +113,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 
     # include any Makefiles found in the module installation directory
     install_dir=$(repro.module_install_dir ${module_name})
-    $_REPRO_DEBUG_ "Looking for Makefiles in the '${module_name}' module installation directory to copy to the '${module_name}' trim directory"
+    $_REPRO_DEBUG_ "Looking for Makefiles in the '${module_name}' module installation directory (${install_dir}) to copy to the module trim directory (${dot_dir})"
     _repro.ensure_nullglob
     makefiles=( ${install_dir}/Makefile-* )
     for makefile_path in "${makefiles[@]}" ; do
@@ -217,7 +217,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
         fi
     done
     if [[ $options != "--quiet" ]] ; then
-        $_REPRO_ERROR_ "The '$requested_target' target is not implemented by this REPRO."
+        $_REPRO_ERROR_ "The '$requested_target' target is not implemented."
     fi
 
     $_REPRO_TRACE_RETURN_
@@ -249,26 +249,26 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
     if [[ "$1" == "--at-start" ]] ; then
-        $_REPRO_DEBUG_ "This function is being called during REPRO startup"
+        $_REPRO_DEBUG_ "The function ${FUNCNAME[0]} is being called during startup"
 
-        if [[ "${REPRO_SERVICES}" == 'auto' ]] ; then
-			$_REPRO_DEBUG_ 'Starting REPRO services now because REPRO_SERVICES == auto'
+        if [[ "${REPRO_SERVICES_STARTUP}" == 'auto' ]] ; then
+			$_REPRO_DEBUG_ 'Starting services now because REPRO_SERVICES_STARTUP == auto'
             $_REPRO_DEBUG_ "Invoking the 'start-services' target with the --quiet option to
                             hide warning when REPRO has no services"
             repro.run_target start-services --quiet
         else
-			$_REPRO_DEBUG_ 'NOT starting REPRO services now because REPRO_SERVICES != auto'
+			$_REPRO_DEBUG_ 'The services are not being started now because REPRO_SERVICES_STARTUP != auto'
 		fi
 
-        $_REPRO_TRACE_RETURN_ "Done handling repro.start_services call during REPRO startup" ; return
+        $_REPRO_TRACE_RETURN_ "Done handling ${FUNCNAME[0]} call during startup" ; return
     fi
 
-    $_REPRO_DEBUG_ 'This function is being called *after* REPRO startup'
+    $_REPRO_DEBUG_ "The function ${FUNCNAME[0]} is being called *after* startup"
 
     # now only if service startup is configured to be manual
-    if [[ "${REPRO_SERVICES}" == 'manual' ]] ; then
+    if [[ "${REPRO_SERVICES_STARTUP}" == 'manual' ]] ; then
 
-		$_REPRO_DEBUG_ 'Starting REPRO services now because REPRO_SERVICES == manual'
+		$_REPRO_DEBUG_ 'Starting services now because REPRO_SERVICES_STARTUP == manual'
 
 		# start services and allow warning that REPRO has no services
         repro.run_target start-services
@@ -277,18 +277,17 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
         # an error code indicates that there were no services to start
         # so there is nothing else to do
         if [[ $return_code -ne 0 ]] ; then
-            $_REPRO_DEBUG "The return code of $return_code indicates there were no services to start"
+            $_REPRO_DEBUG_ "The return code of $return_code indicates there were no services to start"
             $_REPRO_TRACE_RETURN_ "Because no services were started there is nothing left to do"; return
         fi
     else
-        $_REPRO_DEBUG_ 'NOT starting REPRO services now because REPRO_SERVICES != manual'
+        $_REPRO_DEBUG_ 'The services are not being started now because REPRO_SERVICES_STARTUP != manual'
     fi
 
-
     if [[ "$1" == "--wait-for-key" ]] ; then
-        _REPRO_DEBUG "Will now wait for a key stroke before returning because the --wait-for-key option was given"
+        $_REPRO_DEBUG_ "Will now wait for a key stroke before returning because the --wait-for-key option was given"
         while [ true ] ; do
-            $_REPRO_ALERT_ "Type 'q' key to stop the REPRO and its services."
+            $_REPRO_ALERT_ "Press the 'q' key to stop the REPRO and its services."
             $_REPRO_DEBUG_ "Waiting for keystroke"
             read -n 1 key
             echo

@@ -7,47 +7,47 @@ else
 fi
 
 function repro.alert {
-    if [[ ${REPRO_LOGGING} != 'none' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} != 'none' ]] ; then
         _repro.log A MESG $*
     fi
 }
 
 function repro.error {
-    if [[ ${REPRO_LOGGING} != 'none' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} != 'none' ]] ; then
         _repro.log E MESG $*
     fi
 }
 
 function repro.warn {
-    if [[ ${REPRO_LOGGING} != 'none'  && \
-          ${REPRO_LOGGING} != 'alert' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} != 'none'  && \
+          ${REPRO_LOGGING_LEVEL} != 'alert' ]] ; then
         _repro.log W MESG $*
     fi
 }
 
 function repro.info {
-    if [[ ${REPRO_LOGGING} == 'info'  || \
-          ${REPRO_LOGGING} == 'debug' || \
-          ${REPRO_LOGGING} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'info'  || \
+          ${REPRO_LOGGING_LEVEL} == 'debug' || \
+          ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         _repro.log I MESG $*
     fi
 }
 
 function repro.debug {
-    if [[ ${REPRO_LOGGING} == 'debug' || \
-          ${REPRO_LOGGING} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'debug' || \
+          ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         _repro.log D MESG $*
     fi
 }
 
 function repro.trace {
-    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         _repro.log T MESG $*
     fi
 }
 
 function repro.trace_source {
-    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         if [[ -n $1 ]] ; then
             REPRO_TRACE_SOURCE=$1
         else
@@ -58,7 +58,7 @@ function repro.trace_source {
 }
 
 function repro.trace_call {
-    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         arguments=" $(echo $* | xargs)"
         printf -v location "[%s -> %s]" "$(_repro.caller 1)" "$(_repro.caller 0)"
         printf -v message "%s -> %s%s" "$(_repro.caller_func 1)" "$(_repro.caller_func 0)" "${arguments}"
@@ -68,11 +68,11 @@ function repro.trace_call {
 
 function repro.trace_ret {
 
-	if [[ -n "$*" && ( ${REPRO_LOGGING} == 'trace' || ${REPRO_LOGGING} == 'debug' ) ]] ; then
+	if [[ -n "$*" && ( ${REPRO_LOGGING_LEVEL} == 'trace' || ${REPRO_LOGGING_LEVEL} == 'debug' ) ]] ; then
 			_repro.log D MESG $*
 	fi
 
-    if [[ ${REPRO_LOGGING} == 'trace' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         printf -v location "[%s <- %s]" "$(_repro.caller 1)" "$(_repro.caller 0)"
         printf -v message "%s <- %s" "$(_repro.caller_func 1)" "$(_repro.caller_func 0)"
         _repro.log --location "$location" T RETN $message
@@ -131,12 +131,12 @@ function _repro.log {
     # support an --location option overriding the default source location
     location=''
     if [[ "$1" == "--location" ]] ; then
-        if [[ ${REPRO_LOGGING_LOCATIONS} == 'true' ]] ; then
+        if [[ ${REPRO_LOGGING_LOCATIONS} == enabled ]] ; then
             location=" $2"
         fi
         shift 2
     else
-        if [[ ${REPRO_LOGGING_LOCATIONS} == 'true' ]] ; then
+        if [[ ${REPRO_LOGGING_LOCATIONS} == enabled ]] ; then
             printf -v location " [%s]" "$(_repro.caller 1)"
         fi
     fi
@@ -146,19 +146,21 @@ function _repro.log {
 
     shift 2
     arguments="$*"
+	# export func=$(_repro.caller_func 1)
+	# message=$(echo ${arguments} | envsubst "$func")
 
     timestamp=''
-    if [[ ${REPRO_LOGGING_TIMESTAMPS} == 'true' ]] ; then
+    if [[ ${REPRO_LOGGING_TIMESTAMPS} == enabled ]] ; then
         timestamp="$(_repro.timestamp_nospaces) "
     fi
 
     printf -v entry "%s%s %s %s%s" "$timestamp" "$level" "$type" "$arguments" "$location"
 
-    if [[ ${REPRO_LOG_TO_TERMINAL} == 'true' ]] ; then
+    if [[ ${REPRO_LOG_TO_TERMINAL} == enabled ]] ; then
         echo "$entry" >&2
     fi
 
-    if [[ ${REPRO_LOG_TO_FILE} == 'true' ]] ; then
+    if [[ ${REPRO_LOG_TO_FILE} == enabled ]] ; then
         echo "$entry" >> ${REPRO_RUN_LOG_FILE}
     fi
 }
@@ -166,7 +168,7 @@ function _repro.log {
 function _repro.initialize_logging {
 
     # if logging is disabled set logging macros to do nothing
-    if [[ ${REPRO_LOGGING} == 'none' ]] ; then
+    if [[ ${REPRO_LOGGING_LEVEL} == 'none' ]] ; then
         export _REPRO_ALERT_=:
         export _REPRO_ERROR_=:
         export _REPRO_WARN_=:
@@ -180,20 +182,20 @@ function _repro.initialize_logging {
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_TIMESTAMPS"* ]] ; then
-        REPRO_LOGGING_TIMESTAMPS=true
+        REPRO_LOGGING_TIMESTAMPS=enabled
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_LOCATIONS"* ]] ; then
-        REPRO_LOGGING_LOCATIONS=true
+        REPRO_LOGGING_LOCATIONS=enabled
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_FILE"* ]] ; then
-        REPRO_LOG_TO_FILE=true
+        REPRO_LOG_TO_FILE=enabled
         _repro.create_log_file
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_TERMINAL"* ]] ; then
-        REPRO_LOG_TO_TERMINAL=true
+        REPRO_LOG_TO_TERMINAL=enabled
     fi
 
     # define logging macros

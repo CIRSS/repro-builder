@@ -17,15 +17,15 @@ default_target: list
 #- =============================================================================
 
 #- 
-#- --- REPRO_SERVICES ----------------------------------------------------------
+#- --- REPRO_SERVICES_STARTUP --------------------------------------------------
 #- 
 #-    auto : Services start automatically when the REPRO starts (DEFAULT).
 #-  manual : Services start when the start-services target is invoked manually.
 #
-REPRO_SERVICES ?= auto
+REPRO_SERVICES_STARTUP ?= auto
 
 #- 
-#- --- REPRO_LOGGING -----------------------------------------------------------
+#- --- REPRO_LOGGING_LEVEL -----------------------------------------------------
 #- 
 #-    none : The REPRO framework will perform no logging.
 #-   alert : Only alerts and error messages will be logged.
@@ -37,7 +37,7 @@ REPRO_SERVICES ?= auto
 #-   trace : REPRO will additionally log tracepoints placed at function entry
 #-           and return points, etc.
 #
-REPRO_LOGGING ?= info
+REPRO_LOGGING_LEVEL ?= info
 
 #- 
 #- --- REPRO_LOGGING_OPTIONS ---------------------------------------------------
@@ -70,9 +70,9 @@ $(warning The REPRO_IMAGE_TAG variable is not set. Defaulting to \
 endif
 
 # Assemble REPRO settings available within the running REPRO.
-REPRO_SETTINGS=	-e REPRO_SERVICES="$(REPRO_SERVICES)"               \
-				-e REPRO_LOGGING="$(REPRO_LOGGING)"                 \
-				-e REPRO_LOGGING_OPTIONS="$(REPRO_LOGGING_OPTIONS)" \
+REPRO_SETTINGS=	-e REPRO_SERVICES_STARTUP="$(REPRO_SERVICES_STARTUP)" \
+				-e REPRO_LOGGING_LEVEL="$(REPRO_LOGGING_LEVEL)"     \
+				-e REPRO_LOGGING_OPTIONS="$(REPRO_LOGGING_OPTIONS)"	\
                	-e REPRO_NAME="${REPRO_NAME}"                       \
                	-e REPRO_MNT="${REPRO_MNT}"
 
@@ -149,9 +149,9 @@ endif # ifdef PARENT_IMAGE
 
 endif # ifndef IN_RUNNING_REPRO
 
-ifeq ($(REPRO_LOGGING), debug)
+ifeq ($(REPRO_LOGGING_LEVEL), debug)
 QUIET=
-else ifeq ($(REPRO_LOGGING), trace)
+else ifeq ($(REPRO_LOGGING_LEVEL), trace)
 QUIET=
 else 
 QUIET=@
