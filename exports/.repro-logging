@@ -1,7 +1,7 @@
 # ensure this file is sourced only once
 if [[ "$REPRO_LOGGING_FILE_SOURCED" == true ]] ; then
     $_REPRO_TRACE_SOURCE_
-    $_REPRO_TRACE_RETURN_ 'Logging functions already loaded' ; return
+    $_REPRO_TRACE_RETURN_ 'Already loaded logging functions' ; return
 else
     REPRO_LOGGING_FILE_SOURCED=true
 fi
@@ -209,6 +209,14 @@ function _repro.initialize_logging {
     export _REPRO_TRACE_SOURCE_=repro.trace_source
     export _REPRO_TRACE_RETURN_=repro.trace_ret
 
+	# send Make output to terminal if logging at debug or trace levels
+	if [[ ${REPRO_LOGGING_LEVEL} == 'debug' || \
+		${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
+		export REPRO_MAKE_VERBOSITY=''
+	else
+		export REPRO_MAKE_VERBOSITY=--quiet
+    fi
+
 	$_REPRO_TRACE_RETURN_
 }
 
@@ -217,4 +225,4 @@ _repro.initialize_logging
 
 # report definition of logging functions succeeeded
 $_REPRO_TRACE_SOURCE_
-$_REPRO_TRACE_RETURN_ 'Finished loaded logging functions'
+$_REPRO_TRACE_RETURN_ 'Loaded logging functions'

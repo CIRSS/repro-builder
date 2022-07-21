@@ -77,7 +77,7 @@ function repro.update_path { $_REPRO_TRACE_CALL_ $*
 function _repro.ensure_nullglob {
     shopt -q nullglob
     if [[ $? == 1 ]] ; then
-        $_REPRO_DEBUG_ "Enabling nullglob shell option"
+        $_REPRO_TRACE_ "Enabling nullglob shell option"
         shopt -s nullglob
         null_glob_was_enabled=true
     fi
@@ -85,7 +85,7 @@ function _repro.ensure_nullglob {
 
 function _repro.restore_nullglob {
     if [[ -v null_glob_was_enabled ]] ; then
-        $_REPRO_DEBUG_ "Restoring nullglob shell option to disabled state"
+        $_REPRO_TRACE_ "Restoring nullglob shell option to disabled state"
         shopt -u nullglob
         unset null_glob_was_enabled
     fi
@@ -131,24 +131,33 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     # copy module files listed in trim manifest if present
     trim_manifest=${install_dir}/manifest-trim
     if [[ -f ${trim_manifest} ]] ; then
+        $_REPRO_DEBUG_ "Ensuring other files listed in the trim manifest for module ${module_name} are in the module dot directory (${dot_dir})"
         readarray trim_manifest_lines < ${trim_manifest}
         for trim_file_line in "${trim_manifest_lines[@]}" ; do
             trim_file=$(echo ${trim_file_line%%#*} | xargs)
             if [[ -n ${trim_file} ]] ; then
-                cp --no-clobber ${install_dir}/${trim_file} ${dot_dir}/${trim_file}
+                if [[ -f  ${dot_dir}/${trim_file} ]] ; then
+                    $_REPRO_DEBUG_ "Trim file ${trim_file} is already present in ${dot_dir}"
+                else
+                    $_REPRO_DEBUG_ "Copying trim file ${trim_file} from ${install_dir} to ${dot_dir}"
+                    cp ${install_dir}/${trim_file} ${dot_dir}/${trim_file}
+                fi
             fi
         done
     fi
 
-    $_REPRO_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_ "Done initializing trim files for module '${module_name}'" ; return
 }
 
 function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
+    $_REPRO_INFO_ "Initializing REPRO modules"
+    $_REPRO_DEBUG_ "Iterating over the list of installed modules in the module order file (${REPRO_ORDER_FILE})"
     readarray modules < ${REPRO_ORDER_FILE}
     for module in "${modules[@]}" ; do
+        $_REPRO_DEBUG_ "Initializing module '${module}'"
         repro.initialize_module_trim ${module}
     done
-    $_REPRO_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_ "Done inializing modules"
 }
 
 function repro.update_targets { $_REPRO_TRACE_CALL_ $*
@@ -206,7 +215,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
         $_REPRO_DEBUG_ Processing line in target file: ${tokens}
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
             IFS='.' read module_name profile module_target <<< ${tokens[1]}
-            make --quiet -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
+            make ${REPRO_MAKE_VERBOSITY} -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
 
             if [[ ${requested_target} == "start-services" ]] ; then
                 _repro.timestamp > ${REPRO_SERVICES_START_TIME}
