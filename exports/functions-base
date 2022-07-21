@@ -74,7 +74,7 @@ function repro.update_path { $_REPRO_TRACE_CALL_ $*
     $_REPRO_TRACE_RETURN_
 }
 
-function ensure_nullglob {
+function _repro.ensure_nullglob {
     shopt -q nullglob
     if [[ $? == 1 ]] ; then
         $_REPRO_DEBUG_ "Enabling nullglob shell option"
@@ -83,7 +83,7 @@ function ensure_nullglob {
     fi
 }
 
-function restore_nullglob {
+function _repro.restore_nullglob {
     if [[ -v null_glob_was_enabled ]] ; then
         $_REPRO_DEBUG_ "Restoring nullglob shell option to disabled state"
         shopt -u nullglob
@@ -100,33 +100,33 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     # create module dot directory if it does not exist
     dot_dir=$(repro.module_dot_dir ${module_name})
     if [[ ! -d ${dot_dir} ]] ; then
-        $_REPRO_DEBUG_ "Creating the module ${module_name} trim directory ${dot_dir}"
+        $_REPRO_DEBUG_ "Creating the module '${module_name}' trim directory (${dot_dir})"
          mkdir -p ${dot_dir}
     fi
 
     # include a default .gitignore file
     git_ignore_file=${dot_dir}/.gitignore
     if [[ ! -f ${git_ignore_file} ]] ; then
-        $_REPRO_DEBUG_ "Creating a .gitignore file that ignores everything in ${dot_dir}"
+        $_REPRO_DEBUG_ "Creating a .gitignore file that ignores everything in the trim directory (${dot_dir})"
         echo "*" > ${git_ignore_file}
     fi
 
     # include any Makefiles found in the module installation directory
     install_dir=$(repro.module_install_dir ${module_name})
-    $_REPRO_DEBUG_ "Looking for Makefiles in '${module_name}' module installation directory to copy to the corresponding '${module_name}' module trim directory"
-    ensure_nullglob
+    $_REPRO_DEBUG_ "Looking for Makefiles in the '${module_name}' module installation directory to copy to the '${module_name}' trim directory"
+    _repro.ensure_nullglob
     makefiles=( ${install_dir}/Makefile-* )
     for makefile_path in "${makefiles[@]}" ; do
         makefile_name=$(basename ${makefile_path})
 
         if [[ -f ${dot_dir}/${makefile_name} ]] ; then
-            $_REPRO_DEBUG_ "The file ${makefile_name} is already present in ${dot_dir}"
+            $_REPRO_DEBUG_ "The file ${makefile_name} is already present in the '${module_name}' trim directory (${dot_dir})"
         else
-            $_REPRO_DEBUG_ "Copying ${install_dir}/${makefile_name} to ${dot_dir}"
+            $_REPRO_DEBUG_ "Copying ${install_dir}/${makefile_name} to the '${module_name}' trim directory (${dot_dir})"
             cp ${install_dir}/${makefile_name} ${dot_dir}/${makefile_name}
         fi
     done
-    restore_nullglob
+    _repro.restore_nullglob
 
     # copy module files listed in trim manifest if present
     trim_manifest=${install_dir}/manifest-trim
@@ -153,18 +153,18 @@ function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
 
 function repro.update_targets { $_REPRO_TRACE_CALL_ $*
 
-    $_REPRO_DEBUG_ "Ensuring that the global target mapping file ${REPRO_TARGETS_FILE} exists"
+    $_REPRO_DEBUG_ "Ensuring that the global target mapping file (${REPRO_TARGETS_FILE}) exists"
 
     # do nothing if targets file already exists
     if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
-      $_REPRO_TRACE_RETURN_ "The global target mapping file ${REPRO_TARGETS_FILE} already exists so nothing to do." ; return
+      $_REPRO_TRACE_RETURN_ "The global target mapping file (${REPRO_TARGETS_FILE}) already exists so nothing to do." ; return
     fi
 
-    $_REPRO_DEBUG_ "Copying the default (empty) target mapping file to ${REPRO_TARGETS_FILE}"
+    $_REPRO_DEBUG_ "Installing a default (empty) target mapping file to ${REPRO_TARGETS_FILE}"
     repro_builder_install_dir=$(repro.module_install_dir repro)
     cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
 
-    $_REPRO_DEBUG_ "Iterating over the list of installed modules in ${REPRO_ORDER_FILE}"
+    $_REPRO_DEBUG_ "Iterating over the list of installed modules in the module order file (${REPRO_ORDER_FILE})"
     readarray modules < ${REPRO_ORDER_FILE}
     for modules_line in "${modules[@]}" ; do
         module_name=$(echo $modules_line | xargs)
@@ -196,7 +196,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     options=$2
 
     if [[ ! -f ${REPRO_TARGETS_FILE} ]] ; then
-        $_REPRO_TRACE_RETURN_ "No target mapping file ${REPRO_TARGETS_FILE} found." ; return
+        $_REPRO_TRACE_RETURN_ "No global target mapping file (${REPRO_TARGETS_FILE}) found." ; return
     fi
 
     readarray targets_file_lines < ${REPRO_TARGETS_FILE}
@@ -217,7 +217,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
         fi
     done
     if [[ $options != "--quiet" ]] ; then
-        $_REPRO_ERROR_ "The $requested_target target is not implemented by this REPRO."
+        $_REPRO_ERROR_ "The '$requested_target' target is not implemented by this REPRO."
     fi
 
     $_REPRO_TRACE_RETURN_
@@ -253,8 +253,8 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
         if [[ "${REPRO_SERVICES}" == 'auto' ]] ; then
 			$_REPRO_DEBUG_ 'Starting REPRO services now because REPRO_SERVICES == auto'
-            $_REPRO_DEBUG_ 'Invoking the start-services target with the --quiet option to
-                            hide warning when REPRO has no services'
+            $_REPRO_DEBUG_ "Invoking the 'start-services' target with the --quiet option to
+                            hide warning when REPRO has no services"
             repro.run_target start-services --quiet
         else
 			$_REPRO_DEBUG_ 'NOT starting REPRO services now because REPRO_SERVICES != auto'
