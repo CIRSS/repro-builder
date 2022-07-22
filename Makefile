@@ -29,15 +29,14 @@ REPRO_SERVICES_STARTUP ?= auto
 #- 
 #-    none : The REPRO framework will perform no logging.
 #-   alert : Only alerts and error messages will be logged.
-#-    warn : Alerts, errors and warning messages will be logged.
-#-    info : Alerts, errors, warnings and informational messages will be 
-#-           logged (DEFAULT).
+#-    warn : Alerts, errors and warning messages will be logged (DEFAULT).
+#-    info : Alerts, errors, warnings and informational messages will be logged.
 #-   debug : Detailed messages will be included in log output along with script 
 #-           and Makefile target invocation records.
 #-   trace : REPRO will additionally log tracepoints placed at function entry
 #-           and return points, etc.
 #
-REPRO_LOGGING_LEVEL ?= info
+REPRO_LOGGING_LEVEL ?= warn
 
 #- 
 #- --- REPRO_LOGGING_OPTIONS ---------------------------------------------------

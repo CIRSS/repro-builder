@@ -1,7 +1,7 @@
 # ensure this file is sourced only once
 if [[ "$REPRO_LOGGING_FILE_SOURCED" == true ]] ; then
     $_REPRO_TRACE_SOURCE_
-    $_REPRO_TRACE_RETURN_ 'Already loaded logging functions' ; return
+	$_REPRO_DEBUG_TRACE_RETURN_ 'Already loaded logging functions' ; return
 else
     REPRO_LOGGING_FILE_SOURCED=true
 fi
@@ -62,22 +62,39 @@ function repro.trace_call {
         arguments=" $(echo $* | xargs)"
         printf -v location "[%s -> %s]" "$(_repro.caller 1)" "$(_repro.caller 0)"
         printf -v message "%s -> %s%s" "$(_repro.caller_func 1)" "$(_repro.caller_func 0)" "${arguments}"
-        _repro.log --location "$location" T CALL $message
+        _repro.log T CALL --location "$location" $message
     fi
 }
 
 function repro.trace_ret {
 
-	if [[ -n "$*" && ( ${REPRO_LOGGING_LEVEL} == 'trace' || ${REPRO_LOGGING_LEVEL} == 'debug' ) ]] ; then
-			_repro.log D MESG $*
-	fi
+	if [[ $1 == --stack-level ]] ; then
+        callee_stack_level=$2
+        ((caller_stack_level=$callee_stack_level - 1))
+        shift 2
+	else
+		callee_stack_level=1
+        caller_stack_level=0
+    fi
 
     if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
-        printf -v location "[%s <- %s]" "$(_repro.caller 1)" "$(_repro.caller 0)"
-        printf -v message "%s <- %s" "$(_repro.caller_func 1)" "$(_repro.caller_func 0)"
-        _repro.log --location "$location" T RETN $message
+        printf -v location "[%s <- %s]" "$(_repro.caller ${callee_stack_level})" "$(_repro.caller ${caller_stack_level})"
+        printf -v message "%s <- %s" "$(_repro.caller_func ${callee_stack_level})" "$(_repro.caller_func ${caller_stack_level})"
+        _repro.log T RETN --location "$location" $message
     fi
 }
+
+function repro.info_trace_ret {
+	repro.info --stack-level 2 $*
+	repro.trace_ret --stack-level 2 $*
+}
+
+
+function repro.debug_trace_ret {
+	repro.debug --stack-level 2 $*
+	repro.trace_ret --stack-level 2 $*
+}
+
 
 # returns seconds since the epoch
 function _repro.timestamp_seconds {
@@ -128,6 +145,10 @@ function _repro.create_log_file {
 
 function _repro.log {
 
+    level="$1"  # first argument indicates the logging level of the entry
+    type="$2"   # second argument indicates the type of the entry body
+    shift 2
+
     # support an --location option overriding the default source location
     location=''
     if [[ "$1" == "--location" ]] ; then
@@ -135,23 +156,25 @@ function _repro.log {
             location=" $2"
         fi
         shift 2
-    else
-        if [[ ${REPRO_LOGGING_LOCATIONS} == enabled ]] ; then
-            printf -v location " [%s]" "$(_repro.caller 1)"
-        fi
     fi
 
-    level="$1"  # first argument indicates the logging level of the entry
-    type="$2"   # second argument indicates the type of the entry body
+	if [[ $1 == --stack-level ]] ; then
+        stack_level=$2
+        shift 2
+	else
+		stack_level=1
+    fi
 
-    shift 2
+	if [[ ${location} == '' && ${REPRO_LOGGING_LOCATIONS} == enabled ]] ; then
+		printf -v location " [%s]" "$(_repro.caller ${stack_level})"
+	fi
+
     arguments="$*"
-	# export func=$(_repro.caller_func 1)
-	# message=$(echo ${arguments} | envsubst "$func")
 
-    timestamp=''
-    if [[ ${REPRO_LOGGING_TIMESTAMPS} == enabled ]] ; then
+	if [[ ${REPRO_LOGGING_TIMESTAMPS} == enabled ]] ; then
         timestamp="$(_repro.timestamp_nospaces) "
+	else
+	    timestamp=''
     fi
 
     printf -v entry "%s%s %s %s%s" "$timestamp" "$level" "$type" "$arguments" "$location"
@@ -208,6 +231,8 @@ function _repro.initialize_logging {
     export _REPRO_TRACE_CALL_=repro.trace_call
     export _REPRO_TRACE_SOURCE_=repro.trace_source
     export _REPRO_TRACE_RETURN_=repro.trace_ret
+    export _REPRO_INFO_TRACE_RETURN_=repro.info_trace_ret
+    export _REPRO_DEBUG_TRACE_RETURN_=repro.debug_trace_ret
 
 	# send Make output to terminal if logging at debug or trace levels
 	if [[ ${REPRO_LOGGING_LEVEL} == 'debug' || \
@@ -216,8 +241,6 @@ function _repro.initialize_logging {
 	else
 		export REPRO_MAKE_VERBOSITY=--quiet
     fi
-
-	$_REPRO_TRACE_RETURN_
 }
 
 # initialize logger state
@@ -225,4 +248,4 @@ _repro.initialize_logging
 
 # report definition of logging functions succeeeded
 $_REPRO_TRACE_SOURCE_
-$_REPRO_TRACE_RETURN_ 'Loaded logging functions'
+$_REPRO_DEBUG_TRACE_RETURN_ 'Loaded logging functions'
