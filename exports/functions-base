@@ -29,24 +29,24 @@ function repro.get_prefix_paths { $_REPRO_TRACE_CALL_ $*
     $_REPRO_TRACE_RETURN_
 }
 
-function repro.module_install_dir {
+function repro.get_module_install_dir {
     module_name=$1
     read -ra tokens < ${REPRO_INDEX_DIR}/${module_name}
     module_install_dir=${tokens[2]}
     echo ${module_install_dir}
 }
 
-function repro.module_dot_dir {
+function repro.trim_dir_name_for_module {
     module_name=$1
-    dot_dir=${REPRO_MNT}/.${module_name}
-    echo ${dot_dir}
+    trim_dir=${REPRO_MNT}/.${module_name}
+    echo ${trim_dir}
 }
 
 function repro.get_module_paths { $_REPRO_TRACE_CALL_ $*
     unset module_paths
     readarray modules < ${REPRO_ORDER_FILE}
     for module_name in "${modules[@]}" ; do
-        module_install_dir=$(repro.module_install_dir ${module_name})
+        module_install_dir=$(repro.get_module_install_dir ${module_name})
         if [[ -v module_paths ]] ; then
             module_paths=${module_install_dir}:${module_paths}
         else
@@ -100,32 +100,32 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 	$_REPRO_INFO_ "Initializing trim files for module '${module_name}'"
 
     # create module dot directory if it does not exist
-    dot_dir=$(repro.module_dot_dir ${module_name})
-    if [[ ! -d ${dot_dir} ]] ; then
-        $_REPRO_INFO_ "Creating the module '${module_name}' trim directory (${dot_dir})"
-         mkdir -p ${dot_dir}
+    trim_dir=$(repro.trim_dir_name_for_module ${module_name})
+    if [[ ! -d ${trim_dir} ]] ; then
+        $_REPRO_INFO_ "Creating the module '${module_name}' trim directory (${trim_dir})"
+         mkdir -p ${trim_dir}
     fi
 
     # include a default .gitignore file
-    git_ignore_file=${dot_dir}/.gitignore
+    git_ignore_file=${trim_dir}/.gitignore
     if [[ ! -f ${git_ignore_file} ]] ; then
-        $_REPRO_INFO_ "Creating a .gitignore file that ignores everything in the trim directory (${dot_dir})"
+        $_REPRO_INFO_ "Creating a .gitignore file that ignores everything in the trim directory (${trim_dir})"
         echo "*" > ${git_ignore_file}
     fi
 
     # include any Makefiles found in the module installation directory
-    install_dir=$(repro.module_install_dir ${module_name})
-    $_REPRO_INFO_ "Looking for Makefiles in the '${module_name}' module installation directory (${install_dir}) to copy to the module trim directory (${dot_dir})"
+    install_dir=$(repro.get_module_install_dir ${module_name})
+    $_REPRO_INFO_ "Looking for Makefiles in the '${module_name}' module installation directory (${install_dir}) to copy to the module trim directory (${trim_dir})"
     _repro.ensure_nullglob
     makefiles=( ${install_dir}/Makefile-* )
     for makefile_path in "${makefiles[@]}" ; do
         makefile_name=$(basename ${makefile_path})
 
-        if [[ -f ${dot_dir}/${makefile_name} ]] ; then
-            $_REPRO_INFO_ "The file ${makefile_name} is already present in the '${module_name}' trim directory (${dot_dir})"
+        if [[ -f ${trim_dir}/${makefile_name} ]] ; then
+            $_REPRO_INFO_ "The file ${makefile_name} is already present in the '${module_name}' trim directory (${trim_dir})"
         else
-            $_REPRO_INFO_ "Copying ${install_dir}/${makefile_name} to the '${module_name}' trim directory (${dot_dir})"
-            cp ${install_dir}/${makefile_name} ${dot_dir}/${makefile_name}
+            $_REPRO_INFO_ "Copying ${install_dir}/${makefile_name} to the '${module_name}' trim directory (${trim_dir})"
+            cp ${install_dir}/${makefile_name} ${trim_dir}/${makefile_name}
         fi
     done
     _repro.restore_nullglob
@@ -133,16 +133,16 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     # copy module files listed in trim manifest if present
     trim_manifest=${install_dir}/manifest-trim
     if [[ -f ${trim_manifest} ]] ; then
-        $_REPRO_INFO_ "Ensuring other files listed in the trim manifest for module ${module_name} are in the module dot directory (${dot_dir})"
+        $_REPRO_INFO_ "Ensuring other files listed in the trim manifest for module ${module_name} are in the module dot directory (${trim_dir})"
         readarray trim_manifest_lines < ${trim_manifest}
         for trim_file_line in "${trim_manifest_lines[@]}" ; do
             trim_file=$(echo ${trim_file_line%%#*} | xargs)
             if [[ -n ${trim_file} ]] ; then
-                if [[ -f  ${dot_dir}/${trim_file} ]] ; then
-                    $_REPRO_INFO_ "Trim file ${trim_file} is already present in ${dot_dir}"
+                if [[ -f  ${trim_dir}/${trim_file} ]] ; then
+                    $_REPRO_INFO_ "Trim file ${trim_file} is already present in ${trim_dir}"
                 else
-                    $_REPRO_INFO_ "Copying trim file ${trim_file} from ${install_dir} to ${dot_dir}"
-                    cp ${install_dir}/${trim_file} ${dot_dir}/${trim_file}
+                    $_REPRO_INFO_ "Copying trim file ${trim_file} from ${install_dir} to ${trim_dir}"
+                    cp ${install_dir}/${trim_file} ${trim_dir}/${trim_file}
                 fi
             fi
         done
@@ -173,14 +173,14 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
     fi
 
     $_REPRO_INFO_ "Installing a default (empty) target mapping file to ${REPRO_TARGETS_FILE}"
-    repro_builder_install_dir=$(repro.module_install_dir repro)
+    repro_builder_install_dir=$(repro.get_module_install_dir repro)
     cp  ${repro_builder_install_dir}/${REPRO_TARGETS_FILENAME} ${REPRO_TARGETS_FILE}
 
     $_REPRO_TRACE_ "Iterating over the list of installed modules in the module order file (${REPRO_ORDER_FILE})"
     readarray modules < ${REPRO_ORDER_FILE}
     for modules_line in "${modules[@]}" ; do
         module_name=$(echo $modules_line | xargs)
-        install_dir=$(repro.module_install_dir ${module_name})
+        install_dir=$(repro.get_module_install_dir ${module_name})
 
         $_REPRO_INFO_ "Looking for targets in the '${module_name}' module"
         for profile in base trim code demos util; do
@@ -254,7 +254,7 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
         $_REPRO_INFO_ No registered services to start.
     fi
 
-    $_REPRO_TRACE_RETURN_
+    $_REPRO_TRACE_RETURN_ "Done announcing services"
 }
 
 
@@ -308,7 +308,7 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
                 $_REPRO_INFO_TRACE_RETURN_ "Returning because the 'q' key was pressed." ; return
             fi
         done
-    else
-         $_REPRO_INFO_TRACE_RETURN_ "Returning without waiting for a key press." ; return
     fi
+
+    $_REPRO_INFO_TRACE_RETURN_ "Returning without waiting for a key press." ; return
 }

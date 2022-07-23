@@ -77,6 +77,10 @@ function repro.trace_ret {
         caller_stack_level=0
     fi
 
+    if [[ ! -z "$*" ]] ; then
+    	repro.trace --stack-level 2 $*
+    fi
+
     if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         printf -v location "[%s <- %s]" "$(_repro.caller ${callee_stack_level})" "$(_repro.caller ${caller_stack_level})"
         printf -v message "%s <- %s" "$(_repro.caller_func ${callee_stack_level})" "$(_repro.caller_func ${caller_stack_level})"
