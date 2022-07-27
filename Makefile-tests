@@ -1,4 +1,7 @@
 
+export REPRO_EXIT_AFTER_STARTUP=true
+export REPRO_LOGGING_LEVEL=debug
+export REPRO_LOGGING_OPTIONS=NO_APPEND NO_TIMESTAMPS
 
 TESTS = start-repro-auto 		\
 		start-repro-manual		\
@@ -7,41 +10,43 @@ TESTS = start-repro-auto 		\
 		run-demos				\
 		clean-demos				\
 
-test-all: clean $(TESTS)
+all: clean-all test-all
 
-clean: $(addsuffix .clean, $(TESTS))
+test-all: clean-all $(addsuffix .test, $(TESTS))
+
+clean-all: $(addsuffix .clean, $(TESTS))
 
 %.clean:
 	rm -f .repro-log/$(basename $@).log
 
-export REPRO_EXIT_AFTER_STARTUP=true
-export REPRO_LOGGING_LEVEL=debug
-export REPRO_LOGGING_OPTIONS=NO_APPEND NO_TIMESTAMPS
+%.log:
+	rm -f .repro-log/$(basename $@).log
 
-start-repro-auto:
-	@REPRO_LOGGING_FILENAME=$@.log	\
+
+start-repro-auto.test:
+	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
 	REPRO_SERVICES_STARTUP=auto		\
 	make start-repro
 
-start-repro-manual:
-	@REPRO_LOGGING_FILENAME=$@.log	\
+start-repro-manual.test:
+	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
 	REPRO_SERVICES_STARTUP=manual	\
 	make start-repro
 
-start-services-auto:
-	@REPRO_LOGGING_FILENAME=$@.log	\
+start-services-auto.test:
+	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
 	REPRO_SERVICES_STARTUP=auto		\
 	make start-services
 
-start-services-manual:
-	@REPRO_LOGGING_FILENAME=$@.log	\
+start-services-manual.test:
+	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
 	REPRO_SERVICES_STARTUP=manual	\
 	make start-services
 
-run-demos:
-	@REPRO_LOGGING_FILENAME=$@.log	\
+run-demos.test:
+	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
 	make run-demos
 
-clean-demos:
-	@REPRO_LOGGING_FILENAME=$@.log	\
+clean-demos.test:
+	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
 	make clean-demos
