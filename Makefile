@@ -209,7 +209,7 @@ start-repro:
 endif
 
 clean-repro:            ## Delete REPRO run logs in .repro-log directory.
-	rm .repro-log/*.log
+	rm -f .repro-log/*.log
 
 ## 
 ifdef IN_RUNNING_REPRO

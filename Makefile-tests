@@ -16,37 +16,25 @@ test-all: clean-all $(addsuffix .test, $(TESTS))
 
 clean-all: $(addsuffix .clean, $(TESTS))
 
+LOG=REPRO_LOGGING_FILENAME=$(basename $@).log
+
 %.clean:
 	rm -f .repro-log/$(basename $@).log
 
-%.log:
-	rm -f .repro-log/$(basename $@).log
-
-
 start-repro-auto.test:
-	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
-	REPRO_SERVICES_STARTUP=auto		\
-	make start-repro
+	$(LOG)  REPRO_SERVICES_STARTUP=auto  make start-repro
 
 start-repro-manual.test:
-	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
-	REPRO_SERVICES_STARTUP=manual	\
-	make start-repro
+	$(LOG)  REPRO_SERVICES_STARTUP=manual  make start-repro
 
 start-services-auto.test:
-	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
-	REPRO_SERVICES_STARTUP=auto		\
-	make start-services
+	$(LOG) 	REPRO_SERVICES_STARTUP=auto  make start-services
 
 start-services-manual.test:
-	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
-	REPRO_SERVICES_STARTUP=manual	\
-	make start-services
+	$(LOG) 	REPRO_SERVICES_STARTUP=manual  make start-services
 
 run-demos.test:
-	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
-	make run-demos
+	$(LOG) 	make run-demos
 
 clean-demos.test:
-	@REPRO_LOGGING_FILENAME=$(basename $@).log	\
-	make clean-demos
+	$(LOG) 	make clean-demos
