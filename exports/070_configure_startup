@@ -35,5 +35,8 @@ echo -e "$(logging_prefix ${HOME}/.profile)\n$(cat ${HOME}/.profile)" > ${HOME}/
 # add a final line to .bashrc to source the atshell file
 echo "source ${REPRO_ATSHELL_FILE}" >> ${HOME}/.bashrc
 
-# add a final line to .profile to source the atstart file
+# add a penultimate line to .profile to source the atstart file
 echo "source ${REPRO_ATSTART_FILE}" >> ${HOME}/.profile
+
+# add a final line to .profile to optionally exit immediately
+echo 'if ${REPRO_EXIT_AFTER_STARTUP} ; then exit ; fi' >> ${HOME}/.profile
