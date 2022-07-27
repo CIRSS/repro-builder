@@ -90,13 +90,13 @@ function repro.trace_ret {
 
 function repro.info_trace_ret {
 	repro.info --stack-level 2 $*
-	repro.trace_ret --stack-level 2 $*
+	repro.trace_ret --stack-level 2
 }
 
 
 function repro.debug_trace_ret {
 	repro.debug --stack-level 2 $*
-	repro.trace_ret --stack-level 2 $*
+	repro.trace_ret --stack-level 2
 }
 
 
@@ -142,9 +142,20 @@ function _repro.create_log_dir {
 }
 
 function _repro.create_log_file {
+
     _repro.create_log_dir
-    REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nospaces).log"
-    touch ${REPRO_RUN_LOG_FILE}
+
+    if [[ ${REPRO_LOGGING_FILENAME} == auto ]] ; then
+        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nospaces).log"
+    else
+        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/${REPRO_LOGGING_FILENAME}"
+    fi
+
+    if [[ ${REPRO_LOGGING_APPEND} ]] ; then
+        touch ${REPRO_RUN_LOG_FILE}
+    else
+        truncate --size 0 ${REPRO_RUN_LOG_FILE}
+    fi
 }
 
 function _repro.log {
@@ -224,6 +235,11 @@ function _repro.initialize_logging {
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_TERMINAL"* ]] ; then
         REPRO_LOG_TO_TERMINAL=enabled
     fi
+
+    if [[ $REPRO_LOGGING_OPTIONS != *"NO_APPEND"* ]] ; then
+        REPRO_LOGGING_APPEND=true
+    fi
+
 
     # define logging macros
     export _REPRO_ALERT_=repro.alert
