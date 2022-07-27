@@ -146,7 +146,7 @@ function _repro.create_log_file {
     _repro.create_log_dir
 
     if [[ ${REPRO_LOGGING_FILENAME} == auto ]] ; then
-        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nospaces).log"
+        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nospaces)-run.log"
     else
         export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/${REPRO_LOGGING_FILENAME}"
     fi
