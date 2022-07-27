@@ -1,8 +1,26 @@
 
+# default is to clean up then rerun all the tests
+default_target: all
+
+# macros for setting the logging level during a test
+ALERT = REPRO_LOGGING_LEVEL=alert
+WARN  = REPRO_LOGGING_LEVEL=warn
+INFO  = REPRO_LOGGING_LEVEL=info
+DEBUG = REPRO_LOGGING_LEVEL=debug
+TRACE = REPRO_LOGGING_LEVEL=trace
+
+# macros for controlling when services start
+AUTO   = REPRO_SERVICES_STARTUP=auto
+MANUAL = REPRO_SERVICES_STARTUP=manual
+
+# macro for automatically naming the log file for a test
+LOG = REPRO_LOGGING_FILENAME=$(basename $@).log
+
+# settings for all tests
 export REPRO_EXIT_AFTER_STARTUP=true
-export REPRO_LOGGING_LEVEL=debug
 export REPRO_LOGGING_OPTIONS=NO_APPEND NO_TIMESTAMPS
 
+# names of all tests to be run automatically
 TESTS = start-repro-auto 		\
 		start-repro-manual		\
 		start-services-auto		\
@@ -10,31 +28,31 @@ TESTS = start-repro-auto 		\
 		run-demos				\
 		clean-demos				\
 
+# generic targets for running the tests 
 all: clean-all test-all
-
 test-all: clean-all $(addsuffix .test, $(TESTS))
-
 clean-all: $(addsuffix .clean, $(TESTS))
 
-LOG=REPRO_LOGGING_FILENAME=$(basename $@).log
-
+# rule for deleting the products of a particular test
 %.clean:
 	rm -f .repro-log/$(basename $@).log
 
+# the test targets
+
 start-repro-auto.test:
-	$(LOG)  REPRO_SERVICES_STARTUP=auto  make start-repro
+	$(LOG) $(DEBUG) $(AUTO) make start-repro
 
 start-repro-manual.test:
-	$(LOG)  REPRO_SERVICES_STARTUP=manual  make start-repro
+	$(LOG) $(DEBUG) $(MANUAL) make start-repro
 
 start-services-auto.test:
-	$(LOG) 	REPRO_SERVICES_STARTUP=auto  make start-services
+	$(LOG) $(DEBUG) $(AUTO) make start-services
 
 start-services-manual.test:
-	$(LOG) 	REPRO_SERVICES_STARTUP=manual  make start-services
+	$(LOG) $(DEBUG) $(MANUAL) make start-services
 
 run-demos.test:
-	$(LOG) 	make run-demos
+	$(LOG) $(DEBUG) $(AUTO) make run-demos
 
 clean-demos.test:
-	$(LOG) 	make clean-demos
+	$(LOG) $(DEBUG) $(AUTO) make clean-demos
