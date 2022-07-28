@@ -238,23 +238,23 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
 function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 
     # nothing to do if the repro services file is missing
-    if [[ ! -f ${REPRO_SERVICES_FILE} ]] ; then
-        $_REPRO_TRACE_RETURN_ "File not found: ${REPRO_SERVICES_FILE}" ; return
+    if [[ -f ${REPRO_SERVICES_FILE} ]] ; then
+
+        # write a message to the terminal for each service
+        readarray lines < ${REPRO_SERVICES_FILE}
+        if [[ -n "${lines}" ]] ; then
+
+             for line in "${lines[@]}" ; do
+                read service_name internal_port external_port <<< ${line}
+                $_REPRO_INFO_ "The ${service_name} service is now running."
+                $_REPRO_ALERT_ "Connect to ${service_name} at http://localhost:${external_port}."
+            done
+
+            $_REPRO_INFO_TRACE_RETURN_ 'Done announcing services'
+        fi
     fi
 
-    # write a message to the terminal for each service
-    readarray lines < ${REPRO_SERVICES_FILE}
-    if [[ -n "${lines}" ]] ; then
-        for line in "${lines[@]}" ; do
-            read service_name internal_port external_port <<< ${line}
-            $_REPRO_INFO_ The ${service_name} service is now running.
-            $_REPRO_INFO_ Connect to ${service_name} at http://localhost:${external_port}.
-        done
-    else
-        $_REPRO_INFO_ No registered services to start.
-    fi
-
-    $_REPRO_TRACE_RETURN_ "Done announcing services"
+    $_REPRO_INFO_TRACE_RETURN_ 'No registered services to start.'
 }
 
 

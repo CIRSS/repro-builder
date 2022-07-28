@@ -22,5 +22,5 @@ I MESG The function repro.start_services is being called after startup [/home/re
 I MESG The services are not being started now because REPRO_SERVICES_STARTUP != manual [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:36]
 I MESG Will now wait for a key stroke before returning because the --wait-for-key option was given [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:40]
 A MESG Press the 'q' key to stop the REPRO and its services. [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:42]
-I MESG Leaving loop waiting for keypress because REPRO session is non-interactive [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:44]
+I MESG Leaving loop waiting for key press because REPRO session is non-interactive [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:44]
 I MESG Returning without waiting for a key press. [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:57]
