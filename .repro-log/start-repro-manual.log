@@ -15,3 +15,4 @@ I MESG The function repro.start_services is being called during startup [/home/r
 I MESG The services are not being started now because REPRO_SERVICES_STARTUP != auto [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:272]
 I MESG Done handling repro.start_services call during startup [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:275]
 I MESG Done initializing REPRO state [/home/repro/repro-modules/repro-exports/functions-base:repro.initialize_state:14]
+logout

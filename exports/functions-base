@@ -300,6 +300,10 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
         $_REPRO_INFO_ "Will now wait for a key stroke before returning because the --wait-for-key option was given"
         while [ true ] ; do
             $_REPRO_ALERT_ "Press the 'q' key to stop the REPRO and its services."
+            if ! ${REPRO_INTERACTIVE_SESSION} ; then
+                $_REPRO_INFO_ "Leaving loop waiting for key press because REPRO session is non-interactive"
+                break
+            fi
             $_REPRO_INFO_ "Waiting for keystroke"
             read -n 1 key
             echo

@@ -37,6 +37,3 @@ echo "source ${REPRO_ATSHELL_FILE}" >> ${HOME}/.bashrc
 
 # add a penultimate line to .profile to source the atstart file
 echo "source ${REPRO_ATSTART_FILE}" >> ${HOME}/.profile
-
-# add a final line to .profile to optionally exit immediately
-echo 'if ${REPRO_EXIT_AFTER_STARTUP} ; then exit ; fi' >> ${HOME}/.profile

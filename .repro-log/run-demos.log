@@ -18,3 +18,9 @@ I MESG Processing line in target file: run-demos: [/home/repro/repro-modules/rep
 I MESG Processing line in target file: clean-demos: [/home/repro/repro-modules/repro-exports/functions-base:repro.run_target:218]
 I MESG Done handling repro.start_services call during startup [/home/repro/repro-modules/repro-exports/functions-base:repro.start_services:275]
 I MESG Done initializing REPRO state [/home/repro/repro-modules/repro-exports/functions-base:repro.initialize_state:14]
+I MESG Processing line in target file: run-demos: [/home/repro/repro-modules/repro-exports/functions-base:repro.run_target:14]
+make: Entering directory '/mnt/repro/.repro'
+run_all_tests.sh
+jq-1.6
+All Tests Succeeded
+make: Leaving directory '/mnt/repro/.repro'
