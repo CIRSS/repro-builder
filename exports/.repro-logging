@@ -40,6 +40,14 @@ function repro.debug {
     fi
 }
 
+function repro.debug_echo_line {
+    if [[ ${REPRO_LOGGING_LEVEL} == 'debug' || \
+          ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
+        echo $*
+    fi
+    eval $*
+}
+
 function repro.trace {
     if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         _repro.log T MESG $*
@@ -212,10 +220,13 @@ function _repro.initialize_logging {
         export _REPRO_WARN_=:
         export _REPRO_INFO_=:
         export _REPRO_DEBUG_=:
+        export _REPRO_DEBUG_ECHO_=:
         export _REPRO_TRACE_=:
         export _REPRO_TRACE_CALL_=:
         export _REPRO_TRACE_SOURCE_=:
         export _REPRO_TRACE_RETURN_='return ; '
+        export _REPRO_INFO_TRACE_RETURN_='return ; '
+        export _REPRO_DEBUG_TRACE_RETURN_='return ; '
         return
     fi
 
@@ -247,6 +258,7 @@ function _repro.initialize_logging {
     export _REPRO_WARN_=repro.warn
     export _REPRO_INFO_=repro.info
     export _REPRO_DEBUG_=repro.debug
+    export _REPRO_DEBUG_ECHO_=repro.debug_echo_line
     export _REPRO_TRACE_=repro.trace
     export _REPRO_TRACE_CALL_=repro.trace_call
     export _REPRO_TRACE_SOURCE_=repro.trace_source
