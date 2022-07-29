@@ -215,18 +215,22 @@ function _repro.initialize_logging {
 
     # if logging is disabled set logging macros to do nothing
     if [[ ${REPRO_LOGGING_LEVEL} == 'none' ]] ; then
+
         export _REPRO_ALERT_=:
         export _REPRO_ERROR_=:
         export _REPRO_WARN_=:
         export _REPRO_INFO_=:
         export _REPRO_DEBUG_=:
-        export _REPRO_DEBUG_EVAL_='eval $*'
+        export _REPRO_DEBUG_EVAL_=eval
         export _REPRO_TRACE_=:
         export _REPRO_TRACE_CALL_=:
         export _REPRO_TRACE_SOURCE_=:
-        export _REPRO_TRACE_RETURN_='return ; '
-        export _REPRO_INFO_TRACE_RETURN_='return ; '
-        export _REPRO_DEBUG_TRACE_RETURN_='return ; '
+        export _REPRO_TRACE_RETURN_=:
+        export _REPRO_INFO_TRACE_RETURN_=:
+        export _REPRO_DEBUG_TRACE_RETURN_=:
+
+        export REPRO_MAKE_VERBOSITY=--quiet
+
         return
     fi
 
@@ -250,7 +254,6 @@ function _repro.initialize_logging {
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_APPEND"* ]] ; then
         REPRO_LOGGING_APPEND=true
     fi
-
 
     # define logging macros
     export _REPRO_ALERT_=repro.alert

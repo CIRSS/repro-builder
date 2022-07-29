@@ -3,6 +3,7 @@
 default_target: all
 
 # macros for setting the logging level during a test
+NONE  = REPRO_LOGGING_LEVEL=none
 ALERT = REPRO_LOGGING_LEVEL=alert
 WARN  = REPRO_LOGGING_LEVEL=warn
 INFO  = REPRO_LOGGING_LEVEL=info
@@ -28,6 +29,7 @@ TESTS = start-repro-auto 		\
 		start-services-auto		\
 		start-services-manual 	\
 		run-demos				\
+		run-demos-no-logging	\
 		clean-demos
 
 # generic targets for running the tests 
@@ -54,8 +56,11 @@ start-services-manual.test:
 	$(MANUAL) make start-services > $(LOG)
 
 run-demos.test:
-	 make run-demos > $(LOG)
+	$(AUTO) make run-demos > $(LOG)
 
 clean-demos.test:
 	$(AUTO) make clean-demos > $(LOG)
+
+run-demos-no-logging.test:
+	$(NONE) make run-demos > $(LOG)
 

@@ -210,7 +210,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     $_REPRO_INFO_ "Invoking implementations of REPRO target '${requested_target}'"
 
     if [[ ! -f ${REPRO_TARGETS_FILE} ]] ; then
-        $_REPRO_ERROR_TRACE_RETURN_ "REPRO target mapping file (${REPRO_TARGETS_FILE}) not found"
+        $_REPRO_ERROR_TRACE_RETURN_ "REPRO target mapping file (${REPRO_TARGETS_FILE}) not found" ; return
     fi
 
     $_REPRO_DEBUG_ "Looking for implementations of the '${requested_target}' target in the REPRO mapping file (${REPRO_TARGETS_FILE})"
@@ -258,7 +258,7 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
                 $_REPRO_INFO_ "The ${service_name} service is now running."
                 $_REPRO_ALERT_ "Connect to ${service_name} at http://localhost:${external_port}."
             done
-            $_REPRO_INFO_TRACE_RETURN_ 'Done announcing services'
+            $_REPRO_INFO_TRACE_RETURN_ 'Done announcing services' ; return
         fi
     fi
 
