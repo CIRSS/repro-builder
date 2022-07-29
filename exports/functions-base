@@ -207,6 +207,11 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     requested_target=$1
     options=$2
 
+    error_code=
+    if [[ $options == "--enable-error-codes" ]] ; then
+        error_code=1
+    fi
+
     $_REPRO_INFO_ "Invoking implementations of REPRO target '${requested_target}'"
 
     if [[ ! -f ${REPRO_TARGETS_FILE} ]] ; then
@@ -235,7 +240,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     if ${target_invoked} ; then
         $_REPRO_INFO_TRACE_RETURN_ "Done invoking implementations of the '${requested_target}' REPRO target"; return
     else
-        $_REPRO_INFO_TRACE_RETURN_ "No implementations of the '${requested_target}' REPRO target were found" ; return 1
+        $_REPRO_INFO_TRACE_RETURN_ "No implementations of the '${requested_target}' REPRO target were found" ; return ${error_code}
     fi
 }
 
@@ -273,7 +278,7 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
         if [[ "${REPRO_SERVICES_STARTUP}" == 'auto' ]] ; then
 			$_REPRO_INFO_ "Starting services now because REPRO_SERVICES_STARTUP set to 'auto'"
-            $_REPRO_DEBUG_EVAL_ repro.run_target start-services
+            $_REPRO_DEBUG_EVAL_ repro.run_target start-services --enable-error-codes
             return_code=$?
             if [[ $return_code == 0 ]] ; then
                 export REPRO_SERVICES_STARTED=true
@@ -296,7 +301,7 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
 		$_REPRO_INFO_ "Starting services now because REPRO_SERVICES_STARTUP set to 'manual'"
 
 		# start services and allow warning that REPRO has no services
-        $_REPRO_DEBUG_EVAL_ repro.run_target start-services
+        $_REPRO_DEBUG_EVAL_ repro.run_target start-services --enable-error-codes
         return_code=$?
 
         # an error code indicates that there were no services to start
