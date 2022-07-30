@@ -145,7 +145,7 @@ function _repro.create_log_dir {
     export REPRO_LOG_DIR=${REPRO_MNT}/.repro-log
     if [[ ! -d ${REPRO_LOG_DIR} ]] ; then
         mkdir ${REPRO_LOG_DIR}
-        echo "*" > ${REPRO_LOG_DIR}/.gitignore
+        echo "session_*.log" > ${REPRO_LOG_DIR}/.gitignore
     fi
 }
 
@@ -154,7 +154,7 @@ function _repro.create_log_file {
     _repro.create_log_dir
 
     if [[ ${REPRO_LOGGING_FILENAME} == auto ]] ; then
-        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/$(_repro.timestamp_nospaces)-run.log"
+        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/session_$(_repro.timestamp_nospaces).log"
     else
         export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/${REPRO_LOGGING_FILENAME}"
     fi
