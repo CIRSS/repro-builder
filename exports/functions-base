@@ -3,6 +3,7 @@
 function repro.initialize_state { $_REPRO_TRACE_CALL_ $*
     mkdir -p ${REPRO_STATE_DIR}
     _repro.timestamp > ${REPRO_START_TIME}
+    $_REPRO_DEBUG_ "IMAGE ID = ${REPRO_IMAGE_ID}"
     $_REPRO_INFO_ "Initializing REPRO state"
     repro.update_path
     repro.initialize_modules
@@ -96,8 +97,15 @@ function _repro.restore_nullglob {
 function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 
     module_name=$1
+    options=$2
 
-	$_REPRO_INFO_ "Initializing trim files for module '${module_name}'"
+    if [[ "${options}" == "--reset" ]] ; then
+    	$_REPRO_INFO_ "Re-initializing trim files for module '${module_name}'"
+        reset=true
+    else
+    	$_REPRO_INFO_ "Initializing trim files for module '${module_name}'"
+        reset=false
+    fi
 
     # create module dot directory if it does not exist
     trim_dir=$(repro.trim_dir_name_for_module ${module_name})
@@ -121,7 +129,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     for makefile_path in "${makefiles[@]}" ; do
         makefile_name=$(basename ${makefile_path})
 
-        if [[ -f ${trim_dir}/${makefile_name} ]] ; then
+        if [[ ${reset} == "false" && -f ${trim_dir}/${makefile_name} ]] ; then
             $_REPRO_DEBUG_ "The file ${makefile_name} is already present in the '${module_name}' trim directory (${trim_dir})"
         else
             $_REPRO_INFO_ "Copying ${install_dir}/${makefile_name} to the '${module_name}' trim directory (${trim_dir})"
@@ -138,7 +146,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
         for trim_file_line in "${trim_manifest_lines[@]}" ; do
             trim_file=$(echo ${trim_file_line%%#*} | xargs)
             if [[ -n ${trim_file} ]] ; then
-                if [[ -f  ${trim_dir}/${trim_file} ]] ; then
+                if [[ ${reset} == "false" && -f  ${trim_dir}/${trim_file} ]] ; then
                     $_REPRO_DEBUG_ "Trim file ${trim_file} is already present in ${trim_dir}"
                 else
                     $_REPRO_INFO_ "Copying trim file ${trim_file} from ${install_dir} to ${trim_dir}"
@@ -152,7 +160,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
 }
 
 function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
-    $_REPRO_INFO_ "Initializing REPRO modules"
+    $_REPRO_INFO_ "Initializing modules"
     $_REPRO_DEBUG_ "Iterating over the list of installed modules in the module order file (${REPRO_ORDER_FILE})"
     readarray modules < ${REPRO_ORDER_FILE}
     for modules_line in "${modules[@]}" ; do
@@ -161,6 +169,23 @@ function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
         repro.initialize_module_trim ${module}
     done
     $_REPRO_INFO_TRACE_RETURN_ "Done initializing modules"
+}
+
+function repro.reset_module  { $_REPRO_TRACE_CALL_ $*
+    module=$1
+    $_REPRO_INFO_ "Resetting the '${module}' module"
+    $_REPRO_DEBUG_EVAL_ repro.initialize_module_trim ${module} --reset
+}
+
+function repro.reset_repro  { $_REPRO_TRACE_CALL_ $*
+    $_REPRO_INFO_ "Resetting all modules"
+    $_REPRO_DEBUG_ "Iterating over the list of installed modules in the module order file (${REPRO_ORDER_FILE})"
+    readarray modules < ${REPRO_ORDER_FILE}
+    for modules_line in "${modules[@]}" ; do
+        module=$(echo $modules_line | xargs)
+        repro.reset_module ${module}
+    done
+    $_REPRO_DEBUG_TRACE_RETURN_ "Done resetting all modules"
 }
 
 function repro.update_targets { $_REPRO_TRACE_CALL_ $*

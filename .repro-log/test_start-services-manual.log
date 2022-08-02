@@ -1,7 +1,8 @@
 D MESG Loaded logging functions
 D MESG Already loaded logging functions
+D MESG IMAGE ID = sha256:0477da6c3adfa8095991d872ba29cd810ad68e0e925c07df8f2b158a814e19c4
 I MESG Initializing REPRO state
-I MESG Initializing REPRO modules
+I MESG Initializing modules
 D MESG Iterating over the list of installed modules in the module order file (/home/repro/.repro-order)
 I MESG Initializing module 'repro'
 I MESG Initializing trim files for module 'repro'

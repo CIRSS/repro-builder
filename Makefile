@@ -84,12 +84,15 @@ $(warning The REPRO_IMAGE_TAG variable is not set. Defaulting to \
           '${REPRO_IMAGE_TAG}' for Docker image tag.)
 endif
 
+REPRO_IMAGE_ID='$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})'
+
 # Assemble REPRO settings available within the running REPRO.
 REPRO_SETTINGS=	-e REPRO_SERVICES_STARTUP="$(REPRO_SERVICES_STARTUP)" 		\
 				-e REPRO_LOGGING_LEVEL="$(REPRO_LOGGING_LEVEL)"     		\
 				-e REPRO_LOGGING_FILENAME="$(REPRO_LOGGING_FILENAME)"		\
  				-e REPRO_LOGGING_OPTIONS="$(REPRO_LOGGING_OPTIONS)"			\
 				-e REPRO_INTERACTIVE_SESSION="$(REPRO_INTERACTIVE_SESSION)"	\
+				-e REPRO_IMAGE_ID=$(REPRO_IMAGE_ID) 						\
                	-e REPRO_NAME="${REPRO_NAME}"                       		\
                	-e REPRO_MNT="${REPRO_MNT}"
 
@@ -213,6 +216,9 @@ else
 start-repro:
 	$(warning INFO: The REPRO is already running.)
 endif
+
+reset-repro:
+	$(RUN_IN_REPRO) repro.reset_repro
 
 clean-repro:            ## Delete REPRO run logs in .repro-log directory.
 	rm -f .repro-log/*.log
