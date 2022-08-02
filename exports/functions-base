@@ -3,7 +3,7 @@
 function repro.initialize_state { $_REPRO_TRACE_CALL_ $*
     mkdir -p ${REPRO_STATE_DIR}
     _repro.timestamp > ${REPRO_START_TIME}
-    $_REPRO_DEBUG_ "IMAGE ID = ${REPRO_IMAGE_ID}"
+    $_REPRO_DEBUG_VRBL_ REPRO_IMAGE_ID
     $_REPRO_INFO_ "Initializing REPRO state"
     repro.update_path
     repro.initialize_modules

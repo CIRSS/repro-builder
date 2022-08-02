@@ -48,6 +48,15 @@ function repro.debug_eval {
     eval $*
 }
 
+function repro.debug_variable {
+    if [[ ${REPRO_LOGGING_LEVEL} == 'debug' || \
+          ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
+        name=$1
+        value=${!name}
+        _repro.log D VRBL ${name} == "'${value}'"
+    fi
+}
+
 function repro.trace {
     if [[ ${REPRO_LOGGING_LEVEL} == 'trace' ]] ; then
         _repro.log T MESG $*
@@ -222,6 +231,7 @@ function _repro.initialize_logging {
         export _REPRO_INFO_=:
         export _REPRO_DEBUG_=:
         export _REPRO_DEBUG_EVAL_=eval
+        export _REPRO_DEBUG_VRBL_=:
         export _REPRO_TRACE_=:
         export _REPRO_TRACE_CALL_=:
         export _REPRO_TRACE_SOURCE_=:
@@ -262,6 +272,7 @@ function _repro.initialize_logging {
     export _REPRO_INFO_=repro.info
     export _REPRO_DEBUG_=repro.debug
     export _REPRO_DEBUG_EVAL_=repro.debug_eval
+    export _REPRO_DEBUG_VRBL_=repro.debug_variable
     export _REPRO_TRACE_=repro.trace
     export _REPRO_TRACE_CALL_=repro.trace_call
     export _REPRO_TRACE_SOURCE_=repro.trace_source

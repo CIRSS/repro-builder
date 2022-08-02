@@ -84,7 +84,11 @@ $(warning The REPRO_IMAGE_TAG variable is not set. Defaulting to \
           '${REPRO_IMAGE_TAG}' for Docker image tag.)
 endif
 
-REPRO_IMAGE_ID='$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})'
+# Identify the Docker image associated with this REPRO
+REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
+
+# Get the Docker image ID for this image if it already exists
+REPRO_IMAGE_ID=$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
 
 # Assemble REPRO settings available within the running REPRO.
 REPRO_SETTINGS=	-e REPRO_SERVICES_STARTUP="$(REPRO_SERVICES_STARTUP)" 		\
@@ -96,8 +100,6 @@ REPRO_SETTINGS=	-e REPRO_SERVICES_STARTUP="$(REPRO_SERVICES_STARTUP)" 		\
                	-e REPRO_NAME="${REPRO_NAME}"                       		\
                	-e REPRO_MNT="${REPRO_MNT}"
 
-# Identify the Docker image associated with this REPRO
-REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
 
 ## 
 #- =============================================================================
