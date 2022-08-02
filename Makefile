@@ -90,16 +90,20 @@ REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
 # Get the Docker image ID for this image if it already exists
 REPRO_IMAGE_ID=$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
 
-# Assemble REPRO settings available within the running REPRO.
-REPRO_SETTINGS=	-e REPRO_SERVICES_STARTUP="$(REPRO_SERVICES_STARTUP)" 		\
-				-e REPRO_LOGGING_LEVEL="$(REPRO_LOGGING_LEVEL)"     		\
-				-e REPRO_LOGGING_FILENAME="$(REPRO_LOGGING_FILENAME)"		\
- 				-e REPRO_LOGGING_OPTIONS="$(REPRO_LOGGING_OPTIONS)"			\
-				-e REPRO_INTERACTIVE_SESSION="$(REPRO_INTERACTIVE_SESSION)"	\
-				-e REPRO_IMAGE_ID=$(REPRO_IMAGE_ID) 						\
-               	-e REPRO_NAME="${REPRO_NAME}"                       		\
-               	-e REPRO_MNT="${REPRO_MNT}"
+# define mount point for REPRO directory tree in running container
+REPRO_MNT=/mnt/${REPRO_NAME}
 
+# Assemble REPRO settings available within the running REPRO.
+ENV_FILE=.repro-env
+$(file > ${ENV_FILE},)
+$(file >> ${ENV_FILE}, REPRO_SERVICES_STARTUP=$(REPRO_SERVICES_STARTUP))
+$(file >> ${ENV_FILE}, REPRO_LOGGING_LEVEL=$(REPRO_LOGGING_LEVEL))
+$(file >> ${ENV_FILE}, REPRO_LOGGING_FILENAME=$(REPRO_LOGGING_FILENAME))
+$(file >> ${ENV_FILE}, REPRO_LOGGING_OPTIONS=$(REPRO_LOGGING_OPTIONS))
+$(file >> ${ENV_FILE}, REPRO_INTERACTIVE_SESSION=$(REPRO_INTERACTIVE_SESSION))
+$(file >> ${ENV_FILE}, REPRO_IMAGE_ID=$(REPRO_IMAGE_ID))
+$(file >> ${ENV_FILE}, REPRO_NAME=$(REPRO_NAME))
+$(file >> ${ENV_FILE}, REPRO_MNT=$(REPRO_MNT))
 
 ## 
 #- =============================================================================
@@ -184,15 +188,14 @@ endif
 ##    --- Targets also affected by REPRO RUN settings ---
 #- =============================================================================
 
-# define mount point for REPRO directory tree in running container
-REPRO_MNT=/mnt/${REPRO_NAME}
-
 # define command for running the REPRO Docker image
-REPRO_RUN_COMMAND=$(QUIET)docker run -it --rm $(REPRO_DOCKER_OPTIONS)       \
-                             --volume "$(CURDIR)":"$(REPRO_MNT)"            \
-							 $(REPRO_SETTINGS)								\
-                             $(REPRO_MOUNT_OTHER_VOLUMES)                   \
+REPRO_RUN_COMMAND=$(QUIET)docker run -it --rm $(REPRO_DOCKER_OPTIONS)   \
+                             --volume "$(CURDIR)":"$(REPRO_MNT)"       	\
+							 --env-file=${ENV_FILE}						\
+							 $(REPRO_SETTINGS)							\
+                             $(REPRO_MOUNT_OTHER_VOLUMES)               \
                              $(REPRO_IMAGE)
+							
 
 # define command for running a command in a running or currently-idle REPRO
 ifdef IN_RUNNING_REPRO
@@ -200,7 +203,6 @@ RUN_IN_REPRO=$(QUIET)bash -ic
 else
 RUN_IN_REPRO=$(REPRO_RUN_COMMAND) bash -ilc
 endif
-
 
 ## 
 #- ---------- Targets for starting this REPRO  ---------------------------------
@@ -220,6 +222,7 @@ start-repro:
 endif
 
 reset-repro:
+	$(file >> ${ENV_FILE}, REPRO_DEFER_INIT=true)
 	$(RUN_IN_REPRO) repro.reset_repro
 
 clean-repro:            ## Delete REPRO run logs in .repro-log directory.

@@ -1,0 +1,23 @@
+D MESG Loaded logging functions
+D MESG Already loaded logging functions
+D VRBL REPRO_IMAGE_ID == 'sha256:510f10d408fecdb3f520fbcc57ad11020a6ff62f6cda1a2c8bb20d35f956a6bc'
+I MESG Initializing REPRO state
+I MESG Skipping REPRO initialization because REPRO_DEFER_INIT is set to 'true'
+I MESG Resetting REPRO
+I MESG Resetting all modules
+D MESG Iterating over the list of installed modules in the module order file (/home/repro/.repro-order)
+I MESG Resetting the 'repro' module
+D EVAL repro.initialize_module_trim repro --reset
+I MESG Re-initializing trim files for module 'repro'
+D MESG Looking for Makefiles in the 'repro' module installation directory (/home/repro/repro-modules/repro-exports) to copy to the module trim directory (/mnt/repro/.repro)
+I MESG Copying /home/repro/repro-modules/repro-exports/Makefile-demos to the 'repro' trim directory (/mnt/repro/.repro)
+I MESG Done initializing trim files for module 'repro'
+D MESG Done resetting all modules
+I MESG Resetting the REPRO target mapping file (/mnt/repro/.repro/repro-targets)
+I MESG Installing a default (empty) target mapping file to /mnt/repro/.repro/repro-targets
+D MESG Iterating over the list of installed modules in the module order file (/home/repro/.repro-order)
+D MESG Looking for targets in the 'repro' module
+I MESG Mapping the 'run-the-demos' target in the 'demos' profile of the 'repro' module to the REPRO 'run-demos' target
+I MESG Mapping the 'clean-the-demos' target in the 'demos' profile of the 'repro' module to the REPRO 'clean-demos' target
+I MESG Done building the REPRO target mapping file
+D MESG Done resetting REPRO

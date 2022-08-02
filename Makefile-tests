@@ -24,7 +24,8 @@ export REPRO_LOGGING_LEVEL=debug
 export REPRO_LOGGING_OPTIONS=NO_APPEND NO_TIMESTAMPS NO_FILE NO_LOCATIONS
 
 # names of all tests to be run automatically
-TESTS = start-repro-auto 		\
+TESTS = reset-repro				\
+		start-repro-auto 		\
 		start-repro-manual		\
 		start-services-auto		\
 		start-services-manual 	\
@@ -42,6 +43,9 @@ clean-all: $(addsuffix .clean, $(TESTS))
 	rm -f ${LOG}
 
 # the test targets
+
+reset-repro.test:
+	$(AUTO) make reset-repro > $(LOG)
 
 start-repro-auto.test:
 	$(AUTO) make start-repro > $(LOG)

@@ -6,6 +6,11 @@ function repro.initialize_state { $_REPRO_TRACE_CALL_ $*
     $_REPRO_DEBUG_VRBL_ REPRO_IMAGE_ID
     $_REPRO_INFO_ "Initializing REPRO state"
     repro.update_path
+
+    if [[ ${REPRO_DEFER_INIT} == "true" ]] ; then
+        $_REPRO_INFO_TRACE_RETURN_ "Skipping REPRO initialization because REPRO_DEFER_INIT is set to 'true'" ; return
+    fi
+
     repro.initialize_modules
     repro.update_targets
 
@@ -177,7 +182,7 @@ function repro.reset_module  { $_REPRO_TRACE_CALL_ $*
     $_REPRO_DEBUG_EVAL_ repro.initialize_module_trim ${module} --reset
 }
 
-function repro.reset_repro  { $_REPRO_TRACE_CALL_ $*
+function repro.reset_all_modules {
     $_REPRO_INFO_ "Resetting all modules"
     $_REPRO_DEBUG_ "Iterating over the list of installed modules in the module order file (${REPRO_ORDER_FILE})"
     readarray modules < ${REPRO_ORDER_FILE}
@@ -188,13 +193,24 @@ function repro.reset_repro  { $_REPRO_TRACE_CALL_ $*
     $_REPRO_DEBUG_TRACE_RETURN_ "Done resetting all modules"
 }
 
+function repro.reset_repro  { $_REPRO_TRACE_CALL_ $*
+    $_REPRO_INFO_ "Resetting REPRO"
+    repro.reset_all_modules
+    repro.update_targets --reset
+    $_REPRO_DEBUG_TRACE_RETURN_ "Done resetting REPRO"
+}
+
 function repro.update_targets { $_REPRO_TRACE_CALL_ $*
 
-    $_REPRO_INFO_ "Ensuring that the REPRO target mapping file exists (${REPRO_TARGETS_FILE})"
+    options=$1
 
-    # do nothing if targets file already exists
-    if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
-      $_REPRO_DEBUG_TRACE_RETURN_ "The REPRO target mapping file (${REPRO_TARGETS_FILE}) already exists so nothing to do." ; return
+    if [[ "${options}" == "--reset" ]] ; then
+    	$_REPRO_INFO_ "Resetting the REPRO target mapping file (${REPRO_TARGETS_FILE})"
+    else
+        $_REPRO_INFO_ "Ensuring that the REPRO target mapping file exists (${REPRO_TARGETS_FILE})"
+        if [[ -f ${REPRO_TARGETS_FILE} ]] ; then
+        $_REPRO_DEBUG_TRACE_RETURN_ "The REPRO target mapping file (${REPRO_TARGETS_FILE}) already exists so nothing to do." ; return
+        fi
     fi
 
     $_REPRO_INFO_ "Installing a default (empty) target mapping file to ${REPRO_TARGETS_FILE}"
