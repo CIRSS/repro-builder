@@ -3,9 +3,16 @@
 function repro.initialize_session { $_REPRO_TRACE_CALL_ $*
 
     mkdir -p ${REPRO_ACTIVE_SESSION_DIR}
-    echo "# Session informations" > ${REPRO_SESSION_INFO_FILE}
-    echo "repro_name: ${REPRO_NAME}" >> ${REPRO_SESSION_INFO_FILE}
-    echo "start_time: ${REPRO_START_TIME}" >> ${REPRO_SESSION_INFO_FILE}
+    git_ignore_file=${REPRO_SESSIONS_DIR}/.gitignore
+    if [[ ! -f ${REPRO_SESSIONS_DIR} ]] ; then
+        $_REPRO_INFO_ "Creating a .gitignore file that ignores everything in the ${REPRO_SESSIONS_DIR} directory"
+        echo "*" > ${git_ignore_file}
+    fi
+
+
+
+    echo "start_time: ${REPRO_START_TIME}" > ${REPRO_SESSION_INFO_FILE}
+    echo "repro_tag: ${REPRO_TAG}" >> ${REPRO_SESSION_INFO_FILE}
     echo "image_id: ${REPRO_IMAGE_ID}" >>  ${REPRO_SESSION_INFO_FILE}
     echo "session_id: ${REPRO_SESSION_ID}" >> ${REPRO_SESSION_INFO_FILE}
 

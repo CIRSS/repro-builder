@@ -93,18 +93,6 @@ REPRO_IMAGE_ID=$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
 # define mount point for REPRO directory tree in running container
 REPRO_MNT=/mnt/${REPRO_NAME}
 
-# Assemble REPRO settings available within the running REPRO.
-ENV_FILE=.repro-env
-$(file > ${ENV_FILE},)
-$(file >> ${ENV_FILE}, REPRO_SERVICES_STARTUP=$(REPRO_SERVICES_STARTUP))
-$(file >> ${ENV_FILE}, REPRO_LOGGING_LEVEL=$(REPRO_LOGGING_LEVEL))
-$(file >> ${ENV_FILE}, REPRO_LOGGING_FILENAME=$(REPRO_LOGGING_FILENAME))
-$(file >> ${ENV_FILE}, REPRO_LOGGING_OPTIONS=$(REPRO_LOGGING_OPTIONS))
-$(file >> ${ENV_FILE}, REPRO_INTERACTIVE_SESSION=$(REPRO_INTERACTIVE_SESSION))
-$(file >> ${ENV_FILE}, REPRO_IMAGE_ID=$(REPRO_IMAGE_ID))
-$(file >> ${ENV_FILE}, REPRO_NAME=$(REPRO_NAME))
-$(file >> ${ENV_FILE}, REPRO_MNT=$(REPRO_MNT))
-
 ## 
 #- =============================================================================
 ##     --- Targets for understanding and maintaining this Makefile ---
@@ -188,6 +176,23 @@ endif
 ##    --- Targets also affected by REPRO RUN settings ---
 #- =============================================================================
 
+SESSION_DIR=.repro-sessions/active
+ENV_FILE=${SESSION_DIR}/session.env
+
+PHONY: session
+session:
+	$(shell mkdir -p ${SESSION_DIR})
+	$(file  > ${ENV_FILE}, REPRO_NAME=$(REPRO_NAME))
+	$(file >> ${ENV_FILE}, REPRO_MNT=$(REPRO_MNT))
+	$(file >> ${ENV_FILE}, REPRO_TAG=$(REPRO_IMAGE))
+	$(file >> ${ENV_FILE}, REPRO_IMAGE_ID=$(REPRO_IMAGE_ID))
+	$(file >> ${ENV_FILE}, REPRO_SERVICES_STARTUP=$(REPRO_SERVICES_STARTUP))
+	$(file >> ${ENV_FILE}, REPRO_LOGGING_LEVEL=$(REPRO_LOGGING_LEVEL))
+	$(file >> ${ENV_FILE}, REPRO_LOGGING_FILENAME=$(REPRO_LOGGING_FILENAME))
+	$(file >> ${ENV_FILE}, REPRO_LOGGING_OPTIONS=$(REPRO_LOGGING_OPTIONS))
+	$(file >> ${ENV_FILE}, REPRO_INTERACTIVE_SESSION=$(REPRO_INTERACTIVE_SESSION))
+	$(shell docker inspect ${REPRO_IMAGE_ID} > ${SESSION_DIR}/image.json)
+
 # define command for running the REPRO Docker image
 REPRO_RUN_COMMAND=$(QUIET)docker run -it --rm $(REPRO_DOCKER_OPTIONS)   \
                              --volume "$(CURDIR)":"$(REPRO_MNT)"       	\
@@ -210,10 +215,11 @@ endif
 
 ifndef IN_RUNNING_REPRO
 ifeq ($(REPRO_EXIT_AFTER_STARTUP), true)
-start-repro:            ## Start this REPRO in interactive mode. 
+## start-repro             Start an interactive session.
+start-repro: session
 	$(RUN_IN_REPRO) exit
 else
-start-repro: 
+start-repro: session 
 	$(REPRO_RUN_COMMAND)
 endif
 else
@@ -221,7 +227,7 @@ start-repro:
 	$(warning INFO: The REPRO is already running.)
 endif
 
-reset-repro:
+reset-repro: session
 	$(file >> ${ENV_FILE}, REPRO_DEFER_INIT=true)
 	$(RUN_IN_REPRO) repro.reset_repro
 
@@ -230,10 +236,11 @@ clean-repro:            ## Delete REPRO run logs in .repro-log directory.
 
 ## 
 ifdef IN_RUNNING_REPRO
-start-services:         ## Start the services provided by this REPRO.
+## start-services          Start the services provided by this REPRO.
+start-services:  session       
 	$(RUN_IN_REPRO) 'repro.start_services'
 else
-start-services:
+start-services: session
 	$(RUN_IN_REPRO) 'repro.start_services --wait-for-key'
 endif
 
@@ -244,40 +251,40 @@ test-repro:
 ## 
 #- ---------- Targets for running the examples in this REPRO --------------------
 #- 
-run-demos:              ## Run this REPRO's demos.
+run-demos: session      ## Run this REPRO's demos.
 	$(RUN_IN_REPRO) 'repro.run_target run-demos'
 
-clean-demos:            ## Delete all artifacts created by the demos.
+clean-demos: session    ## Delete all artifacts created by the demos.
 	$(RUN_IN_REPRO) 'repro.run_target clean-demos'
 
 ## 
 #- ---------- Targets for performing the analyses in this REPRO -----------------
 #- 
-run-analyses:           ## Run the analyses in this REPRO.
+run-analyses: session  ## Run the analyses in this REPRO.
 	$(RUN_IN_REPRO) 'repro.run_target run-analyses'
 
-clean-analyses:         ## Delete all artificats created by the analyses.
+clean-analyses: session ## Delete all artificats created by the analyses.
 	$(RUN_IN_REPRO) 'repro.run_target clean-analyses'
 
 ## 
 #- ---------- Targets for creating the reports in this REPRO -------------------
 #- 
-build-reports:          ## Generate this REPRO's reports.
+build-reports: session         ## Generate this REPRO's reports.
 	$(RUN_IN_REPRO) 'repro.run_target build-reports'
 
-clean-reports:          ## Delete all generated reports.
+clean-reports: session         ## Delete all generated reports.
 	$(RUN_IN_REPRO) 'repro.run_target clean-reports'
 
 ## 
 #- ---------- Targets for maintaining the databases in this REPRO --------------
 #- 
-clean-databases:        ## Delete the database logs.
+clean-databases: session        ## Delete the database logs.
 	$(RUN_IN_REPRO) 'repro.run_target clean-databases'
 	
-drop-databases:         ## Delete the database storage files.
+drop-databases: session        ## Delete the database storage files.
 	$(RUN_IN_REPRO) 'repro.run_target drop-databases'
 
-purge-databases:        ## Delete all artifacts associated with database instances.
+purge-databases: session       ## Delete all artifacts associated with database instances.
 	$(RUN_IN_REPRO) 'repro.run_target purge-databases'
 
 ## 
@@ -288,22 +295,22 @@ purge-databases:        ## Delete all artifacts associated with database instanc
 ## 
 #- ---------- Targets for building and testing custom code in this REPRO -------
 #- 
-build-code:             ## Build the custom code in this REPRO.
+build-code: session            ## Build the custom code in this REPRO.
 	$(RUN_IN_REPRO) 'repro.run_target build-code'
 
-test-code:              ## Run tests on custom code in this REPRO.
+test-code: session              ## Run tests on custom code in this REPRO.
 	$(RUN_IN_REPRO) 'repro.run_target test-code'
 
-install-code:           ## Install built artifacts in REPRO.
+install-code: session          ## Install built artifacts in REPRO.
 	$(RUN_IN_REPRO) 'repro.run_target install-code'
 
-package-code:           ## Package custom artifacts for distribution.
+package-code: session           ## Package custom artifacts for distribution.
 	$(RUN_IN_REPRO) 'repro.run_target package-code'
 
-clean-code:             ## Delete artifacts generated by builds of the code.
+clean-code: session            ## Delete artifacts generated by builds of the code.
 	$(RUN_IN_REPRO) 'repro.run_target clean-code'
 
-purge-code:             ## Delete all downloaded, cached, and built artifacts.
+purge-code: session            ## Delete all downloaded, cached, and built artifacts.
 	$(RUN_IN_REPRO) 'repro.run_target purge-code'\
 
 ## 
