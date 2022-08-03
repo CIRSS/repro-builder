@@ -15,7 +15,7 @@ AUTO   = REPRO_SERVICES_STARTUP=auto
 MANUAL = REPRO_SERVICES_STARTUP=manual
 
 # macro for automatically naming the log file for a test
-LOG = .repro-log/test_$(basename $@).log
+LOG = .repro-logs/test_$(basename $@).log
 
 # settings for all tests
 export REPRO_EXIT_AFTER_STARTUP=true

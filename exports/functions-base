@@ -1,14 +1,20 @@
 
 
-function repro.initialize_state { $_REPRO_TRACE_CALL_ $*
-    mkdir -p ${REPRO_STATE_DIR}
-    _repro.timestamp > ${REPRO_START_TIME}
-    $_REPRO_DEBUG_VRBL_ REPRO_IMAGE_ID
-    $_REPRO_INFO_ "Initializing REPRO state"
+function repro.initialize_session { $_REPRO_TRACE_CALL_ $*
+
+    mkdir -p ${REPRO_ACTIVE_SESSION_DIR}
+    echo "# Session informations" > ${REPRO_SESSION_INFO_FILE}
+    echo "repro_name: ${REPRO_NAME}" >> ${REPRO_SESSION_INFO_FILE}
+    echo "start_time: ${REPRO_START_TIME}" >> ${REPRO_SESSION_INFO_FILE}
+    echo "image_id: ${REPRO_IMAGE_ID}" >>  ${REPRO_SESSION_INFO_FILE}
+    echo "session_id: ${REPRO_SESSION_ID}" >> ${REPRO_SESSION_INFO_FILE}
+
+    $_REPRO_INFO_ "Initializing REPRO session"
+    $_REPRO_INFO_ "Building PATH variable"
     repro.update_path
 
     if [[ ${REPRO_DEFER_INIT} == "true" ]] ; then
-        $_REPRO_INFO_TRACE_RETURN_ "Skipping REPRO initialization because REPRO_DEFER_INIT is set to 'true'" ; return
+        $_REPRO_INFO_TRACE_RETURN_ "Skipping rest of session initialization because REPRO_DEFER_INIT is set to 'true'" ; return
     fi
 
     repro.initialize_modules

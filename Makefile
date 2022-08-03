@@ -226,7 +226,7 @@ reset-repro:
 	$(RUN_IN_REPRO) repro.reset_repro
 
 clean-repro:            ## Delete REPRO run logs in .repro-log directory.
-	rm -f .repro-log/*.log
+	rm -f .repro-logs/*.log
 
 ## 
 ifdef IN_RUNNING_REPRO

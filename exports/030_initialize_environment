@@ -30,9 +30,9 @@ repro.env REPRO_INDEX_DIR           ${HOME}/.repro-index
 repro.env REPRO_ORDER_FILE          ${HOME}/.repro-order
 repro.env REPRO_EXPORTS_DIR         '${REPRO_MNT}/exports'
 repro.env REPRO_BASE_PATH           '${PATH}'
-repro.env REPRO_STATE_DIR           ${REPRO_DOT_DIR}/state
-repro.env REPRO_START_TIME          ${REPRO_STATE_DIR}/start-time
-repro.env REPRO_SERVICES_START_TIME ${REPRO_STATE_DIR}/services-start-time
+repro.env REPRO_SESSIONS_DIR        '${REPRO_MNT}/.repro-sessions'
+repro.env REPRO_ACTIVE_SESSION_DIR  '${REPRO_SESSIONS_DIR}/active'
+repro.env REPRO_SESSION_INFO_FILE   '${REPRO_ACTIVE_SESSION_DIR}/session-info'
 repro.env REPRO_LOGGING_FUNCTIONS   ${HOME}/.repro-logging
 
 cp .repro-logging ${REPRO_LOGGING_FUNCTIONS}

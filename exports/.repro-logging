@@ -6,6 +6,26 @@ else
     REPRO_LOGGING_FILE_SOURCED=true
 fi
 
+# returns a sortable timestamp with no spaces
+function _repro.timestamp_nospaces {
+    echo "$(date +'%Y%m%d.%H%M%S.%3N')"
+}
+
+export REPRO_START_TIME=$(_repro.timestamp_nospaces)
+export REPRO_SESSION_ID=${REPRO_NAME}-${REPRO_IMAGE_ID}-${REPRO_START_TIME}
+
+
+# returns seconds since the epoch
+function _repro.timestamp_seconds {
+    echo $(date +"%s")
+}
+
+#  returns a sortable timestamp
+function _repro.timestamp {
+    echo "$(date +'%Y-%m-%d %T.%3N')"
+}
+
+
 function repro.alert {
     if [[ ${REPRO_LOGGING_LEVEL} != 'none' ]] ; then
         _repro.log A MESG $*
@@ -117,21 +137,6 @@ function repro.debug_trace_ret {
 }
 
 
-# returns seconds since the epoch
-function _repro.timestamp_seconds {
-    echo $(date +"%s")
-}
-
-#  returns a sortable timestamp
-function _repro.timestamp {
-    echo "$(date +'%Y-%m-%d %T.%3N')"
-}
-
-# returns a sortable timestamp with no spaces
-function _repro.timestamp_nospaces {
-    echo "$(date +'%Y%m%d.%H%M%S.%3N')"
-}
-
 function _repro.caller_file {
 	stack_level=$1
 	read _ _ file  <<< "$(caller $(($stack_level+1)))"
@@ -151,10 +156,10 @@ function _repro.caller {
 }
 
 function _repro.create_log_dir {
-    export REPRO_LOG_DIR=${REPRO_MNT}/.repro-log
-    if [[ ! -d ${REPRO_LOG_DIR} ]] ; then
-        mkdir ${REPRO_LOG_DIR}
-        echo "session_*.log" > ${REPRO_LOG_DIR}/.gitignore
+    export REPRO_LOGS_DIR=${REPRO_MNT}/.repro-logs
+    if [[ ! -d ${REPRO_LOGS_DIR} ]] ; then
+        mkdir ${REPRO_LOGS_DIR}
+        echo "session_*.log" > ${REPRO_LOGS_DIR}/.gitignore
     fi
 }
 
@@ -163,9 +168,9 @@ function _repro.create_log_file {
     _repro.create_log_dir
 
     if [[ ${REPRO_LOGGING_FILENAME} == auto ]] ; then
-        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/session_$(_repro.timestamp_nospaces).log"
+        export REPRO_RUN_LOG_FILE="${REPRO_LOGS_DIR}/session_${REPRO_START_TIME}.log"
     else
-        export REPRO_RUN_LOG_FILE="${REPRO_LOG_DIR}/${REPRO_LOGGING_FILENAME}"
+        export REPRO_RUN_LOG_FILE="${REPRO_LOGS_DIR}/${REPRO_LOGGING_FILENAME}"
     fi
 
     if [[ ${REPRO_LOGGING_APPEND} ]] ; then
@@ -294,4 +299,4 @@ _repro.initialize_logging
 
 # report definition of logging functions succeeeded
 $_REPRO_TRACE_SOURCE_
-$_REPRO_DEBUG_TRACE_RETURN_ 'Loaded logging functions'
+$_REPRO_INFO_TRACE_RETURN_ "Initialized REPRO logging system and macros"
