@@ -13,7 +13,7 @@ REPRO_LOGGING_LEVEL?=trace
 
 #REPRO_MOUNT_OTHER_VOLUMES=$(REPRO_MOUNT_CLI) $(REPRO_MOUNT_BLAZE)
 
-image:                  build-image   ## 
-start:                  start-repro   ## 
+image:             build-image   ## 
+start:             start-repro   ## 
 
 ## 

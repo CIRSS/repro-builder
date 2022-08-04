@@ -12,9 +12,8 @@ default_target: list
 # Include optional repro-config file to to override default REPRO settings.
 -include repro-config
 
-#- =============================================================================
-#-     --- REPRO settings, supported values, and defaults ---
-#- =============================================================================
+#- 
+#- ============================== REPRO SETTINGS ===============================
 
 #- 
 #- --- REPRO_SERVICES_STARTUP --------------------------------------------------
@@ -93,20 +92,21 @@ REPRO_IMAGE_ID=$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
 # define mount point for REPRO directory tree in running container
 REPRO_MNT=/mnt/${REPRO_NAME}
 
+#- 
+#- ========================== REPRO TARGETS ====================================
+
 ## 
-#- =============================================================================
-##     --- Targets for understanding and maintaining this Makefile ---
-#- =============================================================================
+## --------- Targets for understanding and maintaining this Makefile -----------
 ## 
 
-list:                   ## List Makefile targets (default target).
+list:              ## List Makefile targets (default target).
 ifdef PWSH
 	@${PWSH} "Get-ChildItem .repro | Select-String -Pattern '#\# ' | % {$$_.Line.replace('##','')}"
 else
 	@sed -ne '/@sed/!s/#[#] //p' $(MAKEFILE_LIST)
 endif
 
-help:                   ## Show detailed Makefile help.
+help:              ## Show detailed Makefile help.
 ifdef PWSH
 	@${PWSH} "Get-ChildItem .repro | Select-String -Pattern '#\# ' | % {$$_.Line.replace('##','')}"
 else
@@ -114,49 +114,43 @@ else
 endif
 
 ## 
-upgrade-makefile:       ## Replace local REPRO Makefile with latest version 
-                        ## of Makefile on repros-dev/repro master branch.
+upgrade-makefile:  ## Replace local REPRO Makefile with latest version 
+                   ## of Makefile on repros-dev/repro master branch.
 	curl -L https://raw.githubusercontent.com/repros-dev/repro/master/Makefile -o Makefile
 
 
 ifndef IN_RUNNING_REPRO
 
 ## 
-
-#- =============================================================================
-##     --- Targets affected by REPRO IMAGE settings ---
-#- =============================================================================
-
+## ---------- Targets for managing the Docker image for this REPRO -------------
 ## 
-#- ---------- Targets for managing the Docker image for this REPRO -------------
-#- 
-build-image:            ## Build this REPRO's Docker image.
+build-image:       ## Build this REPRO's Docker image.
 	docker build -t ${REPRO_IMAGE} .
 
-rebuild-image:          ## Force rebuild of this REPRO's Docker image.
+rebuild-image:     ## Force rebuild of this REPRO's Docker image.
 	docker build --no-cache -t ${REPRO_IMAGE} .
 
-pull-image:             ## Pull this REPRO's Docker image from Docker Hub.
+pull-image:        ## Pull this REPRO's Docker image from Docker Hub.
 	docker pull ${REPRO_IMAGE}
 
-push-image:             ## Push this REPRO's Docker image to Docker Hub.
+push-image:        ## Push this REPRO's Docker image to Docker Hub.
 	docker push ${REPRO_IMAGE}
 
-#-  
-#- ---------- Targets for building a custom parent image  ----------------------
-#- 
+##  
+## ---------- Targets for building a custom parent image  ----------------------
+## 
 ifdef PARENT_IMAGE
 
-build-parent-image:     #- Build the custom parent Docker image.
+build-parent:      ## Build the custom parent Docker image.
 	docker build -f Dockerfile-parent -t ${PARENT_IMAGE} .
 
-rebuild-parent-image:   #- Force rebuild of the custom Docker image.
+rebuild-parent:    ## Force rebuild of the custom Docker image.
 	docker build --no-cache -f Dockerfile-parent -t ${PARENT_IMAGE} .
 
-pull-parent-image:      #- Pull the custom parent image from Docker Hub.
+pull-parent:       ## Pull the custom parent image from Docker Hub.
 	docker pull ${PARENT_IMAGE}
 
-push-parent-image:      #- Push the custom parent image to Docker Hub.
+push-parent:       ## Push the custom parent image to Docker Hub.
 	docker push ${PARENT_IMAGE}
 
 endif # ifdef PARENT_IMAGE
@@ -171,15 +165,11 @@ else
 QUIET=@
 endif
 
-## 
-#- =============================================================================
-##    --- Targets also affected by REPRO RUN settings ---
-#- =============================================================================
-
 SESSION_DIR=.repro-sessions/active
 ENV_FILE=${SESSION_DIR}/session.env
 
 PHONY: session
+
 session:
 	$(shell mkdir -p ${SESSION_DIR})
 	$(file  > ${ENV_FILE}, REPRO_NAME=$(REPRO_NAME))
@@ -210,12 +200,12 @@ RUN_IN_REPRO=$(REPRO_RUN_COMMAND) bash -ilc
 endif
 
 ## 
-#- ---------- Targets for starting this REPRO  ---------------------------------
-#- 
+## ---------- Targets for starting this REPRO  ---------------------------------
+## 
 
 ifndef IN_RUNNING_REPRO
 ifeq ($(REPRO_EXIT_AFTER_STARTUP), true)
-## start-repro             Start an interactive session.
+## start-repro:       Start an interactive session.
 start-repro: session
 	$(RUN_IN_REPRO) exit
 else
@@ -231,12 +221,16 @@ reset-repro: session
 	$(file >> ${ENV_FILE}, REPRO_DEFER_INIT=true)
 	$(RUN_IN_REPRO) repro.reset_repro
 
-clean-repro:            ## Delete REPRO run logs in .repro-log directory.
+REPRO_TESTS_FILE=repro-tests
+test-repro:        ## Perform regression tests on this REPRO.
+	@make -f Makefile-tests --quiet
+
+clean-repro:       ## Delete REPRO run logs in .repro-log directory.
 	rm -f .repro-logs/*.log
 
 ## 
 ifdef IN_RUNNING_REPRO
-## start-services          Start the services provided by this REPRO.
+## start-services:    Start the services provided by this REPRO.
 start-services:  session       
 	$(RUN_IN_REPRO) 'repro.start_services'
 else
@@ -244,78 +238,83 @@ start-services: session
 	$(RUN_IN_REPRO) 'repro.start_services --wait-for-key'
 endif
 
-REPRO_TESTS_FILE=repro-tests
-test-repro:
-	@make -f Makefile-tests --quiet
 
 ## 
-#- ---------- Targets for running the examples in this REPRO --------------------
-#- 
-run-demos: session      ## Run this REPRO's demos.
+## ---------- Targets for running the examples in this REPRO --------------------
+## 
+## run-demos:         Run this REPRO's demonsrations.
+run-demos: session
 	$(RUN_IN_REPRO) 'repro.run_target run-demos'
 
-clean-demos: session    ## Delete all artifacts created by the demos.
+## clean-demos:       Delete artifacts created by demonstrations.
+clean-demos: session
 	$(RUN_IN_REPRO) 'repro.run_target clean-demos'
 
 ## 
-#- ---------- Targets for performing the analyses in this REPRO -----------------
-#- 
-run-analyses: session  ## Run the analyses in this REPRO.
+## ---------- Targets for performing the analyses in this REPRO -----------------
+## 
+## run-analyses:      Run the analyses in this REPRO.
+run-analyses: session
 	$(RUN_IN_REPRO) 'repro.run_target run-analyses'
 
-clean-analyses: session ## Delete all artificats created by the analyses.
+## clean-analyses:    Delete all artificats created by the analyses.
+clean-analyses: session
 	$(RUN_IN_REPRO) 'repro.run_target clean-analyses'
 
 ## 
-#- ---------- Targets for creating the reports in this REPRO -------------------
-#- 
-build-reports: session         ## Generate this REPRO's reports.
+## ---------- Targets for creating the reports in this REPRO -------------------
+## 
+## build-reports:     Generate this REPRO's reports.
+build-reports: session
 	$(RUN_IN_REPRO) 'repro.run_target build-reports'
 
-clean-reports: session         ## Delete all generated reports.
+## clean-reports:     Delete all generated reports.
+clean-reports: session
 	$(RUN_IN_REPRO) 'repro.run_target clean-reports'
 
 ## 
-#- ---------- Targets for maintaining the databases in this REPRO --------------
-#- 
-clean-databases: session        ## Delete the database logs.
+## ---------- Targets for maintaining the databases in this REPRO --------------
+##  
+## clean-databases:   Delete the database logs.
+clean-databases: session
 	$(RUN_IN_REPRO) 'repro.run_target clean-databases'
 	
-drop-databases: session        ## Delete the database storage files.
+## drop-databases:    Delete the database storage files.
+drop-databases: session
 	$(RUN_IN_REPRO) 'repro.run_target drop-databases'
 
-purge-databases: session       ## Delete all artifacts associated with database instances.
+## purge-databases:   Delete all artifacts associated with database instances.
+purge-databases: session
 	$(RUN_IN_REPRO) 'repro.run_target purge-databases'
 
 ## 
-#- =============================================================================
-##    --- Targets further affected by REPRO CODE settings ---
-#- =============================================================================
-
+## ---------- Targets for building and testing custom code in this REPRO -------
 ## 
-#- ---------- Targets for building and testing custom code in this REPRO -------
-#- 
-build-code: session            ## Build the custom code in this REPRO.
+## build-code:        Build the custom code in this REPRO.
+build-code: session
 	$(RUN_IN_REPRO) 'repro.run_target build-code'
 
-test-code: session              ## Run tests on custom code in this REPRO.
+## test-code:         Run tests on custom code in this REPRO.
+test-code: session
 	$(RUN_IN_REPRO) 'repro.run_target test-code'
 
-install-code: session          ## Install built artifacts in REPRO.
+## install-code:      Install built artifacts in REPRO.
+install-code: session
 	$(RUN_IN_REPRO) 'repro.run_target install-code'
 
-package-code: session           ## Package custom artifacts for distribution.
+## package-code:      Package custom artifacts for distribution.
+package-code: session
 	$(RUN_IN_REPRO) 'repro.run_target package-code'
 
-clean-code: session            ## Delete artifacts generated by builds of the code.
+## clean-code:        Delete artifacts generated by builds of the code.
+clean-code: session
 	$(RUN_IN_REPRO) 'repro.run_target clean-code'
 
-purge-code: session            ## Delete all downloaded, cached, and built artifacts.
+## purge-code:        Delete all downloaded, cached, and built artifacts.
+purge-code: session
 	$(RUN_IN_REPRO) 'repro.run_target purge-code'\
 
 ## 
-#- =============================================================================
 ##    --- Target aliases defined in repro-config ---
-#- =============================================================================
 ## 
 
