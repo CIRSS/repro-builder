@@ -8,8 +8,16 @@ export REPRO_INTERACTIVE_SESSION=false
 export REPRO_LOGGING_LEVEL=debug
 export REPRO_LOGGING_OPTIONS=NO_TIMESTAMPS NO_LOCATIONS NO_TERMINAL
 
+# macro for automatically naming the log file for a test
+REPRO_LOGGING_DIRNAME = .repro-logs
+REPRO_LOGGING_FILENAME = test_$(basename $@).log
+TEXTFILE = $(REPRO_LOGGING_DIRNAME)/test_$(basename $@).txt
+
+# macros for setting destination of logs
+LOG   = REPRO_LOGGING_FILENAME=$(REPRO_LOGGING_FILENAME)
+NOLOG = REPRO_LOGGING_LEVEL=none
+
 # macros for setting the logging level during a test
-NONE  = REPRO_LOGGING_LEVEL=none
 ALERT = REPRO_LOGGING_LEVEL=alert
 WARN  = REPRO_LOGGING_LEVEL=warn
 INFO  = REPRO_LOGGING_LEVEL=info
@@ -19,13 +27,6 @@ TRACE = REPRO_LOGGING_LEVEL=trace
 # macros for controlling when services start
 AUTO   = REPRO_SERVICES_STARTUP=auto
 MANUAL = REPRO_SERVICES_STARTUP=manual
-
-# macro for automatically naming the log file for a test
-REPRO_LOGGING_DIRNAME=.repro-logs
-LOG_FILENAME = test_$(basename $@).log
-TEXTFILE = $(REPRO_LOGGING_DIRNAME)/test_$(basename $@).txt
-LOG = REPRO_LOGGING_FILENAME=$(LOG_FILENAME)
-LOGFILE = ${REPRO_LOGGING_DIRNAME}/${LOG_FILENAME}
 
 # names of all tests to be run automatically
 TESTS = reset-repro				\
@@ -41,16 +42,15 @@ all: clean-all test-all
 test-all: clean-all $(addsuffix .test, $(TESTS))
 clean-all: $(addsuffix .clean, $(TESTS))
 
-
 # rule for deleting the products of a particular test
 %.clean:
-	rm -f $(LOGFILE)
+	rm -f $(REPRO_LOGGING_DIRNAME)/$(REPRO_LOGGING_FILENAME)
 	rm -f $(TEXTFILE)
 
 # the test targets
 
 reset-repro.test:
-	$(NONE) $(AUTO) make init-repro > /dev/null
+	$(NOLOG) $(AUTO) make init-repro > /dev/null
 	$(LOG) $(AUTO) make reset-repro > $(TEXTFILE)
 
 start-repro-auto.test:
