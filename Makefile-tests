@@ -39,7 +39,7 @@ TESTS = reset-repro				\
 
 # generic targets for running the tests 
 all: clean-all test-all
-test-all: clean-all $(addsuffix .test, $(TESTS))
+test-all: $(addsuffix .test, $(TESTS))
 clean-all: $(addsuffix .clean, $(TESTS))
 
 # rule for deleting the products of a particular test
