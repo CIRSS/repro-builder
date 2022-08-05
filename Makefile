@@ -179,6 +179,7 @@ logs:
 	$(shell mkdir -p ${REPRO_LOGGING_DIRNAME})
 
 session: logs
+ifndef IN_RUNNING_REPRO
 	$(shell mkdir -p ${SESSION_DIR})
 	$(file  > ${ENV_FILE}, REPRO_NAME=$(REPRO_NAME))
 	$(file >> ${ENV_FILE}, REPRO_MNT=$(REPRO_MNT))
@@ -191,6 +192,9 @@ session: logs
 	$(file >> ${ENV_FILE}, REPRO_LOGGING_OPTIONS=$(REPRO_LOGGING_OPTIONS))
 	$(file >> ${ENV_FILE}, REPRO_INTERACTIVE_SESSION=$(REPRO_INTERACTIVE_SESSION))
 	$(shell docker inspect ${REPRO_IMAGE_ID} > ${SESSION_DIR}/image.json)
+else
+	@:
+endif
 
 # define command for running the REPRO Docker image
 REPRO_RUN_COMMAND=$(QUIET)docker run -it --rm $(REPRO_DOCKER_OPTIONS)   \

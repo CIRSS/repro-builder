@@ -309,8 +309,6 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 
     $_REPRO_DEBUG_ "Announcing services declared in (${REPRO_SERVICES_FILE})"
 
-    _repro.timestamp > ${REPRO_SERVICES_START_TIME}
-
     if [[ ! -f ${REPRO_SERVICES_FILE} ]] ; then
         $_REPRO_DEBUG_ "The ${REPRO_SERVICES_FILE} does not exist."
     else
