@@ -13,6 +13,9 @@ function logging_prefix {
     echo '#'
 }
 
+
+
+
 # schedule one-time customizations of REPRO user environment at REPRO start
 repro.atstart source ${REPRO_ENV_FILE}
 repro.atstart repro.initialize_session
@@ -37,3 +40,10 @@ echo "source ${REPRO_ATSHELL_FILE}" >> ${HOME}/.bashrc
 
 # add a penultimate line to .profile to source the atstart file
 echo "source ${REPRO_ATSTART_FILE}" >> ${HOME}/.profile
+
+
+cat << 'EOF' >>  ${HOME}/.bash_logout
+
+$_REPRO_DEBUG_ "Ending REPRO session"
+repro.end_session
+EOF

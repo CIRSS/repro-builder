@@ -29,10 +29,5 @@ D MESG Looking for implementations of the 'run-demos' target in the REPRO mappin
 D MESG Processing line in target file: 'run-demos: repro.demos.run-the-demos'
 I MESG Invoking the 'run-the-demos' target of the 'repro' module ('demos' profile)
 D EVAL make -C /mnt/repro/.repro -f Makefile-demos run-the-demos
-make: Entering directory '/mnt/repro/.repro'
-run_all_tests.sh
-jq-1.6
-All Tests Succeeded
-make: Leaving directory '/mnt/repro/.repro'
 D MESG Processing line in target file: 'clean-demos: repro.demos.clean-the-demos'
 I MESG Done invoking implementations of the 'run-demos' REPRO target

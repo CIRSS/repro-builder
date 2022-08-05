@@ -24,4 +24,4 @@ I MESG No implementations of the 'start-services' REPRO target were found
 D MESG No services were started
 D MESG Done handling repro.start_services call during startup
 I MESG Done initializing REPRO state
-logout
+D MESG Ending REPRO session

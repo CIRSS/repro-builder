@@ -62,6 +62,8 @@ REPRO_LOGGING_OPTIONS ?=
 #
 REPRO_INTERACTIVE_SESSION ?= true
 
+REPRO_LOGGING_DIRNAME ?= .repro-logs
+
 # Use working directory as name of REPRO if REPRO_NAME undefined.
 ifndef REPRO_NAME
 REPRO_NAME=$(shell basename $$(pwd))
@@ -91,6 +93,9 @@ REPRO_IMAGE_ID=$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
 
 # define mount point for REPRO directory tree in running container
 REPRO_MNT=/mnt/${REPRO_NAME}
+
+# define logs directory relative to REPRO mount point
+REPRO_LOGS_DIR=${REPRO_MNT}/${REPRO_LOGGING_DIRNAME}
 
 #- 
 #- ========================== REPRO TARGETS ====================================
@@ -168,15 +173,19 @@ endif
 SESSION_DIR=.repro-sessions/active
 ENV_FILE=${SESSION_DIR}/session.env
 
-PHONY: session
+PHONY: session logs
 
-session:
+logs:
+	$(shell mkdir -p ${REPRO_LOGGING_DIRNAME})
+
+session: logs
 	$(shell mkdir -p ${SESSION_DIR})
 	$(file  > ${ENV_FILE}, REPRO_NAME=$(REPRO_NAME))
 	$(file >> ${ENV_FILE}, REPRO_MNT=$(REPRO_MNT))
 	$(file >> ${ENV_FILE}, REPRO_TAG=$(REPRO_IMAGE))
 	$(file >> ${ENV_FILE}, REPRO_IMAGE_ID=$(REPRO_IMAGE_ID))
 	$(file >> ${ENV_FILE}, REPRO_SERVICES_STARTUP=$(REPRO_SERVICES_STARTUP))
+	$(file >> ${ENV_FILE}, REPRO_LOGS_DIR=$(REPRO_LOGS_DIR))
 	$(file >> ${ENV_FILE}, REPRO_LOGGING_LEVEL=$(REPRO_LOGGING_LEVEL))
 	$(file >> ${ENV_FILE}, REPRO_LOGGING_FILENAME=$(REPRO_LOGGING_FILENAME))
 	$(file >> ${ENV_FILE}, REPRO_LOGGING_OPTIONS=$(REPRO_LOGGING_OPTIONS))
@@ -217,16 +226,25 @@ start-repro:
 	$(warning INFO: The REPRO is already running.)
 endif
 
+ifndef IN_RUNNING_REPRO
+## init-repro:        Initialize REPRO modules.
+init-repro: session
+	$(file >> ${ENV_FILE}, REPRO_SERVICES_STARTUP=manual)
+	$(RUN_IN_REPRO) exit
+endif
+
 reset-repro: session
 	$(file >> ${ENV_FILE}, REPRO_DEFER_INIT=true)
 	$(RUN_IN_REPRO) repro.reset_repro
 
 REPRO_TESTS_FILE=repro-tests
-test-repro:        ## Perform regression tests on this REPRO.
+## test-repro:        Perform regression tests on this REPRO.
+test-repro: logs 
 	@make -f Makefile-tests --quiet
 
-clean-repro:       ## Delete REPRO run logs in .repro-log directory.
-	rm -f .repro-logs/*.log
+clean-repro:       ## Delete logs in REPRO logs directory.
+	make -f Makefile-tests clean-all
+	rm -f $(REPRO_LOGGING_DIRNAME)/*.log
 
 ## 
 ifdef IN_RUNNING_REPRO

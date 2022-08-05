@@ -1,6 +1,12 @@
 
-# default is to clean up then rerun all the tests
+# run all tests by default
 default_target: all
+
+# default settings for all tests
+export REPRO_EXIT_AFTER_STARTUP=true
+export REPRO_INTERACTIVE_SESSION=false
+export REPRO_LOGGING_LEVEL=debug
+export REPRO_LOGGING_OPTIONS=NO_TIMESTAMPS NO_LOCATIONS NO_TERMINAL
 
 # macros for setting the logging level during a test
 NONE  = REPRO_LOGGING_LEVEL=none
@@ -15,13 +21,11 @@ AUTO   = REPRO_SERVICES_STARTUP=auto
 MANUAL = REPRO_SERVICES_STARTUP=manual
 
 # macro for automatically naming the log file for a test
-LOG = .repro-logs/test_$(basename $@).log
-
-# settings for all tests
-export REPRO_EXIT_AFTER_STARTUP=true
-export REPRO_INTERACTIVE_SESSION=false
-export REPRO_LOGGING_LEVEL=debug
-export REPRO_LOGGING_OPTIONS=NO_APPEND NO_TIMESTAMPS NO_FILE NO_LOCATIONS
+REPRO_LOGGING_DIRNAME=.repro-logs
+LOG_FILENAME = test_$(basename $@).log
+TEXTFILE = $(REPRO_LOGGING_DIRNAME)/test_$(basename $@).txt
+LOG = REPRO_LOGGING_FILENAME=$(LOG_FILENAME)
+LOGFILE = ${REPRO_LOGGING_DIRNAME}/${LOG_FILENAME}
 
 # names of all tests to be run automatically
 TESTS = reset-repro				\
@@ -30,7 +34,6 @@ TESTS = reset-repro				\
 		start-services-auto		\
 		start-services-manual 	\
 		run-demos				\
-		run-demos-no-logging	\
 		clean-demos
 
 # generic targets for running the tests 
@@ -38,33 +41,34 @@ all: clean-all test-all
 test-all: clean-all $(addsuffix .test, $(TESTS))
 clean-all: $(addsuffix .clean, $(TESTS))
 
+
 # rule for deleting the products of a particular test
 %.clean:
-	rm -f ${LOG}
+	rm -f $(LOGFILE)
+	rm -f $(TEXTFILE)
 
 # the test targets
 
 reset-repro.test:
-	$(AUTO) make reset-repro > $(LOG)
+	$(NONE) $(AUTO) make init-repro > /dev/null
+	$(LOG) $(AUTO) make reset-repro > $(TEXTFILE)
 
 start-repro-auto.test:
-	$(AUTO) make start-repro > $(LOG)
+	$(LOG) $(AUTO) make start-repro > $(TEXTFILE)
 
 start-repro-manual.test:
-	$(MANUAL) make start-repro > $(LOG)
+	$(LOG) $(MANUAL) make start-repro > $(TEXTFILE)
 
 start-services-auto.test:
-	$(AUTO) make start-services > $(LOG)
+	$(LOG) $(AUTO) make start-services > $(TEXTFILE)
 
 start-services-manual.test:
-	$(MANUAL) make start-services > $(LOG)
+	$(LOG) $(MANUAL) make start-services > $(TEXTFILE)
 
 run-demos.test:
-	$(AUTO) make run-demos > $(LOG)
+	$(LOG) $(AUTO) make run-demos  > $(TEXTFILE)
 
 clean-demos.test:
-	$(AUTO) make clean-demos > $(LOG)
+	$(LOG) $(AUTO) make clean-demos > $(TEXTFILE)
 
-run-demos-no-logging.test:
-	$(NONE) make run-demos > $(LOG)
 

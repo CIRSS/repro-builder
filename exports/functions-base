@@ -5,7 +5,7 @@ function repro.initialize_session { $_REPRO_TRACE_CALL_ $*
     mkdir -p ${REPRO_ACTIVE_SESSION_DIR}
     git_ignore_file=${REPRO_SESSIONS_DIR}/.gitignore
     if [[ ! -f ${git_ignore_file} ]] ; then
-        $_REPRO_INFO_ "Creating a .gitignore file that ignores everything in the ${REPRO_SESSIONS_DIR} directory"
+        $_REPRO_TRACE_ "Creating a .gitignore file that ignores everything in the ${REPRO_SESSIONS_DIR} directory"
         echo "*" > ${git_ignore_file}
     fi
 
@@ -29,6 +29,15 @@ function repro.initialize_session { $_REPRO_TRACE_CALL_ $*
     repro.start_services --at-start
 
     $_REPRO_INFO_TRACE_RETURN_ "Done initializing REPRO state"
+}
+
+function repro.end_session { $_REPRO_TRACE_CALL_ $*
+    echo "end_time: $(_repro.timestamp_nospaces)" >> ${REPRO_SESSION_INFO_FILE}
+    persisted_session_dir="${REPRO_SESSIONS_DIR}/session_${REPRO_START_TIME}"
+    mv "${REPRO_ACTIVE_SESSION_DIR}" "${persisted_session_dir}"
+    if [[ ${REPRO_LOG_TO_FILE} == enabled ]] ; then
+        cp "${REPRO_RUN_LOG_FILE}" "${persisted_session_dir}"/session.log
+    fi
 }
 
 function repro.get_prefix_paths { $_REPRO_TRACE_CALL_ $*
@@ -133,7 +142,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     # include a default .gitignore file
     git_ignore_file=${trim_dir}/.gitignore
     if [[ ! -f ${git_ignore_file} ]] ; then
-        $_REPRO_INFO_ "Creating a .gitignore file that ignores everything in the trim directory (${trim_dir})"
+        $_REPRO_TRACE_ "Creating a .gitignore file that ignores everything in the trim directory (${trim_dir})"
         echo "*" > ${git_ignore_file}
     fi
 

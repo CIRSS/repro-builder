@@ -17,4 +17,4 @@ D MESG The function repro.start_services is being called during startup
 I MESG Services not being started now because REPRO_SERVICES_STARTUP is not set to 'auto'
 D MESG Done handling repro.start_services call during startup
 I MESG Done initializing REPRO state
-logout
+D MESG Ending REPRO session

@@ -156,16 +156,22 @@ function _repro.caller {
 }
 
 function _repro.create_log_dir {
-    export REPRO_LOGS_DIR=${REPRO_MNT}/.repro-logs
+
+    if [[ -z ${REPRO_LOGS_DIR} ]] ; then
+        export REPRO_LOGS_DIR=${REPRO_MNT}/.repro-logs
+    fi
+
     if [[ ! -d ${REPRO_LOGS_DIR} ]] ; then
         mkdir ${REPRO_LOGS_DIR}
-        echo "session_*.log" > ${REPRO_LOGS_DIR}/.gitignore
+    fi
+
+    git_ignore_file=${REPRO_LOGS_DIR}/.gitignore
+    if [[ ! -f ${git_ignore_file} ]] ; then
+        echo "session_*.log" > ${git_ignore_file}
     fi
 }
 
 function _repro.create_log_file {
-
-    _repro.create_log_dir
 
     if [[ ${REPRO_LOGGING_FILENAME} == auto ]] ; then
         export REPRO_RUN_LOG_FILE="${REPRO_LOGS_DIR}/session_${REPRO_START_TIME}.log"
@@ -226,6 +232,9 @@ function _repro.log {
 }
 
 function _repro.initialize_logging {
+
+    # ensure the logging directory exists even logging is disabled
+    _repro.create_log_dir
 
     # if logging is disabled set logging macros to do nothing
     if [[ ${REPRO_LOGGING_LEVEL} == 'none' ]] ; then

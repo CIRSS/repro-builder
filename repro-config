@@ -7,6 +7,8 @@ PARENT_IMAGE=cirss/repro-parent:latest
 #REPRO_SERVICES_STARTUP?=manual
 REPRO_LOGGING_LEVEL?=trace
 #REPRO_LOGGING_OPTIONS?=NO_APPEND
+REPRO_LOGGING_DIRNAME?=.repro-logs
+
 
 #REPRO_MOUNT_CLI=--volume $(CURDIR)/../go-cli:/mnt/go-cli
 #REPRO_MOUNT_BLAZE=--volume $(CURDIR)/../blaze:/mnt/blaze

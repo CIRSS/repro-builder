@@ -1,0 +1,3 @@
+make: Entering directory '/mnt/repro/.repro'
+make: Nothing to be done for 'clean-the-demos'.
+make: Leaving directory '/mnt/repro/.repro'
