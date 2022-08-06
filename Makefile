@@ -86,16 +86,16 @@ $(warning The REPRO_IMAGE_TAG variable is not set. Defaulting to \
 endif
 
 # Identify the Docker image associated with this REPRO
-REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
+REPRO_IMAGE ?= ${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
 
 # Get the Docker image ID for this image if it already exists
-REPRO_IMAGE_ID=$(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
+REPRO_IMAGE_ID ?= $(shell docker image inspect -f "{{.Id}}" ${REPRO_IMAGE})
 
 # define mount point for REPRO directory tree in running container
-REPRO_MNT=/mnt/${REPRO_NAME}
+REPRO_MNT ?= /mnt/${REPRO_NAME}
 
 # define logs directory relative to REPRO mount point
-REPRO_LOGS_DIR=${REPRO_MNT}/${REPRO_LOGGING_DIRNAME}
+REPRO_LOGS_DIR ?= ${REPRO_MNT}/${REPRO_LOGGING_DIRNAME}
 
 #- 
 #- ========================== REPRO TARGETS ====================================
