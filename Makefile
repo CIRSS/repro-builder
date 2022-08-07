@@ -9,6 +9,8 @@ endif
 # by default invoke the `list` target run if no argument is provided to make
 default_target: list
 
+TARGET_NOT_SUPPORTED_IN_RUNNING_REPRO = $(error The '$@' target is not supported in a running REPRO)
+
 # Include optional repro-config file to to override default REPRO settings.
 -include repro-config
 
@@ -229,7 +231,7 @@ start-repro: session
 endif
 else
 start-repro:
-	$(warning INFO: The REPRO is already running.)
+	$(TARGET_NOT_SUPPORTED_IN_RUNNING_REPRO)
 endif
 
 ifndef IN_RUNNING_REPRO
@@ -242,8 +244,6 @@ endif
 reset-repro: session
 	$(file >> ${ENV_FILE}, REPRO_DEFER_INIT=true)
 	$(RUN_IN_REPRO) repro.reset_repro
-
-TARGET_NOT_SUPPORTED_IN_RUNNING_REPRO = $(error The $@ target is not supported in a running REPRO)
 
 REPRO_TESTS_FILE=repro-tests
 ## test-repro:        Run automated regression tests on this REPRO.
