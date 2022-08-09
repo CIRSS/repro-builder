@@ -22,8 +22,6 @@ I MESG Starting services now because REPRO_SERVICES_STARTUP set to 'manual'
 D EVAL repro.run_target start-services --enable-error-codes
 I MESG Invoking implementations of REPRO target 'start-services'
 D MESG Looking for implementations of the 'start-services' target in the REPRO mapping file (/mnt/repro/.repro/repro-targets)
-D MESG Processing line in target file: 'run-demos: repro.demos.run-the-demos'
-D MESG Processing line in target file: 'clean-demos: repro.demos.clean-the-demos'
 I MESG No implementations of the 'start-services' REPRO target were found
 D MESG No services were started
 D MESG Because no services have been started there is nothing left to do

@@ -132,7 +132,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
         reset=false
     fi
 
-    # create module dot directory if it does not exist
+    # create module trim directory if it does not exist
     trim_dir=$(repro.trim_dir_name_for_module ${module_name})
     if [[ ! -d ${trim_dir} ]] ; then
         $_REPRO_INFO_ "Creating the module '${module_name}' trim directory (${trim_dir})"
@@ -166,7 +166,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     # copy module files listed in trim manifest if present
     trim_manifest=${install_dir}/manifest-trim
     if [[ -f ${trim_manifest} ]] ; then
-        $_REPRO_INFO_ "Ensuring other files listed in the trim manifest for module ${module_name} are in the module dot directory (${trim_dir})"
+        $_REPRO_INFO_ "Ensuring other files listed in the '${module_name}' module trim manifest are in the module trim directory (${trim_dir})"
         readarray trim_manifest_lines < ${trim_manifest}
         for trim_file_line in "${trim_manifest_lines[@]}" ; do
             trim_file=$(echo ${trim_file_line%%#*} | xargs)
@@ -253,7 +253,7 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
                     read -ra tokens <<< ${target_entry}
                     repro_target=${tokens[0]%?} # trims last character (':') from token 0 to get the module name
                     module_target=${tokens[1]}
-                    $_REPRO_INFO_ "Mapping the '${module_target}' target in the '${profile}' profile of the '${module_name}' module to the REPRO '${repro_target}' target"
+                    $_REPRO_INFO_ "Mapping the ${module_name}:${profile}:${module_target}' target to the REPRO '${repro_target}' target"
                     printf '%s: %s.%s.%s\n' ${repro_target} ${module_name} ${profile} ${module_target} >> ${REPRO_TARGETS_FILE}
                 done
             fi
@@ -285,10 +285,10 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     target_invoked=false
     for target_entry in "${targets_file_lines[@]}" ; do
         read -ra tokens <<< ${target_entry}
-        $_REPRO_DEBUG_ "Processing line in target file: '${tokens[@]}'"
+        $_REPRO_TRACE_ "Processing line in target file: '${tokens[@]}'"
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
             IFS='.' read module_name profile module_target <<< ${tokens[1]}
-            $_REPRO_INFO_ "Invoking the '${module_target}' target of the '${module_name}' module ('${profile}' profile)"
+            $_REPRO_INFO_ "Invoking the '${module_name}:${profile}:${module_target}' target"
             $_REPRO_DEBUG_EVAL_ make ${REPRO_MAKE_VERBOSITY} -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
             target_invoked=true
 

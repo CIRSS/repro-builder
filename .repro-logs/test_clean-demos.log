@@ -18,16 +18,12 @@ I MESG Starting services during session initialization because REPRO_SERVICES_ST
 D EVAL repro.run_target start-services --enable-error-codes
 I MESG Invoking implementations of REPRO target 'start-services'
 D MESG Looking for implementations of the 'start-services' target in the REPRO mapping file (/mnt/repro/.repro/repro-targets)
-D MESG Processing line in target file: 'run-demos: repro.demos.run-the-demos'
-D MESG Processing line in target file: 'clean-demos: repro.demos.clean-the-demos'
 I MESG No implementations of the 'start-services' REPRO target were found
 D MESG No services were started
 D MESG Done handling repro.start_services call during session initialization
 I MESG Done initializing REPRO session
 I MESG Invoking implementations of REPRO target 'clean-demos'
 D MESG Looking for implementations of the 'clean-demos' target in the REPRO mapping file (/mnt/repro/.repro/repro-targets)
-D MESG Processing line in target file: 'run-demos: repro.demos.run-the-demos'
-D MESG Processing line in target file: 'clean-demos: repro.demos.clean-the-demos'
-I MESG Invoking the 'clean-the-demos' target of the 'repro' module ('demos' profile)
+I MESG Invoking the 'repro:demos:clean-the-demos' target
 D EVAL make -C /mnt/repro/.repro -f Makefile-demos clean-the-demos
 D MESG Done invoking implementations of the 'clean-demos' REPRO target
