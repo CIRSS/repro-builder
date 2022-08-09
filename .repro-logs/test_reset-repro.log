@@ -17,7 +17,7 @@ I MESG Resetting the REPRO target mapping file (/mnt/repro/.repro/repro-targets)
 I MESG Installing a default (empty) target mapping file to /mnt/repro/.repro/repro-targets
 D MESG Iterating over the list of installed modules in the module order file (/home/repro/.repro-order)
 D MESG Looking for targets in the 'repro' module
-I MESG Mapping the repro:demos:run-the-demos' target to the REPRO 'run-demos' target
-I MESG Mapping the repro:demos:clean-the-demos' target to the REPRO 'clean-demos' target
+I MESG Mapping the 'repro:demos:run-the-demos' target to the REPRO 'run-demos' target
+I MESG Mapping the 'repro:demos:clean-the-demos' target to the REPRO 'clean-demos' target
 D MESG Done building the REPRO target mapping file
 D MESG Done resetting REPRO

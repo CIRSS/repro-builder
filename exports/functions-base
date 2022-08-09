@@ -253,7 +253,7 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
                     read -ra tokens <<< ${target_entry}
                     repro_target=${tokens[0]%?} # trims last character (':') from token 0 to get the module name
                     module_target=${tokens[1]}
-                    $_REPRO_INFO_ "Mapping the ${module_name}:${profile}:${module_target}' target to the REPRO '${repro_target}' target"
+                    $_REPRO_INFO_ "Mapping the '${module_name}:${profile}:${module_target}' target to the REPRO '${repro_target}' target"
                     printf '%s: %s.%s.%s\n' ${repro_target} ${module_name} ${profile} ${module_target} >> ${REPRO_TARGETS_FILE}
                 done
             fi
