@@ -8,13 +8,13 @@ I MESG Initializing module 'repro'
 I MESG Initializing trim files for module 'repro'
 D MESG Looking for Makefiles in the 'repro' module installation directory (/home/repro/repro-modules/repro-exports) to copy to the module trim directory (/mnt/repro/.repro)
 D MESG The file Makefile-demos is already present in the 'repro' trim directory (/mnt/repro/.repro)
-I MESG Done initializing trim files for module 'repro'
-I MESG Done initializing modules
+D MESG Done initializing trim files for module 'repro'
+D MESG Done initializing modules
 I MESG Ensuring that the REPRO target mapping file exists (/mnt/repro/.repro/repro-targets)
 D MESG The REPRO target mapping file (/mnt/repro/.repro/repro-targets) already exists so nothing to do.
 D MESG Triggering automatic service startup if enabled
-D MESG The function repro.start_services is being called during startup
-I MESG Starting services now because REPRO_SERVICES_STARTUP set to 'auto'
+D MESG The function repro.start_services is being called during session initialization
+I MESG Starting services during session initialization because REPRO_SERVICES_STARTUP set to 'auto'
 D EVAL repro.run_target start-services --enable-error-codes
 I MESG Invoking implementations of REPRO target 'start-services'
 D MESG Looking for implementations of the 'start-services' target in the REPRO mapping file (/mnt/repro/.repro/repro-targets)
@@ -22,8 +22,8 @@ D MESG Processing line in target file: 'run-demos: repro.demos.run-the-demos'
 D MESG Processing line in target file: 'clean-demos: repro.demos.clean-the-demos'
 I MESG No implementations of the 'start-services' REPRO target were found
 D MESG No services were started
-D MESG Done handling repro.start_services call during startup
-I MESG Done initializing REPRO state
-D MESG The function repro.start_services is being called after startup
+D MESG Done handling repro.start_services call during session initialization
+I MESG Done initializing REPRO session
+D MESG The function repro.start_services is being called after session initialization
 I MESG Services not being started now because REPRO_SERVICES_STARTUP not set to 'manual'
 D MESG Because no services have been started there is nothing left to do

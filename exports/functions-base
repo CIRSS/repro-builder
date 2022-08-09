@@ -28,7 +28,7 @@ function repro.initialize_session { $_REPRO_TRACE_CALL_ $*
 	$_REPRO_DEBUG_ "Triggering automatic service startup if enabled"
     repro.start_services --at-start
 
-    $_REPRO_INFO_TRACE_RETURN_ "Done initializing REPRO state"
+    $_REPRO_INFO_TRACE_RETURN_ "Done initializing REPRO session"
 }
 
 function repro.end_session { $_REPRO_TRACE_CALL_ $*
@@ -181,7 +181,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
         done
     fi
 
-    $_REPRO_INFO_TRACE_RETURN_ "Done initializing trim files for module '${module_name}'" ; return
+    $_REPRO_DEBUG_TRACE_RETURN_ "Done initializing trim files for module '${module_name}'" ; return
 }
 
 function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
@@ -193,7 +193,7 @@ function repro.initialize_modules { $_REPRO_TRACE_CALL_ $*
         $_REPRO_INFO_ "Initializing module '${module}'"
         repro.initialize_module_trim ${module}
     done
-    $_REPRO_INFO_TRACE_RETURN_ "Done initializing modules"
+    $_REPRO_DEBUG_TRACE_RETURN_ "Done initializing modules"
 }
 
 function repro.reset_module  { $_REPRO_TRACE_CALL_ $*
@@ -260,7 +260,7 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
         done
     done
 
-    $_REPRO_INFO_TRACE_RETURN_ 'Done building the REPRO target mapping file'
+    $_REPRO_DEBUG_TRACE_RETURN_ 'Done building the REPRO target mapping file'
 }
 
 function repro.run_target { $_REPRO_TRACE_CALL_ $*
@@ -299,7 +299,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
     done
 
     if ${target_invoked} ; then
-        $_REPRO_INFO_TRACE_RETURN_ "Done invoking implementations of the '${requested_target}' REPRO target"; return
+        $_REPRO_DEBUG_TRACE_RETURN_ "Done invoking implementations of the '${requested_target}' REPRO target"; return
     else
         $_REPRO_INFO_TRACE_RETURN_ "No implementations of the '${requested_target}' REPRO target were found" ; return ${error_code}
     fi
@@ -322,7 +322,7 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
                 $_REPRO_INFO_ "The ${service_name} service is now running."
                 $_REPRO_ALERT_ "Connect to ${service_name} at http://localhost:${external_port}."
             done
-            $_REPRO_INFO_TRACE_RETURN_ 'Done announcing services' ; return
+            $_REPRO_DEBUG_TRACE_RETURN_ 'Done announcing services' ; return
         fi
     fi
 
@@ -333,10 +333,10 @@ function repro.announce_services { $_REPRO_TRACE_CALL_ $*
 function repro.start_services { $_REPRO_TRACE_CALL_ $*
 
     if [[ "$1" == "--at-start" ]] ; then
-        $_REPRO_DEBUG_ "The function ${FUNCNAME[0]} is being called during startup"
+        $_REPRO_DEBUG_ "The function ${FUNCNAME[0]} is being called during session initialization"
 
         if [[ "${REPRO_SERVICES_STARTUP}" == 'auto' ]] ; then
-			$_REPRO_INFO_ "Starting services now because REPRO_SERVICES_STARTUP set to 'auto'"
+			$_REPRO_INFO_ "Starting services during session initialization because REPRO_SERVICES_STARTUP set to 'auto'"
             $_REPRO_DEBUG_EVAL_ repro.run_target start-services --enable-error-codes
             return_code=$?
             if [[ $return_code == 0 ]] ; then
@@ -346,13 +346,13 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
                 $_REPRO_DEBUG_ "No services were started"
             fi
         else
-			$_REPRO_INFO_ "Services not being started now because REPRO_SERVICES_STARTUP is not set to 'auto'"
+			$_REPRO_INFO_ "Services not being started during session initialization because REPRO_SERVICES_STARTUP is not set to 'auto'"
 		fi
 
-        $_REPRO_DEBUG_TRACE_RETURN_ "Done handling ${FUNCNAME[0]} call during startup" ; return
+        $_REPRO_DEBUG_TRACE_RETURN_ "Done handling ${FUNCNAME[0]} call during session initialization" ; return
     fi
 
-    $_REPRO_DEBUG_ "The function ${FUNCNAME[0]} is being called after startup"
+    $_REPRO_DEBUG_ "The function ${FUNCNAME[0]} is being called after session initialization"
 
     # now only if service startup is configured to be manual
     if [[ "${REPRO_SERVICES_STARTUP}" == 'manual' ]] ; then
@@ -375,27 +375,28 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
         $_REPRO_INFO_ "Services not being started now because REPRO_SERVICES_STARTUP not set to 'manual'"
     fi
 
-    if [[  ${REPRO_SERVICES_STARTED} == 'false' ]] ; then
+    if ${REPRO_SERVICES_STARTED} ; then
+
+        if [[ "$1" == "--wait-for-key" ]] ; then
+            $_REPRO_DEBUG_ "Will now wait for a key stroke before returning because the --wait-for-key option was given"
+            while [ true ] ; do
+                $_REPRO_ALERT_ "Press the 'q' key to stop the REPRO and its services."
+                if ! ${REPRO_INTERACTIVE_SESSION} ; then
+                    $_REPRO_DEBUG_ "Leaving loop waiting for key press because REPRO session is non-interactive"
+                    break
+                fi
+                $_REPRO_DEBUG_ "Waiting for keystroke"
+                read -n 1 key
+                echo
+                $_REPRO_DEBUG_ "The ${key} key was pressed"
+                if [[ $key = 'q' ]] ; then
+                    $_REPRO_DEBUG_TRACE_RETURN_ "Returning because the 'q' key was pressed." ; return
+                fi
+            done
+        fi
+
+        $_REPRO_DEBUG_TRACE_RETURN_ "Returning without waiting for a key press." ; return
+    else
         $_REPRO_DEBUG_TRACE_RETURN_ "Because no services have been started there is nothing left to do"; return
     fi
-
-    if [[ "$1" == "--wait-for-key" ]] ; then
-        $_REPRO_DEBUG_ "Will now wait for a key stroke before returning because the --wait-for-key option was given"
-        while [ true ] ; do
-            $_REPRO_ALERT_ "Press the 'q' key to stop the REPRO and its services."
-            if ! ${REPRO_INTERACTIVE_SESSION} ; then
-                $_REPRO_DEBUG_ "Leaving loop waiting for key press because REPRO session is non-interactive"
-                break
-            fi
-            $_REPRO_DEBUG_ "Waiting for keystroke"
-            read -n 1 key
-            echo
-            $_REPRO_DEBUG_ "The ${key} key was pressed"
-            if [[ $key = 'q' ]] ; then
-                $_REPRO_DEBUG_TRACE_RETURN_ "Returning because the 'q' key was pressed." ; return
-            fi
-        done
-    fi
-
-    $_REPRO_DEBUG_TRACE_RETURN_ "Returning without waiting for a key press." ; return
 }

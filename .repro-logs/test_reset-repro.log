@@ -11,7 +11,7 @@ D EVAL repro.initialize_module_trim repro --reset
 I MESG Re-initializing trim files for module 'repro'
 D MESG Looking for Makefiles in the 'repro' module installation directory (/home/repro/repro-modules/repro-exports) to copy to the module trim directory (/mnt/repro/.repro)
 I MESG Copying /home/repro/repro-modules/repro-exports/Makefile-demos to the 'repro' trim directory (/mnt/repro/.repro)
-I MESG Done initializing trim files for module 'repro'
+D MESG Done initializing trim files for module 'repro'
 D MESG Done resetting all modules
 I MESG Resetting the REPRO target mapping file (/mnt/repro/.repro/repro-targets)
 I MESG Installing a default (empty) target mapping file to /mnt/repro/.repro/repro-targets
@@ -19,5 +19,5 @@ D MESG Iterating over the list of installed modules in the module order file (/h
 D MESG Looking for targets in the 'repro' module
 I MESG Mapping the 'run-the-demos' target in the 'demos' profile of the 'repro' module to the REPRO 'run-demos' target
 I MESG Mapping the 'clean-the-demos' target in the 'demos' profile of the 'repro' module to the REPRO 'clean-demos' target
-I MESG Done building the REPRO target mapping file
+D MESG Done building the REPRO target mapping file
 D MESG Done resetting REPRO
