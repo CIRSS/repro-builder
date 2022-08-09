@@ -127,6 +127,9 @@ upgrade-makefile:  ## Replace local REPRO Makefile with latest version
                    ## of Makefile on repros-dev/repro master branch.
 	curl -L https://raw.githubusercontent.com/repros-dev/repro/master/Makefile -o Makefile
 
+upgrade-makefile-tests:  
+	curl -L https://raw.githubusercontent.com/repros-dev/repro/master/Makefile-tests -o Makefile-tests
+
 
 ifndef IN_RUNNING_REPRO
 
