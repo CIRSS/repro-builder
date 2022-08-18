@@ -43,18 +43,18 @@ function install_profile {
             exports_manifest_file=${export_snapshot_dir}/${profile_manifest_file}
             if [[ -f ${exports_manifest_file} ]] ; then
                 echo "------Copying local manifest file from ${exports_manifest_file} to $(pwd)------"
-                cp ${export_snapshot_dir}/${profile_manifest_file} . 
-            else 
+                cp ${export_snapshot_dir}/${profile_manifest_file} .
+            else
                 echo "------No local manifest file found at ${exports_manifest_file}------"
                 return
             fi
         else
             remote_manifest_file=${module_url}/${profile_manifest_file}
-            curl -f -L ${remote_manifest_file} -o ${profile_manifest_file} 
+            curl -f -L ${remote_manifest_file} -o ${profile_manifest_file}
             if [[ $? -ne 0 ]] ; then
                 echo "------No remote manifest file found at ${remote_manifest_file}------"
                 return
-            fi 
+            fi
         fi
 
         readarray lines < ${profile_manifest_file}
@@ -85,12 +85,12 @@ function install_profile {
             artifact_base=$(basename $artifact_path)
 
             if [[ ${artifact_path} == http?:* ]] ; then
-                curl -f -L ${artifact_path} -o ${artifact_base} 
+                curl -f -L ${artifact_path} -o ${artifact_base}
             elif [[ $module_version == exports ]] ; then
                 cp ${export_snapshot_dir}/${artifact_path} ${artifact_base}
             else
                 curl -f -L ${module_url}/${artifact_path} -o ${artifact_base}  || \
-                curl -f -L ${module_url}/${artifact_base} -o ${artifact_base} 
+                curl -f -L ${module_url}/${artifact_base} -o ${artifact_base}
             fi
 
             if [[ ${artifact_name} != ${artifact_base} ]] ; then
@@ -106,6 +106,8 @@ function install_profile {
             echo "Running ${profile_setup_file}"
             source ${profile_setup_file} ${module_install_dir}
         fi
+
+        printf  "%s\n" ${profile} >> installed-profiles
     fi
 }
 
@@ -117,7 +119,7 @@ echo "Installing REPRO module ${module_name} version ${module_version}..."
 module_install_dir=${REPRO_MODULES_DIR}/${module_name}-${module_version}
 
 # if the module is already in the index check that the versions are compatible
-if [[ -f ${repro_index_entry} ]] ; then 
+if [[ -f ${repro_index_entry} ]] ; then
     read -ra tokens < ${repro_index_entry}
     installed_version=${tokens[1]}
     if [[ ${module_version} != ${installed_version} ]] ; then
@@ -152,6 +154,6 @@ for i in "${!arguments[@]}"; do
             if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
             install_profile ${profile} ${module_install_dir}
         fi
-    fi 
+    fi
 done
 
