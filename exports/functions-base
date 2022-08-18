@@ -244,7 +244,10 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
         install_dir=$(repro.get_module_install_dir ${module_name})
 
         $_REPRO_DEBUG_ "Looking for targets in the '${module_name}' module"
-        for profile in base trim code demos util; do
+
+        readarray profiles < ${install_dir}/installed-profiles
+        for profiles_line in "${profiles[@]}" ; do
+            profile=$(echo $profiles_line | xargs)
             module_targets_file=${install_dir}/targets-${profile}
             if [[ -f ${module_targets_file} ]] ; then
                 repro_targets=''
