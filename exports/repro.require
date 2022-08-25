@@ -71,10 +71,17 @@ function install_profile {
 
             1)  artifact_name=${tokens[0]}
                 artifact_path=${artifact_name}
+                artifact_base=$(basename $artifact_path)
             ;;
 
             2)  artifact_name=${tokens[0]}
                 artifact_path=${tokens[1]}
+                artifact_base=$(basename $artifact_path)
+            ;;
+
+            3)  artifact_name=${tokens[0]}
+                artifact_path=${tokens[1]}
+                artifact_base=${tokens[2]}
             ;;
 
             *) continue
@@ -82,7 +89,6 @@ function install_profile {
 
             esac
 
-            artifact_base=$(basename $artifact_path)
 
             if [[ ${artifact_path} == http?:* ]] ; then
                 curl -f -L ${artifact_path} -o ${artifact_base}
