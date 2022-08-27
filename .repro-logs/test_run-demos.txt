@@ -1,5 +1,4 @@
 make: Entering directory '/mnt/repro/.repro'
 run_all_tests.sh
 jq-1.6
-All Tests Succeeded
 make: Leaving directory '/mnt/repro/.repro'

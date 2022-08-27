@@ -33,9 +33,8 @@ repro.env REPRO_BASE_PATH           '${PATH}'
 repro.env REPRO_SESSIONS_DIR        '${REPRO_MNT}/.repro-sessions'
 repro.env REPRO_ACTIVE_SESSION_DIR  '${REPRO_SESSIONS_DIR}/active'
 repro.env REPRO_SESSION_INFO_FILE   '${REPRO_ACTIVE_SESSION_DIR}/session.info'
-repro.env REPRO_LOGGING_FUNCTIONS   ${HOME}/.repro-logging
-
-cp .repro-logging ${REPRO_LOGGING_FUNCTIONS}
+repro.env REPRO_BASE_FUNCTIONS      ${REPRO_MODULES_DIR}/repro/functions-base
+repro.env REPRO_LOGGING_FUNCTIONS   ${REPRO_MODULES_DIR}/repro/functions-logging
 
 # create the repro index directory
 mkdir -p ${REPRO_MODULES_DIR}

@@ -1,19 +1,13 @@
-# ensure this file is sourced only once
-if [[ "$REPRO_LOGGING_FILE_SOURCED" == true ]] ; then
+
+if [[ "$(type -t repro.alert)" == "function" ]] ; then
     $_REPRO_TRACE_SOURCE_
-	$_REPRO_DEBUG_TRACE_RETURN_ 'Already loaded logging functions' ; return
-else
-    REPRO_LOGGING_FILE_SOURCED=true
+    $_REPRO_DEBUG_TRACE_RETURN_ "Already loaded repro logging functions" ; return
 fi
 
 # returns a sortable timestamp with no spaces
 function _repro.timestamp_nospaces {
     echo "$(date +'%Y%m%d.%H%M%S.%3N')"
 }
-
-export REPRO_START_TIME=$(_repro.timestamp_nospaces)
-export REPRO_SESSION_ID=${REPRO_NAME}-${REPRO_IMAGE_ID}-${REPRO_START_TIME}
-
 
 # returns seconds since the epoch
 function _repro.timestamp_seconds {
@@ -24,7 +18,6 @@ function _repro.timestamp_seconds {
 function _repro.timestamp {
     echo "$(date +'%Y-%m-%d %T.%3N')"
 }
-
 
 function repro.alert {
     if [[ ${REPRO_LOGGING_LEVEL} != 'none' ]] ; then
@@ -233,6 +226,9 @@ function _repro.log {
 
 function _repro.initialize_logging {
 
+    export REPRO_START_TIME=$(_repro.timestamp_nospaces)
+    export REPRO_SESSION_ID=${REPRO_NAME}-${REPRO_IMAGE_ID}-${REPRO_START_TIME}
+
     # ensure the logging directory exists even logging is disabled
     _repro.create_log_dir
 
@@ -259,24 +255,24 @@ function _repro.initialize_logging {
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_TIMESTAMPS"* ]] ; then
-        REPRO_LOGGING_TIMESTAMPS=enabled
+        export REPRO_LOGGING_TIMESTAMPS=enabled
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_LOCATIONS"* ]] ; then
-        REPRO_LOGGING_LOCATIONS=enabled
+        export REPRO_LOGGING_LOCATIONS=enabled
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_FILE"* ]] ; then
-        REPRO_LOG_TO_FILE=enabled
+        export REPRO_LOG_TO_FILE=enabled
         _repro.create_log_file
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_TERMINAL"* ]] ; then
-        REPRO_LOG_TO_TERMINAL=enabled
+        export REPRO_LOG_TO_TERMINAL=enabled
     fi
 
     if [[ $REPRO_LOGGING_OPTIONS != *"NO_APPEND"* ]] ; then
-        REPRO_LOGGING_APPEND=true
+        export REPRO_LOGGING_APPEND=true
     fi
 
     # define logging macros
@@ -303,9 +299,13 @@ function _repro.initialize_logging {
     fi
 }
 
-# initialize logger state
-_repro.initialize_logging
-
-# report definition of logging functions succeeeded
-$_REPRO_TRACE_SOURCE_
-$_REPRO_INFO_TRACE_RETURN_ "Initialized REPRO logging system and macros"
+# ensure repro logging system is initialized exactly once
+if [[ "$REPRO_LOGGING_INITIALIZED" = true ]] ; then
+    $_REPRO_INFO_ "Loaded repro logging functions"
+    $_REPRO_DEBUG_TRACE_RETURN_ 'Already initialized repro logging system' ; return
+else
+    _repro.initialize_logging
+    export REPRO_LOGGING_INITIALIZED=true
+    $_REPRO_INFO_ "Loaded repro logging functions"
+    $_REPRO_INFO_TRACE_RETURN_ "Initialized repro logging system" ; return
+fi

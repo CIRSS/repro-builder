@@ -1,5 +1,6 @@
-I MESG Initialized REPRO logging system and macros
-D MESG Already loaded logging functions
+I MESG Loaded repro logging functions
+I MESG Initialized repro logging system
+D MESG Already loaded repro logging functions
 I MESG Initializing REPRO session
 I MESG Building PATH variable
 I MESG Initializing modules
@@ -26,4 +27,8 @@ I MESG Invoking implementations of REPRO target 'run-demos'
 D MESG Looking for implementations of the 'run-demos' target in the REPRO mapping file (/mnt/repro/.repro/repro-targets)
 I MESG Invoking the 'repro:demos:run-the-demos' target
 D EVAL make -C /mnt/repro/.repro -f Makefile-demos run-the-demos
+I MESG Loaded repro logging functions
+D MESG Already initialized repro logging system
+I MESG Running all tests
+A MESG All Tests Succeeded
 D MESG Done invoking implementations of the 'run-demos' REPRO target

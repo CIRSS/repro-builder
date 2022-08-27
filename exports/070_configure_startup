@@ -7,14 +7,11 @@ function logging_prefix {
     echo '# to load the REPRO logging functions and macros'
     echo
     echo "REPRO_TRACE_SOURCE=$1"
-    echo "source ${HOME}/.repro-logging"
+    echo "source ${REPRO_LOGGING_FUNCTIONS}"
     echo '$_REPRO_TRACE_ Processing remainder of' "$1"
     echo '###########################################################'
     echo '#'
 }
-
-
-
 
 # schedule one-time customizations of REPRO user environment at REPRO start
 repro.atstart source ${REPRO_ENV_FILE}
@@ -26,7 +23,7 @@ repro.atstart 'cd ${REPRO_MNT}'
 repro.atshell source ${REPRO_ATSCRIPT_FILE}
 
 # schedule initialization of environment for non-interactive scripts
-repro.atscript source ${REPRO_MODULES_DIR}/repro-*/functions-base
+repro.atscript source ${REPRO_BASE_FUNCTIONS}
 
 # ensure all repro-dash and dot-repro files and directories belong to REPRO user
 chown -R ${repro_uid}.${repro_gid} ${HOME}/.repro* ${HOME}/repro-*
