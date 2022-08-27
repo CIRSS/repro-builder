@@ -23,7 +23,6 @@ function install_profile {
     local profile=$1
     local module_install_dir=$2
 
-    mkdir -p ${module_install_dir}
     cd ${module_install_dir}
 
     profile_manifest_file="manifest-${profile}"
@@ -133,9 +132,12 @@ if [[ -f ${repro_index_entry} ]] ; then
         exit 1
     fi
 else
-    # otherwise index the new module
+    # otherwise index the new module and create directory and link
     echo "${module_name} ${module_version} ${module_install_dir}" > ${repro_index_entry}
     echo "${module_name}" >> ${REPRO_ORDER_FILE}
+    mkdir -p ${module_install_dir}
+    cd ${REPRO_MODULES_DIR}
+    ln -s ${module_name}-${module_version} ${module_name}
 fi
 
 # always process the base and trim profiles
