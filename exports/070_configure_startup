@@ -20,6 +20,7 @@ repro.atstart export 'IN_RUNNING_REPRO=${REPRO_NAME}'
 repro.atstart 'cd ${REPRO_MNT}'
 
 # automatically load core repro functions in each interactive shell
+repro.atshell export REPRO_LOGGING_FUNCTIONS=${REPRO_LOGGING_FUNCTIONS}
 repro.atshell source ${REPRO_BASE_FUNCTIONS}
 
 # ensure all repro-dash and dot-repro files and directories belong to REPRO user

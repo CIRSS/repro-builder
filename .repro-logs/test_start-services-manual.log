@@ -1,6 +1,8 @@
 I MESG Loaded repro logging functions
 I MESG Initialized repro logging system
 D MESG Already loaded repro logging functions
+D MESG Already loaded repro logging functions
+I MESG Loaded repro base functions
 I MESG Initializing REPRO session
 I MESG Building PATH variable
 I MESG Initializing modules

@@ -1,4 +1,9 @@
+source ${REPRO_LOGGING_FUNCTIONS}
 
+if [[ "$(type -t repro.initialize_session)" == "function" ]] ; then
+    $_REPRO_TRACE_SOURCE_
+    $_REPRO_DEBUG_TRACE_RETURN_ "Already loaded repro base functions" ; return
+fi
 
 function repro.initialize_session { $_REPRO_TRACE_CALL_ $*
 
@@ -403,3 +408,5 @@ function repro.start_services { $_REPRO_TRACE_CALL_ $*
         $_REPRO_DEBUG_TRACE_RETURN_ "Because no services have been started there is nothing left to do"; return
     fi
 }
+
+$_REPRO_INFO_TRACE_RETURN_ "Loaded repro base functions" ; return
