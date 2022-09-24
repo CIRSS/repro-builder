@@ -25,7 +25,7 @@ function install_profile {
 
     cd ${module_install_dir}
 
-    profile_manifest_file="manifest-${profile}"
+    profile_manifest_file="${profile}-manifest"
 
     if [[ -f ${profile_manifest_file} ]] ; then
         echo "The ${profile} profile for the ${module_name} module already has been installed."
@@ -106,7 +106,7 @@ function install_profile {
 
         done
 
-        profile_setup_file=setup-${profile}
+        profile_setup_file=${profile}-setup
         if [[ -f "${profile_setup_file}" ]] ; then
             echo "Running ${profile_setup_file}"
             source ${profile_setup_file} ${module_install_dir}
@@ -147,7 +147,7 @@ for profile in "${mandatory_profiles[@]}" ; do
 done
 
 # process optional standard profiles specified in the script options
-optional_profiles=( demos code util )
+optional_profiles=( demo code util )
 for profile in "${optional_profiles[@]}" ; do
     if [[ ${arguments[*]} =~ "--$profile" ]] ; then
         install_profile ${profile} ${module_install_dir}

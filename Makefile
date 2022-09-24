@@ -281,13 +281,13 @@ endif
 ## 
 ## ---------- Targets for running the examples in this REPRO --------------------
 ## 
-## run-demos:         Run this REPRO's demonsrations.
-run-demos: session
-	$(RUN_IN_REPRO) 'repro.run_target run-demos'
+## run-demo:         Run this REPRO's demonsration.
+run-demo: session
+	$(RUN_IN_REPRO) 'repro.run_target run-demo'
 
-## clean-demos:       Delete artifacts created by demonstrations.
-clean-demos: session
-	$(RUN_IN_REPRO) 'repro.run_target clean-demos'
+## clean-demo:       Delete artifacts created by the demonstration.
+clean-demo: session
+	$(RUN_IN_REPRO) 'repro.run_target clean-demo'
 
 ## 
 ## ---------- Targets for performing the analyses in this REPRO -----------------

@@ -1,4 +1,0 @@
-run-the-demos:
-	run_all_tests.sh
-
-clean-the-demos:

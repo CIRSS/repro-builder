@@ -155,7 +155,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     install_dir=$(repro.get_module_install_dir ${module_name})
     $_REPRO_DEBUG_ "Looking for Makefiles in the '${module_name}' module installation directory (${install_dir}) to copy to the module trim directory (${trim_dir})"
     _repro.ensure_nullglob
-    makefiles=( ${install_dir}/Makefile-* )
+    makefiles=( ${install_dir}/*-Makefile )
     for makefile_path in "${makefiles[@]}" ; do
         makefile_name=$(basename ${makefile_path})
 
@@ -169,7 +169,7 @@ function repro.initialize_module_trim { $_REPRO_TRACE_CALL_ $*
     _repro.restore_nullglob
 
     # copy module files listed in trim manifest if present
-    trim_manifest=${install_dir}/manifest-trim
+    trim_manifest=${install_dir}/trim-manifest
     if [[ -f ${trim_manifest} ]] ; then
         $_REPRO_INFO_ "Ensuring other files listed in the '${module_name}' module trim manifest are in the module trim directory (${trim_dir})"
         readarray trim_manifest_lines < ${trim_manifest}
@@ -253,7 +253,7 @@ function repro.update_targets { $_REPRO_TRACE_CALL_ $*
         readarray profiles < ${install_dir}/installed-profiles
         for profiles_line in "${profiles[@]}" ; do
             profile=$(echo $profiles_line | xargs)
-            module_targets_file=${install_dir}/targets-${profile}
+            module_targets_file=${install_dir}/${profile}-targets
             if [[ -f ${module_targets_file} ]] ; then
                 repro_targets=''
                 readarray module_targets < ${module_targets_file}
@@ -297,7 +297,7 @@ function repro.run_target { $_REPRO_TRACE_CALL_ $*
         if [[ ${tokens[0]} == ${requested_target}: ]] ; then
             IFS='.' read module_name profile module_target <<< ${tokens[1]}
             $_REPRO_INFO_ "Invoking the '${module_name}:${profile}:${module_target}' target"
-            $_REPRO_DEBUG_EVAL_ make ${REPRO_MAKE_VERBOSITY} -C ${REPRO_MNT}/.${module_name} -f Makefile-${profile} ${module_target}
+            $_REPRO_DEBUG_EVAL_ make ${REPRO_MAKE_VERBOSITY} -C ${REPRO_MNT}/.${module_name} -f ${profile}-Makefile ${module_target}
             target_invoked=true
 
             if [[ ${requested_target} == "start-services" ]] ; then

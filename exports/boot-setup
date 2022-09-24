@@ -9,10 +9,10 @@ function repro.require_file {
         else
             cp ${source}/${file} ${file}
         fi
-    fi 
+    fi
 }
 
-# 
+#
 repro_distribution=${1:-${REPRO_DIST}}
 
 # save the path to the original build directory
@@ -30,7 +30,7 @@ apt-get -y update
 apt-get -y install curl
 
 # download the list of builders
-boot_manifest="manifest-boot"
+boot_manifest="boot-manifest"
 repro.require_file ${boot_manifest} ${repro_distribution}
 
 # process each line in the builders manifest
