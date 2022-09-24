@@ -1,4 +1,4 @@
-demo-Makefile
+demo-makefile
 demo-setup
 demo-targets
 run_all_tests run_all_tests.sh
