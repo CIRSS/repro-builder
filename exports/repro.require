@@ -112,6 +112,8 @@ function install_profile {
             source ${profile_setup_file} ${module_install_dir}
         fi
 
+        echo "################## Working directory: $(pwd) ####################################"
+        echo "################## Adding ${profile} to installed-profiles ######################"
         printf "%s\n" ${profile} >> ${module_install_dir}/installed-profiles
     fi
 }
@@ -159,7 +161,8 @@ standard_profiles=( "${mandatory_profiles[@]}" "${optional_profiles[@]}" )
 for i in "${!arguments[@]}"; do
     if [[ "${arguments[i]}" =~ -[-]?([a-zA-Z0-9_.-]+) ]] ; then
     profile="${BASH_REMATCH[1]}"
-            if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
+        if [[ ! ${standard_profiles[*]} =~ "$profile" ]] ; then
+            echo "################## Module install directory: ${module_install_dir} ####################################"
             install_profile ${profile} ${module_install_dir}
         fi
     fi
