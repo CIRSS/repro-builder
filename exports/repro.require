@@ -112,7 +112,7 @@ function install_profile {
             source ${profile_setup_file} ${module_install_dir}
         fi
 
-        printf  "%s\n" ${profile} >> installed-profiles
+        printf "%s\n" ${profile} >> ${module_install_dir}/installed-profiles
     fi
 }
 
