@@ -2,7 +2,8 @@ REPRO_NAME=repro
 REPRO_DOCKER_ORG=cirss
 REPRO_IMAGE_TAG=latest
 
-PARENT_IMAGE=cirss/repro-parent:latest
+REPRO_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}:${REPRO_IMAGE_TAG}
+PARENT_IMAGE=${REPRO_DOCKER_ORG}/${REPRO_NAME}-parent:${REPRO_IMAGE_TAG}
 
 #REPRO_SERVICES_STARTUP?=manual
 #REPRO_LOGGING_LEVEL?=info
@@ -14,6 +15,8 @@ REPRO_LOGGING_DIRNAME?=.repro-logs
 #REPRO_MOUNT_BLAZE=--volume $(CURDIR)/../blaze:/mnt/blaze
 
 #REPRO_MOUNT_OTHER_VOLUMES=$(REPRO_MOUNT_CLI) $(REPRO_MOUNT_BLAZE)
+
+DOCKER_BUILD_PROGRESS=plain
 
 image:             build-image   ## 
 start:             start-repro   ## 
