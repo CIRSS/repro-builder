@@ -30,7 +30,7 @@ This repository provides a template for simple REPROs that require only that `Gi
 
 A key property of a *Git-Docker-Make* REPRO is that any `Make` target that starts the REPRO docker container must mount the repository cloned on the user's computer at a predefined location within the running container, and must perform all of its work within the directory tree under this mount point.
 
-The REPRO convention is that the clone of the Git repository `<repro_name>` on the user's computer is mounted under the `/mnt/<repro_name>` directory within the running container.  All products of computations performed in the container are stored under this mount point and so can be accessed from outside the container both while the container is running, and when the container is stopped.  Whenever a terminal session is started in the running REPRO the working directory is set automatically to `/mnt/<repro_name>` so that the user's working directory appears unchanged.
+The REPRO convention is that the clone of the Git repository `<repro_name>` on the user's computer is mounted under the `/mnt/<repro_name>` directory within the running container.  All products of computations performed in the container are stored under this mount point and so can be accessed from outside the container both while the container is running, and when the container is stopped.  Whenever a terminal session is started in the running REPRO the working directory is set automatically to `/mnt/<repro_name>` so that the user's working directory appears unchanged
 
 
 
