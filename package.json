@@ -6,7 +6,27 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": {
+    "repro--build-image": "bin/repro--build-image.js",
+    "repro--build-parent-image": "bin/repro--build-parent-image.js",
+    "repro--clean-repro": "bin/repro--clean-repro.js",
+    "repro--init-repro": "bin/repro--init-repro.js",
+    "repro--pull-image": "bin/repro--pull-image.js",
+    "repro--pull-parent-image": "bin/repro--pull-parent-image.js",
+    "repro--push-image": "bin/repro--push-image.js",
+    "repro--push-parent-image": "bin/repro--push-parent-image.js",
+    "repro--rebuild-image": "bin/repro--rebuild-image.js",
+    "repro--rebuild-parent-image": "bin/repro--rebuild-parent-image.js",
+    "repro--reset-repro": "bin/repro--reset-repro.js",
+    "repro--show-help": "bin/repro--show-help.js",
+    "repro--start-repro": "bin/repro--start-repro.js",
+    "repro--start-services": "bin/repro--start-services.js",
+    "repro--test-repro": "bin/repro--test-repro.js"
+  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "shelljs": "^0.8.5"
+  }
 }
